@@ -1,0 +1,119 @@
+cl30 -g -v30 -macin -as -o1 -x1 -iC:\PC32cc\include\target SCAN.C
+[scan.c]
+TMS320C3x/4x ANSI C Compiler            Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "scan.c"   ==> main
+TMS320C3x/4x ANSI C Optimizer           Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "scan.c"   ==> main
+TMS320C3x/4x ANSI C Code Generator      Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "scan.c"   ==> main
+TMS320C3x/4x COFF Assembler             Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+ PASS 1
+ PASS 2
+
+ No Errors,  No Warnings
+
+cl30 -g -v30 -macin -as -o1 -x1 -iC:\PC32cc\include\target PID.C
+[pid.c]
+TMS320C3x/4x ANSI C Compiler            Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "pid.c"   ==> wait
+   "pid.c"   ==> get_adc
+   "pid.c"   ==> set_dac
+   "pid.c"   ==> invert_piezo
+   "pid.c"   ==> expo_regel
+   "pid.c"   ==> get_dac
+   "pid.c"   ==> InitPIDInt
+   "pid.c"   ==> InitPID
+   "pid.c"   ==> Differenz2Regelwert
+   "pid.c"   ==> PID
+   "pid.c"   ==> c_int90
+   "pid.c"   ==> AbortScan
+   "pid.c"   ==> InitGo
+   "pid.c"   ==> do_sps
+   "pid.c"   ==> do_go
+   "pid.c"   ==> InitScan
+   "pid.c"   ==> set_pos
+   "pid.c"   ==> do_scan
+TMS320C3x/4x ANSI C Optimizer           Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "pid.c"   ==> wait
+   "pid.c"   ==> get_adc
+   "pid.c"   ==> set_dac
+   "pid.c"   ==> invert_piezo
+   "pid.c"   ==> expo_regel
+   "pid.c"   ==> get_dac
+   "pid.c"   ==> InitPIDInt
+   "pid.c"   ==> InitPID
+   "pid.c"   ==> Differenz2Regelwert
+   "pid.c"   ==> PID
+   "pid.c"   ==> c_int90
+   "pid.c"   ==> AbortScan
+   "pid.c"   ==> InitGo
+   "pid.c"   ==> do_sps
+   "pid.c"   ==> do_go
+   "pid.c"   ==> InitScan
+   "pid.c"   ==> set_pos
+   "pid.c"   ==> do_scan
+TMS320C3x/4x ANSI C Code Generator      Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "pid.c"   ==> wait
+   "pid.c"   ==> get_adc
+   "pid.c"   ==> set_dac
+   "pid.c"   ==> invert_piezo
+   "pid.c"   ==> expo_regel
+   "pid.c"   ==> get_dac
+   "pid.c"   ==> InitPIDInt
+   "pid.c"   ==> InitPID
+   "pid.c"   ==> Differenz2Regelwert
+   "pid.c"   ==> PID
+   "pid.c"   ==> c_int90
+   "pid.c"   ==> AbortScan
+   "pid.c"   ==> InitGo
+   "pid.c"   ==> do_sps
+   "pid.c"   ==> do_go
+   "pid.c"   ==> InitScan
+   "pid.c"   ==> set_pos
+   "pid.c"   ==> do_scan
+TMS320C3x/4x COFF Assembler             Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+ PASS 1
+ PASS 2
+
+ No Errors,  No Warnings
+
+cl30 -g -v30 -macin -as -o1 -x1 -iC:\PC32cc\include\target APPROACH.C
+[approach.c]
+TMS320C3x/4x ANSI C Compiler            Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "approach.c"   ==> Approach
+   "approach.c"   ==> Retract
+   "approach.c"   ==> GoForward
+   "approach.c"   ==> GoBack
+TMS320C3x/4x ANSI C Optimizer           Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "approach.c"   ==> Approach
+   "approach.c"   ==> Retract
+   "approach.c"   ==> GoForward
+   "approach.c"   ==> GoBack
+TMS320C3x/4x ANSI C Code Generator      Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+   "approach.c"   ==> Approach
+   "approach.c"   ==> Retract
+   "approach.c"   ==> GoForward
+   "approach.c"   ==> GoBack
+TMS320C3x/4x COFF Assembler             Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+ PASS 1
+ PASS 2
+
+ No Errors,  No Warnings
+
+lnk30  SNOMPUTZ.MAK
+TMS320C3x/4x COFF Linker                Version 5.00
+Copyright (c) 1987-1997 Texas Instruments Incorporated
+Build Complete,
+  0 Errors, 0 Warnings.

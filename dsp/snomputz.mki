@@ -1,0 +1,27 @@
+#
+# Generic tools file for *.MAK
+#
+
+#
+# Macros
+#
+ASM = asm30
+ASM_ARGS = -v30 -s 
+CC = cl30
+CC_ARGS = -g -mn -v30 -q -x2 -o2
+LNK = lnk30
+LNK_ARGS = -c -stack 0x200 -heap 0x400 
+AR = ar30
+AR_ARGS = -r
+HEX = hex30
+HEX_ARGS = prom.cmd
+HEX2BIN = hex2bin
+HEX2BIN_ARGS = -f
+HEXVERT = hexvert
+HEXVERT_ARGS = -w4 -r   
+LIBS = -l stdio.lib -l periph.lib -l dsp.lib -l rts30.lib
+DEBUGGER = c:\spm\composer\cc_app.exe
+# EXECUTE = terminal.exe
+
+# Uncomment to explicitly set output object file
+# OUTPUT = filename.out

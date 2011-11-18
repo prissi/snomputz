@@ -1,0 +1,16 @@
+/* Auto generated project response file */
+-i C:\SPM\PC32cc\lib\target
+-i c:\spm\pc32cc\
+-i c:\fltc
+
+/* Project-specific linker options */
+ -c -stack 0x200 -heap 0x400 
+
+/* Project object files */
+pid.obj
+scan.obj
+
+/* Project library files */
+ -l stdio.lib -l periph.lib -l dsp.lib -l rts30.lib
+
+C:\SPM\PC32cc\generic.cmd

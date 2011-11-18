@@ -1,0 +1,71 @@
+;Codewright Project File (do not remove or modify this line)
+[ProjInit]
+ProjSetConfigFlags=0x04010940
+ProjCheckPath='V:\PRISSI\C\Snom32ms\DSP\\'
+
+[Files]
+V:\PRISSI\C\Snom32ms\DSP\PID.C
+V:\PRISSI\C\Snom32ms\DSP\scan.c
+
+
+[State]
+SysSetCwd='V:\PRISSI\C\Snom32ms\DSP'
+SrchSetFlags=0x0410602a
+FileSortMode=0x0
+StateWindowFrame=0,33,576,831,0x63097fca
+_StateWindow=81,81,785,309,0x00100008,'C:\SPM\PC32cc\Periph\Bus\clr_mbox.c',240,15,244,4,20,12,46,26,126,176,8,4294967295,4294967295,1,0,'MS Sans Serif',4294967279,0,49,0,10,499,0,0,753,252,249,1,1,400,0,244,246,242,252,753,753,752,761,253,80,0,253,224,14,1,1,208,1,6
+_StateWindow=108,108,785,309,0x00100008,'C:\SPM\PC32cc\Periph\Misc\INSTVECT.ASM',240,15,244,4,20,12,46,26,126,176,8,4294967295,4294967295,0,0,'MS Sans Serif',4294967279,0,49,0,10,499,0,0,753,252,249,17,21,400,0,244,246,242,252,753,753,752,761,253,80,0,253,224,14,13,1,208,2,6
+_StateWindow=54,54,785,309,0x00100008,'C:\SPM\PC32cc\Periph\Misc\EN_XRPT.ASM',240,15,244,4,20,12,46,26,126,176,8,4294967295,4294967295,0,0,'MS Sans Serif',4294967279,0,49,0,10,499,0,0,753,252,249,38,28,400,0,244,246,242,252,753,753,752,761,253,80,0,253,224,14,34,1,208,3,6
+_StateBuffer='C:\SPM\PC32cc\Periph\Misc\EN_XRPT.ASM',0x0c00048e,38,28,25,'5 9','',0x0,'',1,72,0
+_StateBuffer='C:\SPM\PC32cc\Periph\Misc\INSTVECT.ASM',0x0c00048e,17,21,25,'5 9','',0x0,'',1,72,0
+_StateBuffer='C:\SPM\PC32cc\Periph\Bus\clr_mbox.c',0x0000048e,1,1,25,'5 9','',0x0,'',1,72,1
+_StateHistory=FILELIST,'C:\SPM\PC32cc\Periph\Digital\timebase.c','C:\SPM\PC32cc\Periph\Misc\EN_XRPT.ASM','C:\SPM\PC32cc\Periph\Misc\SET_IE.ASM','C:\SPM\PC32cc\Periph\Misc\INSTVECT.ASM','C:\SPM\PC32cc\Include\Target\Misc\Chip.h','C:\FLTC\timer30.h','C:\SPM\PC32cc\Periph\Rts\CLOCK.C','C:\SPM\PC32cc\Periph\Rts\II_BOOT.C','C:\SPM\PC32cc\Periph\Bus\clr_mbox.c'
+_StateHistory=SEARCH,'Z_DA','enable_analog','iRegel','read_mailbox','read_m','MHZ'
+_StateHistory=XSYMBOL,'Retract','PID_INTERRUPT','set_dac','InitScan','wait','get_adc','__INLINE','test_timers'
+
+[Editor]
+VCSProject=''
+VCSProjectPath=''
+VCSProjectLocalPath=''
+ClipboardSetTermStr='\r\n',0
+ClipboardEnableTermStr=1
+ClipboardSetSepStr='\r\n',0
+ClipboardEnableSepStr=1
+ScrapSetCount=1
+
+[Compiler]
+CompilerNewExt=.htm
+CompilerAssign='TI C Compiler','.c'
+CompilerNewExt=.pas
+CompilerAssign='TI C Compiler','.h'
+CompilerNewExt=.ini
+CompilerNewExt=.html
+CompilerAssign='Default Compiler Settings','.*'
+CompilerNewExt=.txt
+CompilerAssign='TI Assembler','.asm'
+TagSetCmd='${HOME}${WTAGS} -oc -d -t${TAGFILE}.tag -p${TAGFILE}.ptg',0x8000060
+BrowseSetFile='V:\PRISSI\C\Snom32ms\DSP\snomputz.ptg'
+TagSetFile='V:\PRISSI\C\Snom32ms\DSP\snomputz.tag'
+CompilerAddCmd='Default Compiler Settings','',1073741840,'',16,'',16,'',16,'',0,'',0,'','','','',''
+CompilerAddResponse='Default Compiler Settings',
+CompilerAddCmd='TI Assembler',' asm30 -v30 -s  %b',1073742192,' asm30 -v30 -s  %b',368,'',400,'',400,'',0,'',0,'','','','',''
+CompilerAddResponse='TI Assembler',
+CompilerAddCmd='$_cw_proj_hash_$','',1073742160,'',336,'nmake -f V:\PRISSI\C\Snom32ms\DSP\snomputz.mk',432,'nmake -f V:\PRISSI\C\Snom32ms\DSP\snomputz.mk rebuild',432,'c:\spm\composer\cc_app.exe',32,'terminal.exe -f V:\PRISSI\C\Snom32ms\DSP\snomputz.out',32,'_TMS320ErrorInfo','_NMakeErrorInfo','','proj.err','%x'
+CompilerAddResponse='$_cw_proj_hash_$',
+CompilerAddCmd='TI C Compiler',' cl30 -g -mn -v30 -q -x2 -o2 %b',1073742192,' cl30 -g -mn -v30 -q -x2 -o2 %b',368,'',400,'',400,'',0,'',0,'','','','',''
+CompilerAddResponse='TI C Compiler',
+
+[VersionControl:PVCS]
+VCSSetCmd=VCS_CHECKIN_ID,'put -n -T@%Q -M@%Q %b%e',0x8000040
+VCSSetCmd=VCS_CHECKINLOCK_ID,'put -n -T@%Q -M@%Q -l %b%e',0x8000040
+VCSSetCmd=VCS_CHECKOUT_ID,'get -y %b%e',0x8000040
+VCSSetCmd=VCS_CHECKOUTLOCK_ID,'get -y -l %b%e',0x8000040
+VCSSetCmd=VCS_CHECKLOCK_ID,'vcs -y -l %b%e',0x8000040
+VCSSetCmd=VCS_CHECKUNLOCK_ID,'vcs -y -u %b%e',0x8000040
+VCSSetCmd=VCS_CHECKLABEL_ID,'vcs -y -v"${VCSLABEL}" %b%e',0x8000040
+VCSSetCmd=VCS_CHECKLOG_ID,'vlog %b%e',0x8000040
+VCSSetCmd=VCS_CHECKPROP_ID,'vlog -b %b%e',0x8000040
+VCSSetCmd=VCS_CHECKDIFF_ID,'vdiff -r %b%e',0x8000040
+VCSSetCmd=VCS_CHECKMENU_ID,'pvcsvmwn',0x8000000
+VCSSetCmd=VCS_ADD_ID,'vcs -i -t@%Q %b%e',0x8000040
+VCSSetCmd=VCS_REMOVE_ID,'del /f %b%{??v|___}e',0x8000040

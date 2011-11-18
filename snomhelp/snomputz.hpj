@@ -1,0 +1,25 @@
+; This file is maintained by HCW. Do not modify this file directly.
+
+; snomputz.hpj file
+[OPTIONS]
+HCW=0
+COMPRESS=12 Hall Zeck
+LCID=0x407 0x0 0x0 ;Deutsch (Deutschland)
+REPORT=No
+CONTENTS=Inhalt
+TITLE=Hilfe für SNOM-Putz 1.00ß
+ICON=snomhelp.ico    ;minimize icon to use
+BMROOT=path to .bmp files
+ROOT=path to project
+HLP=.\Snomputz.hlp
+
+[FILES]
+.\Snomputz.rtf
+
+[CONFIG]
+BrowseButtons()    ;to use browser
+;[BITMAPS]
+;first.bmp       ;section can be skipped
+;second.bmp      ;if BMROOT is used
+;[MAP]
+;#include <snomputz.h>

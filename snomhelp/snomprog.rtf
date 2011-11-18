@@ -1,0 +1,30 @@
+{\rtf1\ansi \deff4\deflang1033{\fonttbl{\f4\froman\fcharset0\fprq2 Times New Roman;}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;
+\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{\widctlpar 
+\f4\fs20\lang1031 \snext0 Normal;}{\*\cs10 \additive Default Paragraph Font;}}{\info{\author MP}{\operator MP}{\creatim\yr1999\mo1\dy12\hr12\min54}{\revtim\yr1999\mo1\dy12\hr16\min53}{\version2}{\edmins0}{\nofpages1}{\nofwords111}{\nofchars638}
+{\*\company Unbekannte Organisation}{\vern57431}}\paperw11907\paperh16840\margl1418\margr1418\margt1418\margb1134 \deftab708\widowctrl\ftnbj\aenddoc\hyphhotz425\formshade \fet0\sectd \psz9\linex0\headery709\footery709\colsx709\endnhere {\*\pnseclvl1
+\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}{\*\pnseclvl5
+\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang
+{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \widctlpar \f4\fs20\lang1031 
+\par 
+\par \trowd \trgaph70\trleft-70 \cellx2552\cellx3969\cellx6555\cellx9141 \pard \widctlpar\intbl GetHandle\cell \pard \widctlpar\intbl Dateiname\cell \pard \widctlpar\intbl Handle\cell \pard \widctlpar\intbl Ermittelt das Handle zu einem Dateinamen\cell \pard 
+\widctlpar\intbl \row \trowd \trgaph70\trleft-70 \cellx2552\cellx3969\cellx6555\cellx9141 \pard \widctlpar\intbl \cell \pard \widctlpar\intbl \cell \pard \widctlpar\intbl \cell \cell \pard \widctlpar\intbl \row \pard \widctlpar 
+\par \trowd \trgaph70\trleft-70 \cellx1134\cellx3803\cellx6472\cellx9141 \pard \widctlpar\intbl Typ\cell \pard \widctlpar\intbl Identifier\cell Verwendung\cell Bemerkungen\cell \pard \widctlpar\intbl \row \trowd \trgaph70\trleft-70 \cellx1134\cellx3803
+\cellx6472\cellx9141 \pard \widctlpar\intbl Handle\cell \pard \widctlpar\intbl @xyz\cell @xyz = GetHandle(\rdblquote A.hdf\rdblquote )\cell \pard \widctlpar\intbl Kann Untertyp Bild spezifizieren\cell \pard \widctlpar\intbl \row \pard \widctlpar\intbl 
+Bild\cell \pard \widctlpar\intbl #xyz oder @(T|E|L)xyz\cell #xyz  = @(T)zyx + 2;\cell \pard \widctlpar\intbl Setzt sich aus Ganzzahlen zusammen\cell \pard \widctlpar\intbl \row \pard \widctlpar\intbl String\cell \pard \widctlpar\intbl $xyz\cell $xyz = 
+\rdblquote abc\rdblquote ;\cell \pard \widctlpar\intbl Setzt sich aus Einzelstrings oder Zahlen zusammen\cell \pard \widctlpar\intbl \row \pard \widctlpar\intbl Zahl\cell \pard \widctlpar\intbl !xyz\cell \pard \widctlpar\intbl !i = #xyz[4][5];\cell \pard 
+\widctlpar\intbl \cell \pard \widctlpar\intbl \row \trowd \trgaph70\trleft-70 \cellx1134\cellx3803\cellx6472\cellx9141 \pard \widctlpar\intbl Untertyp\cell \pard \widctlpar\intbl ->\cell siehe Typen\cell \cell \pard \widctlpar\intbl \row \pard \widctlpar 
+
+\par Untertypen zu Handle
+\par \tab @(T)xyz\tab Topografie
+\par \tab @(EL)xyz\tab Fehler und Lumineszens
+\par \tab @(TEL)xyz = @xyz\tab Nicht = Topografie+Fehler+Lumineszens zusammen
+\par \tab @xyz -> W\tab Weite in Punkten
+\par \tab @xyz -> H\tab H\'f6he in Punkten
+\par \tab @xyz -> XW\tab Weite in nm
+\par \tab @xyz -> YW\tab H\'f6he in nm
+\par 
+\par Untertypen zu einem einzelnen Bild
+\par \tab #xyz -> Z\tab Maximalwert (Minimalwert ist Null)
+\par \tab #xyz -> ZW\tab H\'f6he eines Pixels in nm
+\par \tab #xyz -> 
+\par }

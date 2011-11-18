@@ -1,0 +1,1094 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "snomputz.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// To keep MS happy ...
+//
+#include "afxres.h"
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+ProgrammMenu MENU 
+{
+ POPUP "&Datei"
+ {
+  MENUITEM "&Öffnen...", IDM_OPEN
+  MENUITEM "Speichern &unter...", IDM_SAVE
+  MENUITEM SEPARATOR
+  MENUITEM "&Schließen", IDM_CLOSE
+ }
+
+ POPUP "&Bearbeiten"
+ {
+  MENUITEM "&Rückgängig\tStrg+Z", IDM_UNDO
+  MENUITEM SEPARATOR
+  MENUITEM "&Ausschneiden\tStrg+X", IDM_CUT
+  MENUITEM "&Kopieren\tStrg+C", IDM_COPY
+  MENUITEM "&Einfügen\tStrg+V", IDM_PASTE
+ }
+
+ POPUP "&Programm"
+ {
+  MENUITEM "&Ausführen", IDM_PROG_RUN
+  MENUITEM "An&halten", IDM_PROG_STOP
+  MENUITEM SEPARATOR
+  MENUITEM "&Trace", IDM_PROG_TRACE, GRAYED
+ }
+
+}
+
+
+
+MessMenu MENU 
+{
+ POPUP "&Datei"
+ {
+  MENUITEM "Bild &speichern", IDM_MESS_SPEICHERN
+  MENUITEM SEPARATOR
+  MENUITEM "&Zurück", IDM_MESS_ENDE
+ }
+
+ POPUP "&Einstellen"
+ {
+  MENUITEM "&Serielle Kommunikation ...", IDM_MESS_SERIAL
+  MENUITEM "&Annäherung ...", IDM_MESS_APPROACH
+  MENUITEM "Resonanz&frequenz ...", IDM_MESS_FREQ
+  MENUITEM "&PID-Parameter ...", IDM_MESS_PID
+  MENUITEM SEPARATOR
+  MENUITEM "&Bild aufnehmen", IDM_MESS_MESS
+ }
+
+}
+
+MDIMenuInit MENU  DISCARDABLE
+{
+ POPUP "&Datei"
+ {
+  MENUITEM "Bild &messen", IDM_MESS
+  MENUITEM "Datei ö&ffnen ...\t^O", IDM_OPEN
+  POPUP "Bild &importieren ..."
+  {
+   MENUITEM "Binär ...", IDM_IMPORT_BINAER
+   MENUITEM "ASCII-Daten ...", IDM_IMPORT_ASCII, GRAYED
+  }
+
+  MENUITEM SEPARATOR
+  MENUITEM "&Beenden\tALT+X", IDM_EXIT
+ }
+
+ POPUP "&Einstellungen"
+ {
+  MENUITEM "&Profildaten ändern ...", IDM_PROFIL
+  MENUITEM "&Darstellung ändern ...", IDM_3DANSICHT_DEFAULT
+  POPUP "&Verkleinerung"
+  {
+   MENUITEM "Bild wie Fenster\t0", IDM_FIT_TO_WINDOW
+   MENUITEM SEPARATOR
+   MENUITEM "1:&1\t1", IDM_1ZU1, CHECKED
+	 MENUITEM "1:&2\t2", IDM_1ZU2
+   MENUITEM "1:&3\t3", IDM_1ZU3
+   MENUITEM "1:&4\t4", IDM_1ZU4
+  }
+
+ }
+
+ POPUP "&Hilfe", HELP
+ {
+  MENUITEM "Über &SNOM-Putz 1.00ß ...", IDM_ABOUT
+  MENUITEM SEPARATOR
+  MENUITEM "&Inhalt\tF1", IDM_HILFEINHALT
+  MENUITEM "&Eintrag suchen ...", IDM_HILFESUCHEN
+  MENUITEM SEPARATOR
+  MENUITEM "SNOM-Putz Tutor", IDM_HILFETUTOR
+ }
+
+}
+
+MDIMenuBitmap MENU
+{
+ POPUP "&Datei"
+ {
+  MENUITEM "Bild &messen", IDM_MESS
+  MENUITEM "Datei ö&ffnen ...\t^O", IDM_OPEN
+  POPUP "Bild &importieren ..."
+  {
+   MENUITEM "Binär ...", IDM_IMPORT_BINAER
+   MENUITEM "ASCII-Daten ...", IDM_IMPORT_ASCII, GRAYED
+  }
+
+  MENUITEM SEPARATOR
+  POPUP "Bild &exportieren ..."
+  {
+   MENUITEM "&Topografie", IDM_EXPORT_TOPO
+   MENUITEM "&Lumineszens", IDM_EXPORT_LUMI
+   MENUITEM "&Ansicht", IDM_EXPORT_ANSICHT
+   MENUITEM SEPARATOR
+   MENUITEM "DI-Bild", IDM_EXPORT_DI, GRAYED
+  }
+
+  MENUITEM "Datei &speichern als ...\t^S", IDM_SAVE
+  MENUITEM "S&chließen", IDM_CLOSE
+  MENUITEM SEPARATOR
+  MENUITEM "Seitenlayout ...", IDM_SEITENLAYOUT, GRAYED
+  MENUITEM "Druckereinstellungen ...", IDM_DRUCKEREINSTELLEN
+  MENUITEM "Seite drucken ...", IDM_DRUCKEN
+  MENUITEM SEPARATOR
+  MENUITEM "&Beenden\tALT+X", IDM_EXIT
+ }
+
+ POPUP "&Bearbeiten"
+ {
+  MENUITEM "&Undo\tALT+BS", IDM_UNDO, GRAYED
+  MENUITEM "&Redo\tALT+SHIFT+BS", IDM_REDO, GRAYED
+  MENUITEM SEPARATOR
+  MENUITEM "Ansicht kopieren\t^C", IDM_COPY
+  MENUITEM "Höhenprofil kopieren", IDM_COPY_SCANLINE
+  MENUITEM "Einfügen\t^V", IDM_PASTE, GRAYED
+  MENUITEM SEPARATOR
+  MENUITEM "&Topografie bearbeiten", IDM_NUR_TOPO, CHECKED
+  MENUITEM "&Fehler bearbeiten", IDM_NUR_ERROR, CHECKED
+  MENUITEM "&Lumineszenz bearbeiten", IDM_NUR_LUMI, CHECKED
+ }
+
+ POPUP "&Verändern"
+ {
+	MENUITEM "&Rechtsdrehung um 90\260", IDM_DREHEN
+	POPUP "&Neigungs-/Zeilenausgleich"
+	{
+	 MENUITEM "Zeilen&mittelung ...", IDM_ZEILENMITTEL
+	 MENUITEM "&3D Mittel ...", IDM_3DMITTEL
+	 MENUITEM "&X-Steigung Null", IDM_NULL
+	 MENUITEM "&Y-Steigung Null", IDM_DIFF_NULL
+	}
+
+	POPUP "&Filter"
+	{
+	 MENUITEM "&Gleitendes Mittel ...", IDM_GLEITEND_MITTEL
+	 MENUITEM "&FFT-Glättung ...", IDM_FFT_MITTEL
+	 MENUITEM "Max/Min-Interpolation ...", IDM_DESPIKE
+	 MENUITEM "&Medianmittelung ...", IDM_MEDIAN
+	}
+
+	MENUITEM "Vergrößern/Verkleinern", IDM_GROESSE
+	MENUITEM SEPARATOR
+	MENUITEM "Bild &invertieren", IDM_NEGATIV
+	MENUITEM "Bilder&mathematik ...", IDM_MATHE
+	MENUITEM "1. Ab&leitung", IDM_DIFFERENTIAL
+	MENUITEM "In&tegrieren", IDM_INTEGRAL
+	MENUITEM "FF&T", IDM_FFT
+	MENUITEM "Autokorrelation", IDM_AUTOKORRELATION
+ }
+
+ POPUP "Aus&schlussregionen"
+ {
+	MENUITEM "Markierung &löschen", IDM_LOESCHE_MASKE
+	MENUITEM "Markierung &invertieren", IDM_INVERT_MASKE
+	MENUITEM SEPARATOR
+	MENUITEM "Daten &kopieren", IDM_COPY_MASKE
+	MENUITEM "Daten &vertikal interpolieren", IDM_MASKE_VERTIKAL_MITTELN
+	MENUITEM "Daten &horizontal interpolieren", IDM_MASKE_HORIZONTAL_MITTELN
+ }
+
+ POPUP "A&nalyse"
+ {
+	MENUITEM "&RMS-Rauhigkeit ...", IDM_RMS
+	MENUITEM "&Histogramm ...", IDM_HISTOGRAMM
+	MENUITEM "Rauhigkeits&exponent ...", IDM_ALPHA
+	MENUITEM SEPARATOR
+	MENUITEM "Winkelverteilung ...", IDM_ORIENTIERUNG
+	MENUITEM "Höhenlinien ...", IDM_KONTOUR
+	MENUITEM SEPARATOR
+	MENUITEM "Höhen&profil speichern ...", IDM_SCANLINE
+ }
+
+ POPUP "&Einstellungen"
+ {
+	MENUITEM "&Farben/Kontrast ...", IDM_FALSCHFARBEN
+	MENUITEM "&Maße festlegen ...", IDM_MASZE
+	MENUITEM SEPARATOR
+	MENUITEM "Höhen&profilformat ...", IDM_PROFIL
+	MENUITEM "&Darstellung ändern ...", IDM_3DANSICHT
+	MENUITEM "&Update erzwingen\tF3", IDM_REDRAW
+	POPUP "&Verkleinerung"
+	{
+	 MENUITEM "Bild wie Fenster\t0", IDM_FIT_TO_WINDOW
+	 MENUITEM SEPARATOR
+	 MENUITEM "1:&1\t1", IDM_1ZU1, CHECKED
+	 MENUITEM "1:&2\t2", IDM_1ZU2
+	 MENUITEM "1:&3\t3", IDM_1ZU3
+	 MENUITEM "1:&4\t4", IDM_1ZU4
+	}
+
+	MENUITEM SEPARATOR
+	MENUITEM "&Topografie zeigen", IDM_SHOW_TOPO, CHECKED
+	MENUITEM "&Fehler zeigen", IDM_SHOW_ERROR, CHECKED
+	MENUITEM "&Lumineszens zeigen", IDM_SHOW_LUMI, CHECKED
+ }
+
+ POPUP "&Fenster"
+ {
+	MENUITEM "Über&lappend\tSHIFT+F5", IDM_CASCADE
+	MENUITEM "&Nebeneinander\tSHIFT+F4", IDM_TILE
+	MENUITEM "Alle Fenster sch&ließen", IDM_CLOSEALL
+	MENUITEM SEPARATOR
+	MENUITEM "&Programmierfenster", IDM_PROGRAMM
+	MENUITEM SEPARATOR
+	MENUITEM "&Umbenennen ...", IDM_UMBENNEN
+	MENUITEM "&Symbole anordnen", IDM_ARRANGE
+ }
+
+ POPUP "&Hilfe", HELP
+ {
+	MENUITEM "Über &SNOM-Putz 1.00ß ...", IDM_ABOUT
+	MENUITEM SEPARATOR
+	MENUITEM "&Inhalt\tF1", IDM_HILFEINHALT
+	MENUITEM "&Eintrag suchen ...", IDM_HILFESUCHEN
+	MENUITEM SEPARATOR
+	MENUITEM "SNOM-Putz Tutor", IDM_HILFETUTOR
+ }
+
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+BITMAPACCEL ACCELERATORS
+{
+ "0", IDM_FIT_TO_WINDOW, ASCII, NOINVERT
+ "1", IDM_1ZU1, ASCII, NOINVERT
+ "2", IDM_1ZU2, ASCII, NOINVERT
+ "3", IDM_1ZU3, ASCII, NOINVERT
+ "4", IDM_1ZU4, ASCII, NOINVERT
+ VK_BACK, IDM_UNDO, VIRTKEY, ALT, NOINVERT
+ VK_BACK, IDM_REDO, VIRTKEY, SHIFT, CONTROL, NOINVERT
+ VK_F1, IDM_HILFEINHALT, VIRTKEY, NOINVERT
+ VK_F3, IDM_REDRAW, VIRTKEY, NOINVERT
+ VK_F4, IDM_TILE, VIRTKEY, SHIFT, NOINVERT
+ VK_F5, IDM_CASCADE, VIRTKEY, SHIFT, NOINVERT
+ VK_INSERT, IDM_COPY, VIRTKEY, CONTROL, NOINVERT
+ VK_INSERT, IDM_PASTE, VIRTKEY, SHIFT, NOINVERT
+ "^C", IDM_COPY, ASCII, NOINVERT
+ "^O", IDM_OPEN, ASCII, NOINVERT
+ "^S", IDM_SAVE, ASCII, NOINVERT
+ "^V", IDM_PASTE, ASCII, NOINVERT
+ "^Z", IDM_UNDO, ASCII, NOINVERT
+ "x", IDM_EXIT, ASCII, ALT, NOINVERT
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+ABOUTDIALOG DIALOG 64, 86, 219, 105
+STYLE DS_NOIDLEMSG | 0x8L | WS_POPUP | WS_VISIBLE | WS_DLGFRAME
+FONT 10, "MS Sans Serif"
+{
+ CTEXT "Programm zum Messen und Bearbeiten von SNOM-Bildern\nVersion 1.00ß\nvom 14.7.99\n©'97-99 Markus Pristovsek\nprissi@physik.tu-berlin.de", -1, 41, 7, 160, 53
+ CONTROL "LOGO_3P", -1, "Static", SS_BITMAP |WS_CHILD | WS_VISIBLE, 8, 7, 20, 50
+ ICON "SNOMIcon", -1, 46, 28, 16, 16
+ LTEXT "Lizensiert an\nTU-Berlin\nPN6-1", ABOUT_LIZENZ, 48, 62, 161, 26
+}
+
+GLEITENDDIALOG DIALOG 65, 27, 130, 64
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: Glätten"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Gleitendes Mittel", -1, 4,4,82,57
+ LTEXT "Punktezahl", -1, 7,18,46,10
+ EDITTEXT GLATT_PUNKTE, 51, 17, 30, 12
+ LTEXT "Sinnvolle Werte liegen zwischen 3 und 10.", -1, 8,38,75,19
+ DEFPUSHBUTTON "Weiter", IDOK, 90,6,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 90,24,38,14
+ PUSHBUTTON "Hilfe", 9, 90,47,38,14
+ LTEXT "Gleitendes Mittel", HILFETEXT, 3,112,123,17
+}
+
+RohDialog DIALOG 64, 44, 197, 145
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bild importiern: Binäre Daten"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Art der Daten", -1, 6, 3, 142, 23, WS_GROUP
+ CONTROL "&Topografie", DLG_TOPO, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 9,12,46,10
+ CONTROL "&Fehler", DLG_ERROR, "Button", BS_AUTORADIOBUTTON, 56, 12, 34, 10
+ CONTROL "&Lumineszens", DLG_LUMI, "Button", BS_AUTORADIOBUTTON, 89, 12, 55, 10
+ GROUPBOX "Position der Daten", -1, 6, 28, 142, 56
+ RTEXT "Offset in Bytes", -1, 17, 41, 60, 10
+ EDITTEXT ROH_OFFSET, 80, 40, 50, 12
+ RTEXT "Weite in Pixel", -1, 15, 55, 60, 10
+ EDITTEXT ROH_WEITE, 80, 54, 50, 12
+ RTEXT "Höhe in Pixel", -1, 16, 69, 59, 10
+ EDITTEXT ROH_HOEHE, 80, 68, 50, 12
+ GROUPBOX "Format der Daten", -1, 7, 86, 142, 53
+ CHECKBOX "Intel", ROH_INTEL, 12, 95, 28, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "Vorzeichenlos", ROH_UNSIGNED, 80, 95, 59, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CONTROL "8 Bit", ROH_8BIT, "Button", BS_AUTORADIOBUTTON, 12,109,36,12
+ CONTROL "10 Bit", ROH_10BIT, "Button", BS_AUTORADIOBUTTON, 12,121,36,12
+ CONTROL "12 Bit", ROH_12BIT, "Button", BS_AUTORADIOBUTTON, 80, 109, 36, 12
+ CONTROL "16 Bit", ROH_16BIT, "Button", BS_AUTORADIOBUTTON, 80, 121, 36, 12
+ DEFPUSHBUTTON "OK", IDOK, 154, 7, 38, 14
+ PUSHBUTTON "Abbruch", IDCANCEL, 154, 26, 38, 14
+ PUSHBUTTON "Hilfe", 9, 155, 124, 38, 14
+}
+
+FarbenDialog DIALOG 118, 28, 202, 243
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Ansicht: Farbzuweisung"
+FONT 8, "MS Sans Serif"
+{
+#ifdef __TURBOC__
+ CONTROL "", FARB_WECHSELE, "Wechselknopf", 0 | WS_CHILD | WS_VISIBLE, 0,0,202,16
+#endif
+ GROUPBOX "Falschfarben", -1, 6,22,132,107
+ AUTOCHECKBOX "Farb&verlauf über 3 Farben", FARB_3FARBEN, 12,32,112,10, BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP
+ AUTOCHECKBOX "&Modulokonturen je", FARB_MOD, 12,44,75,10
+ EDITTEXT FARB_MOD_DIST, 87,43,30,12, WS_BORDER | WS_TABSTOP
+ LTEXT "", FARB_MOD_EINHEIT, 120,44,14,10
+ PUSHBUTTON "von", FARB_1, 12,60,30,13
+ LTEXT "", FARB_SHOW1, 12,74,30,12, WS_BORDER |NOT WS_GROUP
+ PUSHBUTTON "über", FARB_2, 52,60,30,13
+ LTEXT "", FARB_SHOW2, 52,74,30,12, WS_BORDER |NOT WS_GROUP
+ PUSHBUTTON "nach", FARB_3, 92,60,30,13
+ LTEXT "", FARB_SHOW3, 92,74,30,12, WS_BORDER |NOT WS_GROUP
+ LTEXT "Startwert", -1, 12,95,31,10
+ SCROLLBAR FARB_START, 46,94,42,12, WS_TABSTOP
+ LTEXT "", FARB_START_ZAHL, 92,94,28,12
+ LTEXT "", FARB_START_EINHEIT, 122,95,14,10
+ LTEXT "Weite", -1, 12,111,32,10
+ SCROLLBAR FARB_WEITE, 46,110,42,12, WS_TABSTOP
+ LTEXT "", FARB_WEITE_ZAHL, 92,110,28,12
+ LTEXT "", FARB_WEITE_EINHEIT, 122,111,14,10
+ GROUPBOX "Sonstiges", -1, 6,132,132,67
+ EDITTEXT FARB_TITEL, 36,144,96,12, WS_BORDER | WS_TABSTOP
+ LTEXT "Titel", -1, 12,145,23,10
+ AUTOCHECKBOX "&Konturen zeigen", FARB_KONT, 12,160,67,10
+ EDITTEXT FARB_KONT_DIST, 78,158,30,12, WS_BORDER | WS_TABSTOP
+ LTEXT "", FARB_KONT_EINHEIT, 110,160,20,10
+ RTEXT "Toleranz (%)", -1, 14, 173, 58, 10
+ EDITTEXT FARB_KONT_TOL, 78,172,30,12, WS_BORDER | WS_TABSTOP
+ AUTOCHECKBOX "&3D Darstellung", FARB_3D, 12, 186, 116, 10
+ AUTOCHECKBOX "&Z-Achse zeigen", FARB_Z_ACHSE, 12, 224, 121, 8
+ GROUPBOX "Z-Achse", -1, 6,200,133,37
+ PUSHBUTTON "Aktualisieren", FARB_PREVIEW, 144,206,52,14
+ EDITTEXT FARB_Z_UNIT, 66,208,68,12, WS_BORDER | WS_TABSTOP
+ AUTOCHECKBOX "spez. &Einheit", FARB_SPEZ_Z, 12,209,54,10
+ DEFPUSHBUTTON "Weiter", IDOK, 144,26,52,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 144,45,52,14
+ PUSHBUTTON "Hilfe", 9, 144,224,52,14
+}
+
+HUBDIALOG DIALOG 19, 34, 196, 245
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Ansicht: Maße festlegen"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "&Skalierung", -1, 6,4,139,83, WS_GROUP
+ LTEXT "X", -1, 12,16,12,10
+ EDITTEXT HUB_X, 30,14,79,12
+ LTEXT "Y", -1, 12,30,12,10
+ EDITTEXT HUB_Y, 30,28,79,12
+ LTEXT "Z", -1, 12,44,12,10
+ EDITTEXT HUB_Z, 30,42,79,12
+ CTEXT "", HUB_Z_UNIT, 112,44,30,8
+ LTEXT "Lumi", -1, 12,58,18,10
+ EDITTEXT HUB_LUMI, 30,56,79,12
+ LTEXT "", HUB_LUMI_UNIT, 112,58,31,8
+ CONTROL "Å", HUB_AA, "Button", BS_AUTORADIOBUTTON, 12,72,25,12
+ CONTROL "nm", HUB_NM, "Button", BS_AUTORADIOBUTTON, 38,72,24,12
+ CONTROL "\xB5m", HUB_MKM, "Button", BS_AUTORADIOBUTTON, 66,72,25,12
+ CONTROL "Keine", HUB_KEINE, "Button", BS_AUTORADIOBUTTON, 96,72,39,12
+ GROUPBOX "Offset", -1, 6,88,139,42
+ CONTROL "&Offset an", HUB_SHOW_OFF, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,100,42,10
+ EDITTEXT HUB_X_OFF, 54,98,85,12
+ EDITTEXT HUB_Y_OFF, 54,112,85,12
+ GROUPBOX "Sonstige Dateiinformationen", -1, 6,132,139,54
+ EDITTEXT HUB_INFO, 12,142,127,40, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
+ GROUPBOX "Kommentar", -1, 6,188,139,50
+ EDITTEXT HUB_KOMM, 12,197,127,37, ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN
+ DEFPUSHBUTTON "&OK", IDOK, 152,6,38,14, WS_GROUP
+ PUSHBUTTON "&Abbruch", IDCANCEL, 152,22,38,14, WS_GROUP
+ PUSHBUTTON "&Laden", HUB_LADEN, 152,208,38,14, WS_DISABLED | WS_GROUP
+ PUSHBUTTON "&Hilfe", 9, 152,224,38,14, WS_GROUP
+}
+
+Ansicht3DDialog DIALOG 71, 39, 254, 191
+STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Ansicht: Darstellung ändern"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "3D-Parameter bestimmen", -1, 4,2,202,78
+ LTEXT "XY-Winkel", -1, 14,14,36,12
+ EDITTEXT ANSICHT_XY_EDIT, 56, 12, 40, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "Z-Winkel", -1, 14,30,36,12
+ EDITTEXT ANSICHT_Z_EDIT, 56, 28, 40, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "Z-Achse", -1, 14,46,36,12
+ EDITTEXT ANSICHT_HOEHE_EDIT, 56, 44, 40, 12, WS_BORDER | WS_TABSTOP
+ AUTOCHECKBOX "&Entwurfsqualität", ANSICHT_DRAFT, 14,62,80,12
+ CONTROL "", ANSICHT_PREVIEW, "Static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 106, 13, 91, 59
+ GROUPBOX "Farben && Text auswählen", -1, 4,84,203,101
+ PUSHBUTTON "&Vordergrund", ANSICHT_VORNE, 10,96,64,12
+ LTEXT "", ANSICHT_SHOW1, 78,96,24,12, WS_BORDER |NOT WS_GROUP
+ PUSHBUTTON "Markierung &links", ANSICHT_MARK_LINKS, 10,114,64,12
+ LTEXT "", ANSICHT_SHOW2, 78,114,24,12, WS_BORDER |NOT WS_GROUP
+ PUSHBUTTON "Markierung &rechts", ANSICHT_MARK_RECHTS, 10,132,64,12
+ LTEXT "", ANSICHT_SHOW3, 78,132,24,12, WS_BORDER | NOT WS_GROUP
+ PUSHBUTTON "&Hintergrund", ANSICHT_HINTEN, 10,150,64,12
+ LTEXT "", ANSICHT_SHOW4, 78,150,24,12, WS_BORDER |NOT WS_GROUP
+ PUSHBUTTON "Zeichensatz auswählen", ANSICHT_ZEICHENSATZ, 10,167,93,12
+ RTEXT "Links", -1, 115,100,22,10
+ COMBOBOX ANSICHT_LINKS, 139,98,62,50, CBS_DROPDOWNLIST | WS_TABSTOP | 0x4
+ RTEXT "Rechts", -1, 109,118,28,10
+ COMBOBOX ANSICHT_RECHTS, 139,116,62,50, CBS_DROPDOWNLIST | WS_TABSTOP | 0x4
+ RTEXT "Daten", -1, 116,166,22,10
+ AUTOCHECKBOX "Diagramm unten", ANSICHT_PLOTPOS, 132,148,70,10
+ COMBOBOX ANSICHT_DATEN, 140,164,62,96, CBS_DROPDOWNLIST |WS_TABSTOP | 0x4
+ DEFPUSHBUTTON "OK", IDOK, 212,8,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 212,26,38,14
+ PUSHBUTTON "Hilfe", 9, 212,171,38,14
+}
+
+DRUCKENDIALOG DIALOG 36, 52, 270, 111
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Datei: Drucken"
+FONT 8, "MS Sans Serif"
+{
+ LTEXT "Druck&qualität:", 1091, 14,47,50,9
+ COMBOBOX 1136, 64,46,81,36, CBS_DROPDOWNLIST | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ LTEXT "&Kopien:", 1092, 14,66,29,9
+ EDITTEXT 1154, 64,64,26,12, ES_RIGHT
+ DEFPUSHBUTTON "Drucken", 1, 196,9,66,14, WS_GROUP
+ PUSHBUTTON "Abbruch", 2, 196,26,66,14, WS_GROUP
+ PUSHBUTTON "Drucker wählen...", 1024, 196,49,66,14
+ PUSHBUTTON "&Seitenlayout...", 100, 196,66,66,14, WS_DISABLED
+ PUSHBUTTON "&Hife", 3, 196,89,66,14, WS_GROUP
+ LTEXT "Drucker:", 1093, 14,18,40,8
+ LTEXT "Standarddrucker", 1088, 64,18,120,18
+ GROUPBOX "Print Range", 1072, 5,150,39,26, WS_GROUP
+ RADIOBUTTON "&All", 1056, 6,150,76,12, WS_GROUP | WS_TABSTOP
+ RADIOBUTTON "S&election", 1057, 5,150,76,12
+ RADIOBUTTON "&Pages", 1058, 14,150,76,12
+ RTEXT "&From:", 1089, 12,150,24,9, NOT WS_GROUP
+ EDITTEXT 1152, 14,150,26,12, ES_RIGHT | NOT WS_TABSTOP
+ RTEXT "&To:", 1090, 18,150,16,9, NOT WS_GROUP
+ EDITTEXT 1153, 15,150,26,12, ES_RIGHT | NOT WS_TABSTOP
+ CONTROL "In Datei drucken", 1040, "Button", BS_AUTOCHECKBOX, 4,150,120,12
+ CONTROL "Collate Cop&ies", 1041, "Button", BS_AUTOCHECKBOX, 9,150,67,12
+ CONTROL "", -1, "Static", SS_BLACKFRAME, 6,8,182,96
+}
+
+MatheDialog DIALOG 70, 29, 199, 122
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: Bildermathematik"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "1. Operand und Ziel", -1, 6,3,142,23, WS_GROUP
+ CONTROL "&Topografie", DLG_TOPO, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 9,12,46,10
+ CONTROL "&Fehler", DLG_ERROR, "Button", BS_AUTORADIOBUTTON, 56, 12, 34, 10
+ CONTROL "&Lumineszens", DLG_LUMI, "Button", BS_AUTORADIOBUTTON, 89, 12, 55, 10
+ GROUPBOX "Operation", -1, 6,26,142,48, WS_GROUP
+ CONTROL "&+", MATHE_PLUS, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 12,33,18,12
+ CONTROL "&-", MATHE_MINUS, "Button", BS_AUTORADIOBUTTON, 42,33,18,12
+ CONTROL "&*", MATHE_MAL, "Button", BS_AUTORADIOBUTTON, 69,33,18,12
+ CONTROL "&/", MATHE_GETEILT, "Button", BS_AUTORADIOBUTTON, 94,33,18,12
+ CONTROL "&%", MATHE_MODULO, "Button", BS_AUTORADIOBUTTON, 124,33,18,12
+ CONTROL "&^", MATHE_HOCH, "Button", BS_AUTORADIOBUTTON | WS_DISABLED, 12,45,18,12
+ CONTROL "&OR", MATHE_OR, "Button", BS_AUTORADIOBUTTON, 42, 45, 30, 12
+ CONTROL "&AND", MATHE_AND, "Button", BS_AUTORADIOBUTTON, 77, 45, 30, 12
+ CONTROL "Ln(x+1)*", MATHE_LOG, "Button", BS_AUTORADIOBUTTON, 100, 60, 40, 8
+ CONTROL "&XOR", MATHE_XOR, "Button", BS_AUTORADIOBUTTON, 113, 45, 30, 12
+ CONTROL "&Überlauf entdecken", MATHE_OVERFLOW, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,60,77,10
+ GROUPBOX "2. Operand", -1, 6,74,142,45, WS_GROUP
+ CONTROL "fester &Wert", MATHE_FEST, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,85,46,10
+ EDITTEXT MATHE_WERT, 62, 84, 79, 12
+ COMBOBOX MATHE_QUELLE, 12, 100, 129, 62, CBS_DROPDOWNLIST | CBS_OEMCONVERT | CBS_SORT | WS_TABSTOP
+ DEFPUSHBUTTON "OK", IDOK, 154,6,40,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 154,26,40,14
+ PUSHBUTTON "&Hilfe", IDHELP, 154,104,40,14
+}
+
+STRINGDIALOG DIALOG 19, 34, 265, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Fenster: Umbennen"
+FONT 8, "MS Sans Serif"
+{
+ EDITTEXT IDD_ZAHL, 12,18,202,12
+ DEFPUSHBUTTON "OK", IDOK, 226,6,34,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 226,24,34,14
+ GROUPBOX "neuen Namen eingeben", -1, 6,4,214,33
+}
+
+MITTEL3DDIALOG DIALOG 126, 44, 119, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: 3D-Mittelung"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "Weiter", IDOK, 76,7,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 76,24,38,14
+ PUSHBUTTON "Hilfe", 9, 76,71,38,14
+ GROUPBOX "Richtung", -1, 6,3,64,54
+ CONTROL "&Horizontal", MITTEL_0, "Button", BS_AUTORADIOBUTTON, 12,16,54,10
+ CONTROL "&Vertikal", MITTEL_1, "Button", BS_AUTORADIOBUTTON, 12,28,54,10
+ CONTROL "&Fläche", MITTEL_2, "Button", BS_AUTORADIOBUTTON, 12,41,54,10
+ EDITTEXT MITTEL_N, 48, 69, 19, 12
+ GROUPBOX "Fit", -1, 6,60,65,25
+ LTEXT "Ordnung", -1, 10, 71, 35, 11
+}
+
+MessApproach DIALOG 0, 0, 256, 256
+STYLE DS_NOIDLEMSG | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Grobannäherung", -1, 6,6,102,96
+ SCROLLBAR MESS_GROB_SCROLL, 90,18,12,79, SBS_VERT | WS_TABSTOP
+ LTEXT "Position", -1, 12,18,36,10
+ EDITTEXT MESS_GROB_POS, 12,28,66,12, WS_BORDER | WS_TABSTOP
+ LTEXT "Max. Spannung", -1, 12,44,60,10
+ EDITTEXT MASS_APPROACH_SPANNUNG, 12,54,66,12, WS_BORDER | WS_TABSTOP
+ DEFPUSHBUTTON "Abbruch", MESS_ABORT, 200,109,50,14, WS_GROUP
+ CONTROL "", -1, "Static", SS_BLACKFRAME | WS_CHILD | WS_VISIBLE, 1,129,254,126
+ CONTROL "", MESS_OSZI, "Oszilloskop", 8 | WS_CHILD | WS_VISIBLE, 2,130,252,124
+}
+
+MessFreq DIALOG 0, 0, 256, 256
+STYLE DS_NOIDLEMSG | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "PID-Parameter", -1, 6, 6, 157, 67, WS_GROUP
+ LTEXT "Mittenfrequenz (Hz)", -1, 12,22,74,10
+ EDITTEXT MESS_FREQ_MITTE, 90, 20, 64, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "Bereichsbreite (Hz)", -1, 12,38,74,10
+ EDITTEXT MESS_FREQ_WEITE, 90, 36, 64, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "Amplitude (V)", -1, 12, 54, 74, 10
+ EDITTEXT MESS_FREQ_AMPLITUDE, 90, 52, 64, 12, WS_BORDER | WS_TABSTOP
+ PUSHBUTTON "Abbrechen", MESS_ABORT, 6, 110, 78, 14
+ PUSHBUTTON "Werte übertragen", MESS_FREQ_PHASE, 89, 110, 78, 14
+ PUSHBUTTON "Frequenz suchen", MESS_SCAN_SEND, 172, 110, 78, 14
+ CONTROL "", -1, "Static", SS_BLACKFRAME | WS_CHILD | WS_VISIBLE, 1,129,254,126
+ CONTROL "", MESS_OSZI, "Oszilloskop", 8 | WS_CHILD | WS_VISIBLE, 2,130,252,124
+}
+
+MessPID DIALOG 0, 0, 256, 256
+STYLE DS_NOIDLEMSG | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "PID-Parameter", -1, 3, 6, 132, 94, WS_GROUP
+ LTEXT "Verstärkung (P in %)", -1, 9, 22, 75, 10
+ EDITTEXT MESS_PID_PROP, 87, 20, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Integrationszeit (ms)", -1, 9, 38, 74, 10
+ EDITTEXT MESS_PID_INT, 87, 36, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Differentiation (ms)", -1, 9, 54, 73, 10
+ EDITTEXT MESS_PID_DIFF, 87, 52, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Regelfrequenz (kHz)", -1, 9, 70, 75, 10
+ EDITTEXT MESS_PID_FREQ, 87, 68, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Sollwert ", -1, 9, 86, 40, 10
+ CTEXT "", MESS_PID_SHOW_SOLL, 52,86,30,10
+ EDITTEXT MESS_PID_SOLL, 87, 84, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ GROUPBOX "Bildparameter", -1, 140, 6, 113, 94, WS_GROUP
+ LTEXT "Zeilen/Bild", -1, 147, 16, 41, 8
+ EDITTEXT MESS_SCAN_YPTS, 146, 25, 44, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ RTEXT "Punkte/Zeile", -1, 194, 16, 46, 8
+ EDITTEXT MESS_SCAN_XPTS, 193, 25, 49, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Topgrafie und", -1, 146, 41, 52, 8
+ COMBOBOX MESS_MESS_MODUS, 145, 51, 66, 55, CBS_DROPDOWNLIST | WS_TABSTOP
+ RTEXT "Versatz (Pts)", -1, 214, 41, 29, 8
+ EDITTEXT MESS_SCAN_VERSATZ, 216, 52, 28, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Richtung", -1, 146, 71, 38, 8
+ COMBOBOX MESS_WHICH_WAY, 145, 80, 49, 51, CBS_DROPDOWNLIST | WS_TABSTOP
+ RTEXT "Zyklen/Punkt", -1, 197, 71, 48, 8
+ EDITTEXT MESS_SCAN_FREQ, 202, 81, 43, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ GROUPBOX "Bildparameter", -1, 3, 103, 132, 59
+ LTEXT "Bildgröße", -1, 8, 114, 37, 10
+ EDITTEXT MESS_WEITE, 47, 113, 34, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ EDITTEXT MESS_HOEHE, 89, 113, 34, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Offset", -1, 8, 129, 38, 10
+ EDITTEXT MESS_XOFF, 47, 129, 34, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ EDITTEXT MESS_YOFF, 89, 129, 34, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ LTEXT "Einheit ist", -1, 9, 148, 57, 10
+ CONTROL "nm", HUB_NM, "Button", BS_AUTORADIOBUTTON, 71, 147, 24, 12
+ CONTROL "\xB5m", HUB_MKM, "Button", BS_AUTORADIOBUTTON, 101, 147, 25, 12
+ GROUPBOX "Piezo-Eichung", -1, 140, 103, 113, 60, BS_GROUPBOX
+ CTEXT "X", -1, 147, 117, 30, 10
+ EDITTEXT MESS_PIEZO_X, 147, 127, 30, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ CTEXT "Y", -1, 182, 117, 30, 10
+ EDITTEXT MESS_PIEZO_Y, 182, 127, 30, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ CTEXT "Z", -1, 218, 117, 30, 10
+ EDITTEXT MESS_PIEZO_Z, 218, 127, 30, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ CHECKBOX "Piezo invertiert", MESS_SCAN_INVERT, 148, 146, 100, 10, BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP
+ PUSHBUTTON "Zurückziehen", MESS_ABORT, 3, 166, 80, 14
+ PUSHBUTTON "Parameter senden", MESS_PID_SEND, 87, 166, 80, 14
+ PUSHBUTTON "Neues Bild", MESS_SCAN_SEND, 173, 166, 80, 14
+ CONTROL "", -1, "Static", SS_BLACKFRAME | WS_CHILD | WS_VISIBLE, 1, 185, 254, 70
+ CONTROL "", MESS_OSZI, "Oszilloskop", 8 | WS_CHILD | WS_VISIBLE, 2, 186, 252, 68
+}
+
+MessMess DIALOG 0, 0, 256, 256
+STYLE DS_NOIDLEMSG | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Bildparameter", -1, 6, 6, 105, 96
+ RTEXT "Bildweite", -1, 12, 19, 42, 10
+ EDITTEXT MESS_WEITE, 57, 18, 48, 12
+ EDITTEXT MESS_HOEHE, 57, 32, 48, 12
+ RTEXT "X-Offset", -1, 12, 47, 42, 10
+ EDITTEXT MESS_XOFF, 57, 46, 48, 12
+ RTEXT "Y-Offset", -1, 12, 61, 42, 10
+ EDITTEXT MESS_YOFF, 57, 60, 48, 12
+ PUSHBUTTON "Setzen", MESS_GROB_SETZEN, 69, 82, 36, 14
+ AUTOCHECKBOX "Bildweite", MESS_NOT_SQUARE, 14, 32, 41, 12
+ AUTOCHECKBOX "Neu beginnen", SCAN_RESTART, 11, 83, 57, 13
+ CONTROL "", -1, "Static", SS_BLACKFRAME | WS_CHILD | WS_VISIBLE, 117, 7, 132, 70
+ CONTROL "", MESS_OSZI, "Oszilloskop", 8 | WS_CHILD | WS_VISIBLE, 118, 8, 130, 68
+ COMBOBOX MESS_MESS_MODUS, 118, 81, 78, 55, CBS_DROPDOWNLIST | WS_TABSTOP
+ PUSHBUTTON "Neu Skalieren", MESS_RESCALE, 200, 80, 49, 14
+ DEFPUSHBUTTON "Zurück", MESS_ZURUECK, 2, 109, 34, 14
+ AUTOCHECKBOX "Bild speichern", MESS_SAVE, 54, 109, 58, 14
+ CONTROL "", MESS_SKALA, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 118, 97, 131, 29
+ CONTROL "", MESS_BITMAP, "Static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 1, 128, 245, 117
+ SCROLLBAR MESS_Y_SCROLL, 246, 128, 10, 117, SBS_VERT | WS_TABSTOP
+ SCROLLBAR MESS_X_SCROLL, 1, 245, 246, 10, WS_TABSTOP
+}
+
+MESSSERIAL DIALOG 0, 0, 256, 256
+STYLE DS_NOIDLEMSG | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Kommunikation", -1, 6,6,140,50
+ LTEXT "Schnittstelle", -1, 12,20,66,8, NOT WS_GROUP
+ COMBOBOX MESS_SER_PORT, 84,18,54,56, CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP
+ PUSHBUTTON "Parameter ändern", MESS_SER_PAR, 13, 37, 126, 12
+ EDITTEXT MESS_SER_TERMINAL, 6,62,244,187, ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_OEMCONVERT | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+}
+
+MITTELDIALOG DIALOG 126, 44, 119, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: Zeilenmittelung"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "Weiter", IDOK, 76,7,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 76,24,38,14
+ PUSHBUTTON "Hilfe", 9, 76,71,38,14
+ GROUPBOX "Analytisch", -1, 6,3,64,54
+ CONTROL "&0. Ordnung", MITTEL_0, "Button", BS_AUTORADIOBUTTON, 12,16,54,10
+ CONTROL "&1. Ordnung", MITTEL_1, "Button", BS_AUTORADIOBUTTON, 12,28,54,10
+ CONTROL "&2. Ordnung", MITTEL_2, "Button", BS_AUTORADIOBUTTON, 12,41,54,10
+ CONTROL "Ordnung", MITTEL_FIT, "Button", BS_AUTORADIOBUTTON, 12,72,  38,8
+ EDITTEXT MITTEL_N, 52,70,15,12
+ GROUPBOX "Fit", -1, 6,60,65,25
+}
+
+
+CAPTURESHOW DIALOG 7, 17, 161, 127
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bild speichern"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "", -1, "Static", SS_BLACKFRAME, 0,0,130,50
+ CONTROL "", MESS_OSZI, "Oszilloskop", 0x8, 1,1,128,48
+ CONTROL "", CAPTURE_BITMAP, "Static", SS_WHITERECT, 0,51,161,127
+}
+
+KORRELATIONSDIALOG DIALOG 114, 42, 143, 68
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Analyse: Rauhigkeitsexponent"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Rastergröße", -1, 3,3,88,59
+ LTEXT "Startweite", -1, 6,15,40,10
+ EDITTEXT ALPHA_START, 48,14,34,12
+ LTEXT "Endweite", -1, 6,30,40,10
+ EDITTEXT ALPHA_ENDE, 48,29,34,12
+ CONTROL "2D Scan", ALPHA_2D, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 6,45,40,10
+ EDITTEXT ALPHA_WINKEL, 48,44,34,12
+ DEFPUSHBUTTON "Start", IDOK, 100,6,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 100,24,38,14
+ PUSHBUTTON "Hilfe", 9, 100,48,38,14
+}
+
+STEIGUNGNULL DIALOG 19, 34, 132, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: Steigung auf Null setzen"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Teiler", -1, 3,3,87,58
+ EDITTEXT IDD_ZAHL, 8, 17, 35, 12
+ LTEXT "(>=1)", -1, 49, 18, 32, 10
+ LTEXT "Teiler gibt die kleinste Differenz zweier Werte an (meist 1).", -1, 6,32,79,25
+ DEFPUSHBUTTON "Weiter", IDOK, 94,6,34,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 94,24,34,14
+ PUSHBUTTON "Hilfe", 9, 94,47,34,14
+ LTEXT "Zeilenmittelung", HILFETEXT, 3,112,123,17
+}
+
+WINKELDIALOG DIALOG 19, 34, 137, 61
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Analyse: Winkelverteilung berechnen"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Verteilung", -1, 6,3,88,53
+ EDITTEXT IDD_ZAHL, 54,17,34,12
+ DEFPUSHBUTTON "OK", IDOK, 100,6,34,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 100,24,34,14
+ CONTROL "Logarithmieren", WINKEL_LOGARITHMUS, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,38,72,10
+ LTEXT "Grenzwinkel", -1, 10,19,42,8
+ PUSHBUTTON "Hilfe", 9, 100,43,34,14
+}
+
+DespikeDialog DIALOG 51, 31, 204, 112
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bearbeiten: Despiken"
+FONT 8, "MS Sans Serif"
+{
+#ifdef __TURBOC__
+ CONTROL "", SPIKE_WECHSELE, "Wechselknopf", 0 | WS_CHILD | WS_VISIBLE, 0, 0, 204, 16
+#endif
+ GROUPBOX "Richtungen", -1, 6, 16, 142, 39
+ CONTROL "horizontal", SPIKE_X, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12, 26, 65, 8
+ CONTROL "vertikal", SPIKE_Y, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 88, 26, 52, 8
+ LTEXT "Punktezahl (0=bel.)", -1, 12, 40, 84, 8
+ EDITTEXT SPIKE_WEITE, 97, 38, 44, 12
+ GROUPBOX "Zu ersetzende Werte", -1, 6, 57, 142, 51
+ CONTROL "Unteres Limit (>=0)", SPIKE_LOW_OK, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12, 68, 78, 8
+ EDITTEXT SPIKE_LOW, 97, 66, 44, 12
+ CONTROL "Oberes Limit", SPIKE_UP_OK, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12, 82, 81, 8
+ EDITTEXT SPIKE_UP, 97, 80, 44, 12
+ CONTROL "Linear Interpolieren", SPIKE_INTERPOL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12, 95, 128, 9
+ DEFPUSHBUTTON "OK", IDOK, 154, 20, 44, 14
+ PUSHBUTTON "Abbruch", IDCANCEL, 154, 38, 44, 14
+ PUSHBUTTON "Hilfe", 9, 154, 95, 44, 14
+}
+
+KONTURDIALOG DIALOG 19, 34, 132, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Analyse: Höhenlinien berechnen"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Bytedifferenz", -1, 6,4,82,33
+ EDITTEXT IDD_ZAHL, 12,18,70,12
+ DEFPUSHBUTTON "OK", IDOK, 94,6,34,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 94,24,34,14
+}
+
+GROSSDIALOG DIALOG 29, 22, 179, 79
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: Größe"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Neue Größe", -1, 6,3,115,71
+ CONTROL "&Weite x Höhe", GROSS_X_Y, "Button", BS_AUTORADIOBUTTON, 12,14,70,8
+ LTEXT "Weite", -1, 21,27,20,8
+ EDITTEXT GROSS_W, 50,26,40,12
+ LTEXT "Höhe", -1, 21,42,20,8
+ EDITTEXT GROSS_H, 50,40,40,12
+ CONTROL "&Konstanter Faktor", GROSS_FAKTOR_OK, "Button", BS_AUTORADIOBUTTON, 12,58,72,8
+ EDITTEXT GROSS_FAKTOR, 86,56,30,12
+ DEFPUSHBUTTON "&OK", IDOK, 130,6,44,14
+ PUSHBUTTON "&Abbruch", IDCANCEL, 130,24,44,14
+ PUSHBUTTON "&Hilfe", 9, 130,60,44,14
+}
+
+TUTORDIALOGNEIGUNG DIALOG 6, 15, 189, 187
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Tutor: Bildneigung ausgleichen"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Bildneigung ausgleichen", -1, 5,4,178,160
+ LTEXT "Es gibt zwei unterschiedliche Methoden; die Zeilenmittelung funktioniert gut auf Proben, die entweder rauh oder glatt sind. Hat die Probe glatte aber sehr unterschiedlich hohe Bereiche, dann wird die Zeilendifferenzminimierung bessere Resultate erzielen. ", -1, 12,22,158,54
+ CONTROL "Linear mitteln", IDM_ZEILENMITTEL, "Button", BS_AUTORADIOBUTTON, 14,80,156,8
+ CONTROL "Zeilendifferenzen minimieren", IDM_DIFF_NULL, "Button", BS_AUTORADIOBUTTON, 14,92,158,8
+ LTEXT "Falls die glatten Flächen auf der Probe immer noch geneigt sind, kann ein X-Steigungs- ausgleich durchgeführt werden.", -1, 12,114,158,25
+ CONTROL "Terrassen begradigen", IDM_NULL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 13,142,162,12
+ PUSHBUTTON "Abbruch", IDCANCEL, 6,168,38,14
+ DEFPUSHBUTTON "Weiter", IDOK, 54,168,38,14
+ PUSHBUTTON "Hilfe", 9, 144,168,38,14
+}
+
+OVERRUNDIALOG DIALOG 84, 68, 176, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Überlauf!"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Überlauf aufgetreten!", -1, 3,3,118,75
+ CONTROL "Zu hohe Werte abschneiden", OVERRUN_OVERFLOW, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 6,14,110,10
+ CONTROL "Zu kleine Werte abschneiden", OVERRUN_UNDERFLOW, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 6,27,110,10
+ LTEXT "Bei der Berechnung trat ein Überlauf auf.\nZu hohe Werte werden auf 65535,\noder zu kleine Werte auf 0 gesetzt.", -1, 6,42,112,33
+ DEFPUSHBUTTON "OK", IDOK, 128,6,42,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 128,24,42,14
+ PUSHBUTTON "Hilfe", 9, 128,64,42,14
+}
+
+MEDIANDIALOG DIALOG 51, 29, 198, 60
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bearbeiten: Medianmittelung"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "OK", IDOK, 150,6,44,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 150,24,44,14
+ PUSHBUTTON "Hilfe", 9, 150,42,44,14
+ GROUPBOX "Spalten", -1, 6,3,138,23
+ GROUPBOX "Flächen", -1, 6,28,138,25
+ CONTROL "3 Zeilen", MEDIAN_3ZEILEN, "Button", BS_AUTORADIOBUTTON, 12,13,38,10
+ CONTROL "5 Zeilen", MEDIAN_5ZEILEN, "Button", BS_AUTORADIOBUTTON, 56,13,38,10
+ CONTROL "7 Zeilen", MEDIAN_7ZEILEN, "Button", BS_AUTORADIOBUTTON, 100,13,38,10
+ CONTROL "2x2", MEDIAN_2X2, "Button", BS_AUTORADIOBUTTON, 12,38,38,10
+ CONTROL "3x3", MEDIAN_3X3, "Button", BS_AUTORADIOBUTTON, 56,38,38,10
+ CONTROL "5x5", MEDIAN_5X5, "Button", BS_AUTORADIOBUTTON, 100,38,38,10
+}
+
+REGIONINTERPOLIEREN DIALOG 65, 27, 147, 71
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Auschlussregion: interpolieren"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Werte interpolieren", -1, 3,3,96,66
+ EDITTEXT IDD_ZAHL, 8, 17, 41, 12
+ LTEXT "(1<n<11)", -1, 57, 19, 34, 10
+ LTEXT "Die Werte in der Aus- schlussregion werden durch ein Polynom n-1. Grades ersetzt.", -1, 8,32,88,35
+ DEFPUSHBUTTON "Weiter", IDOK, 105,6,38,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 105,25,38,14
+ PUSHBUTTON "Hilfe", 9, 105,55,38,14
+ LTEXT "Ausschlussregionen", HILFETEXT, 3,112,123,17
+}
+
+
+ProfilDialog DIALOG 51, 31, 225, 117
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Einstellen: Höhenprofil"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Daten kopieren von", -1, 6,3,161,23, WS_GROUP
+ CONTROL "&Topografie", DLG_TOPO, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,12,46,10
+ CONTROL "&Fehler", DLG_ERROR, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 65,12,35,10
+ CONTROL "&Lumineszens", DLG_LUMI, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 107,12,57,10
+ GROUPBOX "In Datei kopieren", -1, 6,27,161,86
+ CONTROL "&Distanz vom Startpunkt", PROFIL_DISTANZ, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,38,150,10
+ CONTROL "&X-Koordinaten", PROFIL_X, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,50,150,10
+ CONTROL "&Y-Koordinaten", PROFIL_Y, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,62,150,10
+ CONTROL "&Werte", PROFIL_WERTE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,74,150,10
+ CONTROL "&Autokorrelation", PROFIL_AUTOKORRELATION, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12,86,150,10
+ CHECKBOX "Amplituden&quadrat", PROFIL_AMPLITUDE, 12,98,150,10, BS_AUTOCHECKBOX | WS_TABSTOP
+ DEFPUSHBUTTON "OK", IDOK, 174,6,44,14
+ PUSHBUTTON "Abbruch", IDCANCEL, 174,24,44,14
+ PUSHBUTTON "Hilfe", IDHELP, 174,98,44,14
+}
+
+FFTDialog DIALOG 71, 39, 178, 189
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Verändern: FFT-Filterung"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "Filterkurve", -1, 6, 4, 125, 77, BS_GROUPBOX
+ GROUPBOX "Untere Grenze", -1, 6, 86, 125, 46, BS_GROUPBOX
+ CONTROL "", FFT_FKT, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE | WS_BORDER, 12, 14, 114, 62
+ EDITTEXT FFT_LOW_FREQ, 68, 98, 58, 12
+ EDITTEXT FFT_LOW_W, 68, 114, 58, 12
+ LTEXT "Frequenz (Hz)", -1, 12, 99, 52, 10
+ LTEXT "Steilheit (%)", -1, 13, 115, 52, 10
+ GROUPBOX "Obere Grenze", -1, 6, 136, 125, 46, BS_GROUPBOX
+ EDITTEXT FFT_HIGH_FREQ, 68, 148, 58, 12
+ EDITTEXT FFT_HIGH_W, 68, 164, 58, 12
+ LTEXT "Frequenz (Hz)", -1, 12, 149, 52, 10
+ LTEXT "Steilheit (%)", -1, 12, 165, 52, 10
+ DEFPUSHBUTTON "OK", IDOK, 137, 8, 38, 14
+ PUSHBUTTON "Abbruch", IDCANCEL, 137, 26, 38, 14
+ PUSHBUTTON "Hilfe", IDHELP, 137, 169, 38, 14
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+SNOMICON ICON "snomputz.ico"
+SNOMICONBILD ICON "snombild.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+TOOLBARBMP BITMAP "toolbar.bmp"
+SCANBARBMP BITMAP "scanbar.bmp"
+LOGO_3P BITMAP "3p.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+{
+ W_OVERFLOW, "ACHTUNG: Überlauf aufgetreten! (Werte können falsch sein!)"
+ I_SNOM_HDF, "Soll SNOM-Putz mit HDF-Dateien verknüft werden und \ndieses später auch wieder prüfen?"
+ E_MEMORY, "FEHLER: Zu wenig Speicher! (Aktion wurde abgebrochen!)"
+ W_NIX, "ACHTUNG: Nichts zu tun (Weder Topografie/Fehler/Lumineszens ausgewählt!)"
+ I_ZEILENMITTEL, "Zeilenweise Mittelung läuft ..."
+ I_DESPIKE, "Ausreißer werden entfernt ..."
+ I_GROSS, "Verändere Größe ..."
+ I_FREE_MEMORY, "Versuche Speicher freizugeben ..."
+ I_REDRAW, "Fenster wird neu gezeichnet."
+ I_IMPORT, "Bild importieren ..."
+ I_SAVE_WND, "Speichere Ansicht ..."
+ I_EXPORT, "Daten in 256-Farben BMP-Datei exportieren ..."
+ E_IMPORT, "Fehler beim Import!"
+ I_PRINTING, "Schicke Daten an den Drucker ..."
+ I_UNDO, "Letzte Änderung wird zurückgenommen ..."
+ I_X_DIFF, "Häufigste Steigung in X-Richtung wird zu Null gesetzt."
+ E_LOW_MEMORY, "Zuwenig Speicher frei.\n Bitte andere Fenster schließen."
+ E_NOT_FITTED, "FEHLER: Zeilenmittelung erfolglos!"
+ DO_NO_OVERFLOW, "ACHTUNG: Werte zu groß! \nAbhilfe: Daten durch %li teilen! "
+ E_FILE_CORRUPT, "FEHLER: Datei ist defekt!"
+ E_TOO_SMALL, "FEHLER: Neue Daten sind zu schmal!"
+ E_HARDDISK, "FEHLER: Kann nicht schreiben! (Laufwerk voll/Schreibgeschützt?)"
+ E_DSP_DLL, "FEHLER: DSP-DLL nicht gefunden!"
+ I_SAVE_FILE, "Datei %s wurde verändert! \nÄnderungen speichern?"
+ I_DIFFERENTIAL, "Berechne 1. Ableitung ..."
+ E_DSP_TARGET, "FEHLER: Kann DSP nicht initialisieren!"
+ E_LOCKIN, "FEHLER: Keine Kommunikation mit Lock-In-Verstärker!"
+ W_STATISTIK, "ACHTUNG: Schlechte Statistik! Bitte Teilerfaktor erhöhen!"
+ I_Y_DIFF, "Zeilendifferenzen werden minimiert ..."
+ I_GLAETTUNG, "Glättung läuft ..."
+ I_INVERT, "Daten werden invertiert ..."
+ I_TURN, "Daten werden um 90\260 nach rechts gedreht ..."
+ I_WINKEL, "Winkelverteilung wird berechnet ..."
+ I_KONTUR, "Konturen werden berechnet ..."
+ I_COPY, "Daten werden kopiert ..."
+ E_NO_BITMAP, "FEHLER: Das ist keine gültige Bitmap-Datei!"
+ E_FILE, "ACHTUNG: Kann die Datei nicht öffnen!"
+ I_ASCII, "Lese Rohdaten-Datei ..."
+ I_DI, "Lese Digital Instruments\251 Datei ..."
+ I_HDF, "Lese HDF-Datei ..."
+ I_BMP, "Lese BMP-Datei ..."
+ E_UNKNOWN_FILE, "FEHLER: Unbekanntes Dateiformat!"
+ W_COMMENT, "ACHTUNG: Zu langen Kommentar auf 1024 Zeichen gekürzt!"
+ E_COM, "FEHLER: COM belegt!"
+ I_FFT, "FFT-Filterung läuft ..."
+ IDM_MESS, "Zur Datenerfassung"
+ IDM_OPEN, "Datei öffnen"
+ IDM_SAVE, "Datei speichern als"
+ IDM_DRUCKEN, "Ansicht drucken"
+ IDM_UNDO, "Rückgängig machen"
+ IDM_REDO, "Wiederholen"
+ IDM_COPY, "Ansicht in Zwischenablage kopieren"
+ IDM_COPY_SCANLINE, "Höheprofil in Zwischenablage kopieren"
+ IDM_DREHEN, "Rechtsdrehung um 90\260"
+ IDM_ZEILENMITTEL, "Zeilenmittelung"
+ IDM_MATHE, "Daten mathematisch verändern"
+ IDM_3DANSICHT_DEFAULT, "Ansicht einstellen"
+ IDM_FALSCHFARBEN, "Farben und Kontrast einstellen"
+ IDM_3DANSICHT, "Ansicht einstellen"
+ IDM_MASZE, "Maße und Dateiinformationen anzeigen"
+}
+
+
+STRINGTABLE 
+{
+ PROG_OK, "Programm erfolgreich beendet!"
+ PROG_LINE_OVERFLOW, "Programm: Zeile zu lang!"
+ PROG_VAR_SUBTYPE, "Programm: Nur Unteryp T, E oder L erlaubt!"
+ PROG_VAR_NULLNAME, "Programm: Identifier (@#$!) ohne folgenden Namen!"
+ PROG_VAR_OUT_OF_NAMES, "Programm: Kein interner Speicher mehr für neue Variablen!"
+ PROG_VAR_UNDEF, "Programm: Undefinierte Variable! (Schreibfehler?)"
+ PROG_PARSE_EOL, "Programm: Unerwartetes Zeilenende!"
+ PROG_EVAL_STRING, "Programm: String nicht geschlossen!"
+ PROG_PARSE_STACK_UNDER, "Programm: Stackunterlauf (Zu viele })!"
+ PROG_PARSE_STACK_OVER, "Programm: Stacküberlauf (Zu viele Blocks)!"
+ PROG_PARSE_BRACKETS, "Programm: Klammerfehler (fehlende Klammer)!"
+ PROG_EVAL_CHAR, "Programm: Unerlaubtes Zeichen!"
+ PROG_EVAL_TYPES, "Programm: Typenkonflikt!"
+ PROG_EVAL_OPERATOR, "Programm: Fehlender Operator!"
+ PROG_EVAL_ASSIGN, "Programm: Zuweisung in Unterausdrücken nicht erlaubt! (War '==' gemeint?)"
+ PROG_PARSE_WRONG, "Programm: Unerwartete Eingabe!"
+ PROG_OP_ILLEGAL, "Programm: Unzulässige Operation für diesen Typ!"
+}
+
+STRINGTABLE 
+{
+ STR_REGEL, "Regelwert %i"
+ STR_ENDE_PID, "Keine PID-Regelung mehr!"
+ STR_NOT_SEND, "Kann nicht senden!"
+ STR_SCANNING, "Scanne!"
+ STR_NEW_F, "Neue Frequenz %.2f Hz"
+ STR_TOPO_MEAN, "Die mittlere Höhe ist %7.5lf nm, \ndie mittlere Rauhigkeit (RMS) %5.3lf nm."
+ STR_LUMI_MEAN, "Die normierte mittlere Lumineszens ist %7.5lf, \ndie normierte mittlere Abweichung %5.3lf."
+ STR_ORIENT, "Orientierung von %s"
+ STR_ANGLE_PLOT, "Winkelplot (\260)"
+ STR_CONTUR_PLOT, "Konturen von %s"
+ STR_HOEHENLINIEN, "Konturlinien (%s)"
+ STR_PART_OF, "Ausschnitt von %s"
+ STR_SCANLINE, "Scanline von %i,%i nach %i,%i, Winkel %i"
+ STR_MASK, "Ausschlussfläche von %i,%i nach %i,%i hinzufügen (%i x %i)"
+ STR_FRAC_LINE, "Berechne %li in %li \260 ..."
+ STR_FRAC_RECT, "Berechne (%li x %li) ..."
+}
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+1 VERSIONINFO 
+FILEVERSION 1,0,0,1
+PRODUCTVERSION 1,0,0,1
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS 0x40004L
+FILETYPE 0x2L
+FILESUBTYPE 0x0L
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040704b0"
+  {
+   VALUE "CompanyName", "3P Messsoftware\0"
+   VALUE "FileDescription", "Deutsche Texte für Snomputz\0"
+   VALUE "FileVersion", "1, 0, 0, 1\0"
+   VALUE "InternalName", "langdll\0"
+   VALUE "LegalCopyright", "Copyright © 1999\0"
+   VALUE "OriginalFilename", "langdll.dll\0"
+   VALUE "ProductName", "SNOM-Putz\0"
+   VALUE "ProductVersion", "1, 0, 0, 1\0"
+  }
+
+ }
+
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 0x407, 1200
+ }
+
+}
+
+OverviewDlg DIALOG 10, 18, 355, 337
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Dateiüberblick"
+FONT 8, "MS Sans Serif"
+{
+ LISTBOX OVER_LIST, 6, 60, 344, 272, LBS_NOTIFY | WS_BORDER | LBS_SORT | LBS_MULTIPLESEL | LBS_OWNERDRAWFIXED | LBS_NOINTEGRALHEIGHT | LBS_MULTICOLUMN | LBS_EXTENDEDSEL | LBS_DISABLENOSCROLL | WS_BORDER | WS_HSCROLL | WS_TABSTOP
+ EDITTEXT OVER_DIR, 6, 6, 282, 14, ES_READONLY | WS_BORDER | WS_TABSTOP
+ CHECKBOX "Daten speichern (*.hdo)", OVER_SAVE, 8, 33, 101, 15, BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP
+ GROUPBOX "Sortierreihenfolge", -1, 158, 24, 130, 30, BS_GROUPBOX
+ CONTROL "Datum", OVER_DATE, "BUTTON", BS_AUTORADIOBUTTON, 162, 36, 34, 14
+ CONTROL "Nummer", OVER_NUMBER, "BUTTON", BS_AUTORADIOBUTTON, 201, 36, 42, 14
+ CONTROL "Name", OVER_NAME, "BUTTON", BS_AUTORADIOBUTTON, 250, 36, 34, 14
+ DEFPUSHBUTTON "Laden", IDOK, 300, 6, 50, 14
+ PUSHBUTTON "Abbruch", IDCANCEL, 300, 23, 50, 14
+ PUSHBUTTON "Hilfe", IDHELP, 300, 41, 50, 14, WS_DISABLED | WS_TABSTOP
+}
