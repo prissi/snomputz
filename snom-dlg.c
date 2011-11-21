@@ -23,6 +23,7 @@
 #include "snom-dat.h"
 #include "snom-dsp.h"
 #include "snom-mem.h"
+#include "snom-mat.h"
 #include "snom-wrk.h"
 #include "snom-win.h"
 #include "snom-dsp.h"
@@ -2972,3 +2973,121 @@ int WINAPI VolumeDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 // 25.4.2002
+
+
+/***************************************************************************************/
+
+
+/* Verwaltet QD-Dialog */
+DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	static LPBMPDATA  pBmp;
+	static LPSNOMDATA pSnom;
+	static LPBILD	  pBild;
+	static HWND		  hwnd, hfStart;
+	BYTE str[128];
+	WORD	 i=0;
+
+	i = 0;
+	switch (message)
+	{
+		case WM_INITDIALOG:
+			hwnd = (HWND)lParam;
+			pBmp = (LPBMPDATA)GetWindowLong( hwnd, 0 );
+			if(  pBmp==NULL  )
+				EndDialog( hdlg, wParam!=IDOK );
+			// Ok, valid pointers ...
+			pSnom = pBmp->pSnom+pBmp->iAktuell;
+			// Scrolly Initialisieren
+			hfStart = GetDlgItem(hdlg,FARB_START);
+			SetScrollRange( hfStart, SB_CTL, 1, pSnom->Topo.uMaxDaten/4, FALSE );
+		return TRUE;
+
+
+		case WM_NOTIFY:
+			SetScrollPos( hfStart, SB_CTL, (WORD)(pBmp->dot_quantisation), TRUE );
+			InvalidateRect( hdlg, NULL, FALSE );
+		break;
+
+		case WM_HSCROLL:
+		{
+			int		iOffset = GetScrollPos( GET_SCROLL_HANDLE(lParam), SB_CTL );
+			switch( LOWORD(wParam) )
+			{
+					case SB_LINEDOWN:
+						iOffset ++;
+						break;
+					case SB_LINEUP:
+						iOffset --;
+						break;
+					case SB_PAGEDOWN:
+						iOffset += 16;
+						break;
+					case SB_PAGEUP:
+						iOffset -= 16;
+						break;
+					case SB_BOTTOM:
+						iOffset = 256;
+						break;
+					case SB_TOP:
+						iOffset = 0;
+						break;
+					case SB_THUMBPOSITION:
+					case SB_THUMBTRACK:
+#ifndef BIT32
+					iOffset = LOWORD(lParam);
+#else
+					iOffset = HIWORD(wParam);
+#endif
+						break;
+				}
+				SetScrollPos( GET_SCROLL_HANDLE(lParam), SB_CTL, (WORD)iOffset, TRUE );
+				iOffset = GetScrollPos( hfStart, SB_CTL );
+				if(  iOffset!=pBmp->dot_radius  ) {
+					double Median, MedianRMS;
+					LPUWORD pData = GetDataPointer(pBmp,TOPO);
+					pBmp->dot_radius = iOffset;
+					MeadianArea( pData, pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+					pBmp->dot_mean_level = Median;
+					pBmp->dot_quantisation = MedianRMS;
+					if(  pBmp->dot_histogramm_count>0  ) {
+						free( pBmp->dot_histogramm );
+					}
+					pBmp->dot_histogramm_count = 0;
+					pBmp->dot_histogramm = NULL;
+					pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &(pBmp->dot_histogramm) );
+					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+					pBmp->dot_histogramm_count = pBmp->dot_number;
+					InvalidateRect( hwnd, NULL, FALSE );
+				}
+			}
+			break;
+
+		case WM_COMMAND:
+		switch (wParam)
+		{
+			case IDHELP:
+				WinHelp(hwndFrame,szHilfedatei,HELP_KEY,(DWORD)(LPSTR)STR_HELP_FARBEN);
+			break;
+
+			case IDCANCEL:
+				// Neue Bitmap wieder löschen
+				pBmp->dot_radius = 3;	// to conitnue
+				EndDialog( hdlg, FALSE );
+				return TRUE;
+
+			case IDOK:
+			{
+				pBmp->dot_radius = 3;	// to conitnue
+				EndDialog( hdlg, TRUE );
+				InvalidateRect( hwnd, NULL, FALSE );
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+/* 21.5.97 */
+
+
+/***************************************************************************************/

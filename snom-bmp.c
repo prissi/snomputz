@@ -1987,6 +1987,8 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				// dots automatisch zählen
 				case IDM_DOTS_AUTO:
 				{
+					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
+/*
 					LPUWORD	pData = GetDataPointer( pBmp, TOPO );
 					if(  pData==NULL  ) {
 						WarnungRsc( W_NIX );
@@ -2011,6 +2013,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						pBmp->bCountDots = TRUE;
 						InvalidateRect( hwnd, NULL, FALSE );
 					}
+*/
 				}
 				break;
 

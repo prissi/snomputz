@@ -25,7 +25,7 @@ BOOL WINAPI TutorDialog (HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL WINAPI ProfilDialog (HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL WINAPI FFTDialog (HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL WINAPI VolumeDialog (HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
-
+DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 // helper functions
