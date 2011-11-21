@@ -39,7 +39,6 @@
 #define M_PI        3.14159265358979323846
 #endif
 
-UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
 
 /*****************************************************************************************/
 //** "Rückruffunktion" für die individuellen Daten von Bitmap-Dokumentenfenstern
@@ -1918,6 +1917,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					UWORD			last_kontur, bw, *pLine;
 					WORD			iType=NONE;
 					LPBILD			pData=NULL;
+					double Median, MedianRMS;
 
 					// Erst einmal aktuelle Pointer ermitteln
 					if(  modus&TOPO  &&  pBmp->pSnom[iAkt].Topo.puDaten  )
@@ -1949,72 +1949,39 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						WarnungRsc( W_NIX );
 						break;
 					}
-					pBmp->dot_radius = DialogBoxParam( hInst, "DotDialog", hwnd, StdDialog, 3 );
-					if(  pBmp->dot_radius>0  ) {
-						double Median, MedianRMS;
+					MeadianArea( GetDataPointer(pBmp,iType), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, 1.0, pData->uMaxDaten, &Median, &MedianRMS );
+					pBmp->dot_mean_level = Median;
+					pBmp->dot_quantisation = MedianRMS;
+					free( pBmp->dot_histogramm );
+					pBmp->dot_histogramm_count = 0;
+					pBmp->dot_histogramm = NULL;
 
-						MeadianArea( GetDataPointer(pBmp,iType), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, 1.0, pData->uMaxDaten, &Median, &MedianRMS );
-						pBmp->dot_mean_level = Median;
-						pBmp->dot_quantisation = MedianRMS;
-						free( pBmp->dot_histogramm );
-						pBmp->dot_histogramm_count = 0;
-						pBmp->dot_histogramm = NULL;
+					w = pBmp->pSnom[iAkt].w;
+					h = pBmp->pSnom[iAkt].h;
 
-						w = pBmp->pSnom[iAkt].w;
-						h = pBmp->pSnom[iAkt].h;
-
-						// Maskespeicher anlegen
+					// Maskespeicher anlegen
+					if(  pBmp->pMaske==NULL  )
+					{
+						pBmp->wMaskeW = (WORD)(pBmp->pSnom[pBmp->iAktuell].w+7u) / 8;
+						pBmp->pMaske = pMalloc( pBmp->wMaskeW*(pBmp->pSnom[pBmp->iAktuell].h) );
 						if(  pBmp->pMaske==NULL  )
 						{
-							pBmp->wMaskeW = (WORD)(pBmp->pSnom[pBmp->iAktuell].w+7u) / 8;
-							pBmp->pMaske = pMalloc( pBmp->wMaskeW*(pBmp->pSnom[pBmp->iAktuell].h) );
-							if(  pBmp->pMaske==NULL  )
-							{
-								pBmp->rectMaske.left = pBmp->rectMaske.right = 0;
-								FehlerRsc( E_MEMORY );
-								break;
-							}
-							pBmp->dot_number = 0;
+							pBmp->rectMaske.left = pBmp->rectMaske.right = 0;
+							FehlerRsc( E_MEMORY );
+							break;
 						}
-	
-						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
-						StatusLine( str );
-						pBmp->bCountDots = TRUE;
+						pBmp->dot_number = 0;
 					}
+
+					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+					StatusLine( str );
+					pBmp->bCountDots = TRUE;
 				}
 				break;
 
 				// dots automatisch zählen
 				case IDM_DOTS_AUTO:
-				{
 					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
-/*
-					LPUWORD	pData = GetDataPointer( pBmp, TOPO );
-					if(  pData==NULL  ) {
-						WarnungRsc( W_NIX );
-						break;
-					}
-					pBmp->dot_radius = DialogBoxParam( hInst, "DotDialog", hwnd, StdDialog, 3 );
-					if(  pBmp->dot_radius>0  ) {
-						LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
-						double Median, MedianRMS;
-
-						MeadianArea( GetDataPointer(pBmp,TOPO), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
-						pBmp->dot_mean_level = Median;
-						pBmp->dot_quantisation = MedianRMS;
-						free( pBmp->dot_histogramm );
-						pBmp->dot_histogramm_count = 0;
-						pBmp->dot_histogramm = NULL;
-
-						pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &(pBmp->dot_histogramm) );
-						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
-						pBmp->dot_histogramm_count = pBmp->dot_number;
-						StatusLine( str );
-						pBmp->bCountDots = TRUE;
-						InvalidateRect( hwnd, NULL, FALSE );
-					}
-*/
-				}
 				break;
 
 				case IDM_MATHE:
@@ -2903,27 +2870,18 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					pBmp->dot_histogramm[pBmp->dot_number].x = pt.x;
 					pBmp->dot_histogramm[pBmp->dot_number].y = pSnom->h-pt.y;
 					pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+((pSnom->h-pt.y)*pSnom->w)];
-					// mask
-					if(  pBmp->pMaske  ) {
-						double size = pSnom->fX*pSnom->w*pSnom->fY*pSnom->h;
-						for(  y=max(0,pt.y-pBmp->dot_radius);  y<pt.y+pBmp->dot_radius  &&  y<pBmp->pSnom[pBmp->iAktuell].h;  y++  ) {
-							for(  x=max(0,pt.x-pBmp->dot_radius);  x<pt.x+pBmp->dot_radius  &&  x<pBmp->pSnom[pBmp->iAktuell].w;  x++  ) {
-								pBmp->pMaske[y*pBmp->wMaskeW+(x/8)] |= 0x80>>(x%8);
-							}
-						}
-						pBmp->dot_number ++;
-						InvalidateRect( hwnd, NULL, FALSE );
-						{
-							char str2[256];
-							sprintf( str2, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/size );
-							sprintf( (LPSTR)str, "%sx(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", str2, (int)pt.x, (double)pt.x*pSnom->fX, (int)(pSnom->h-pt.y), (double)(pSnom->h-pt.y)*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pBmp->dot_histogramm[pBmp->dot_number-1].hgt*pBild->fSkal, pBild->strZUnit );
-						}
-						StatusLine( str );
-						pBmp->IsDirty = TRUE;
-						break;
+					pBmp->dot_number ++;
+
+					{
+						char str2[256];
+						sprintf( str2, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
+						sprintf( (LPSTR)str, "%sx(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", str2, (int)pt.x, (double)pt.x*pSnom->fX, (int)(pSnom->h-pt.y), (double)(pSnom->h-pt.y)*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pBmp->dot_histogramm[pBmp->dot_number-1].hgt*pBild->fSkal, pBild->strZUnit );
 					}
-					else {
-						pBmp->bCountDots = FALSE;
+					StatusLine( str );
+					{
+						HDC hdc = GetDC( hwnd );
+						DrawDotsPlot( hdc, pBmp, 1.0/pBmp->fZoom );
+						ReleaseDC( hwnd, hdc );
 					}
 				}
 			}

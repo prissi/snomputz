@@ -33,6 +33,8 @@
 #define M_PI        3.14159265358979323846
 #endif
 
+UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
+
 
 /************************************************************************************/
 
@@ -2983,9 +2985,9 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static LPBMPDATA  pBmp;
 	static LPSNOMDATA pSnom;
-	static LPBILD	  pBild;
 	static HWND		  hwnd, hfStart;
 	BYTE str[128];
+	static char unit_str[128], result_str[128];
 	WORD	 i=0;
 
 	i = 0;
@@ -3001,6 +3003,11 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 			// Scrolly Initialisieren
 			hfStart = GetDlgItem(hdlg,FARB_START);
 			SetScrollRange( hfStart, SB_CTL, 1, pSnom->Topo.uMaxDaten/4, FALSE );
+			SetScrollPos( hfStart, SB_CTL, pBmp->dot_radius, TRUE );
+			sprintf( unit_str, "Tolerance %i (%lf.4 nm)", pBmp->dot_radius, pSnom->Topo.fSkal*pBmp->dot_radius );
+			SetDlgItemText( hdlg, FARB_KONT_EINHEIT, unit_str );
+			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
+			SetDlgItemText( hdlg, FARB_KONT_DIST, result_str );
 		return TRUE;
 
 
@@ -3027,7 +3034,7 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 						iOffset -= 16;
 						break;
 					case SB_BOTTOM:
-						iOffset = 256;
+						iOffset = pSnom->Topo.uMaxDaten/4;
 						break;
 					case SB_TOP:
 						iOffset = 0;
@@ -3056,8 +3063,14 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 					pBmp->dot_histogramm_count = 0;
 					pBmp->dot_histogramm = NULL;
 					pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &(pBmp->dot_histogramm) );
-					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+					sprintf( unit_str, "Tolerance %i (%.3lf nm)", pBmp->dot_radius, pSnom->Topo.fSkal*pBmp->dot_radius );
+					SetDlgItemText( hdlg, FARB_KONT_EINHEIT, unit_str );
+					sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
+					SetDlgItemText( hdlg, FARB_KONT_DIST, result_str );
 					pBmp->dot_histogramm_count = pBmp->dot_number;
+					pBmp->bCountDots = (pBmp->dot_number>0);
+					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+					StatusLine( str );
 					InvalidateRect( hwnd, NULL, FALSE );
 				}
 			}
@@ -3071,9 +3084,12 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 			case IDCANCEL:
-				// Neue Bitmap wieder löschen
-				pBmp->dot_radius = 3;	// to conitnue
-				EndDialog( hdlg, FALSE );
+				// clear dot count
+				if(  pBmp->dot_histogramm_count  ) {
+					free( pBmp->dot_histogramm );
+				}
+				pBmp->dot_histogramm = NULL;
+				pBmp->dot_histogramm_count = pBmp->dot_number = 0;
 				return TRUE;
 
 			case IDOK:

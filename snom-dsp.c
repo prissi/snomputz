@@ -2484,7 +2484,7 @@ void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 	int				i, j, iSize=2;
 	WORD			wModus;	// Was ist zu zeichnen
 
-	if(  pBmp->dot_histogramm_count==0  )
+	if(  pBmp->dot_histogramm_count==0  ||  pSnom->Topo.bPseudo3D  )
 		return;
 
 	hOld = SelectObject( hdc, CreatePen( PS_SOLID, 1, cMarkierungLinks ) );
@@ -2492,8 +2492,8 @@ void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 	
 		POINT pt;
 
-		pt.x = pBmp->rectLinks.left + pBmp->dot_histogramm[i].x/fScale;
-		pt.y = pBmp->rectLinks.top + pBmp->dot_histogramm[i].y/fScale;
+		pt.x = (pBmp->rectLinks.left + pBmp->dot_histogramm[i].x)/fScale;
+		pt.y = (pBmp->rectLinks.top + pBmp->dot_histogramm[i].y)/fScale;
 
 		// make a cross
 		MoveToEx( hdc, pt.x-5,  pt.y, NULL );
@@ -2502,7 +2502,6 @@ void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 		LineTo( hdc, pt.x, pt.y+5 );
 	}
 	DeleteObject( SelectObject( hdc, hOld ) );
-	return;
 }
 // 9.11.98
 // 22.11.97
