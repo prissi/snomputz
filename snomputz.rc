@@ -196,6 +196,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Mark I&solines ...",          IDM_KONTOUR
         MENUITEM "Count dots ...",				IDM_DOTS
+        MENUITEM "Count dots (automatic) ...",	IDM_DOTS_AUTO
     END
     POPUP "A&nalysis"
     BEGIN

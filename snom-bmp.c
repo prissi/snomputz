@@ -39,6 +39,7 @@
 #define M_PI        3.14159265358979323846
 #endif
 
+UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
 
 /*****************************************************************************************/
 //** "Rückruffunktion" für die individuellen Daten von Bitmap-Dokumentenfenstern
@@ -393,6 +394,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					BitBlt( hDC2, 0, 0, w, h, NULL, 0, 0, WHITENESS );
 					DrawScanLine( hDC2, pBmp, 1 );
 					DrawScanLinePlot( hDC2, pBmp, 1, FALSE );
+					DrawDotsPlot( hdc, pBmp, 1.0 );
 
 					// Testfarben ermitteln!
 					SelectObject( hDC2, CreatePen( PS_INSIDEFRAME, 1, cMarkierungRechts ) );
@@ -474,6 +476,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 								DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 								DrawScanLine( hDC2, pBmp, 1.0 );
 								DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
+								DrawDotsPlot( hdc, pBmp, 1.0 );
 								lf.lfHeight /= (int)fZoom;
 								RecalcCache( pBmp, FALSE, FALSE );
 								CloseEnhMetaFile( hDC2 );
@@ -526,6 +529,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						lf.lfHeight *= (int)fZoom;
 						DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 						DrawScanLine( hDC2, pBmp, 1.0 );
+						DrawDotsPlot( hdc, pBmp, 1.0 );
 						DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
 						lf.lfHeight /= (int)fZoom;
 						hDC2 = CloseEnhMetaFile( hDC2 );
@@ -727,6 +731,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							DisplayDib( PDlg.hDC, pBmp->pDib, NULL, &p_rect, 0, pBmp->pCacheBits );
 							DrawScanLine( PDlg.hDC, pBmp, 1.0/hfaktor );
 							DrawScanLinePlot( PDlg.hDC, pBmp, 1.0/hfaktor, FALSE );
+							DrawDotsPlot( hdc, pBmp, 1.0/hfaktor );
 							StatusLineRsc( I_PRINTING );
 							EndPage( PDlg.hDC );
 							EndDoc( PDlg.hDC );
@@ -1979,6 +1984,36 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				}
 				break;
 
+				// dots automatisch zählen
+				case IDM_DOTS_AUTO:
+				{
+					LPUWORD	pData = GetDataPointer( pBmp, TOPO );
+					if(  pData==NULL  ) {
+						WarnungRsc( W_NIX );
+						break;
+					}
+					pBmp->dot_radius = DialogBoxParam( hInst, "DotDialog", hwnd, StdDialog, 3 );
+					if(  pBmp->dot_radius>0  ) {
+						LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
+						double Median, MedianRMS;
+
+						MeadianArea( GetDataPointer(pBmp,TOPO), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+						pBmp->dot_mean_level = Median;
+						pBmp->dot_quantisation = MedianRMS;
+						free( pBmp->dot_histogramm );
+						pBmp->dot_histogramm_count = 0;
+						pBmp->dot_histogramm = NULL;
+
+						pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &(pBmp->dot_histogramm) );
+						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+						pBmp->dot_histogramm_count = pBmp->dot_number;
+						StatusLine( str );
+						pBmp->bCountDots = TRUE;
+						InvalidateRect( hwnd, NULL, FALSE );
+					}
+				}
+				break;
+
 				case IDM_MATHE:
 					DialogBoxParam( hInst, "MatheDialog", hwnd, MatheDialog, (LPARAM)hwnd );
 				break;
@@ -2683,6 +2718,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					{
 						bMouseMove = TRUE;
 						DrawScanLinePlot( hdc, pBmp, 1.0/pBmp->fZoom, TRUE );
+						DrawDotsPlot( hdc, pBmp, 1.0/pBmp->fZoom );
 						bMouseMove = FALSE;
 					}
 
@@ -2784,6 +2820,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					if(  CMUFileSave( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
 						(hFile=OpenFile(str,&of,OF_CREATE))!=HFILE_ERROR  ) {
 						LPBILD	pBild=GetBildPointer(pBmp,pBmp->Links);
+						LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
 						int i;
 						
 						int len = sprintf( str, "List of dot heights\xD\xA" );
@@ -2797,7 +2834,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						_lwrite( hFile, "\xD\xA", 2 );
 
 						for(  i=0;  i<pBmp->dot_number;  i++  ) {
-							len = sprintf( str, "%lf\xD\xA", pBild->fSkal*pBmp->dot_histogramm[i] );
+							len = sprintf( str, "%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt );
 							_lwrite( hFile, str, len );
 						}
 						_lclose( hFile );
@@ -2857,10 +2894,12 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					pt.y = pSnom->h - (pt.y-pBmp->rectLinks.top);
 					// add to histogramm
 					if(  pBmp->dot_histogramm_count<=pBmp->dot_number+1  ) {
-						pBmp->dot_histogramm = realloc( pBmp->dot_histogramm, sizeof(UWORD)*(pBmp->dot_histogramm_count+512) );
+						pBmp->dot_histogramm = realloc( pBmp->dot_histogramm, sizeof(XYZ_COORD)*(pBmp->dot_histogramm_count+512) );
 						pBmp->dot_histogramm_count += 512;
 					}
-					pBmp->dot_histogramm[pBmp->dot_number] = pData[pt.x+((pSnom->h-pt.y)*pSnom->w)];
+					pBmp->dot_histogramm[pBmp->dot_number].x = pt.x;
+					pBmp->dot_histogramm[pBmp->dot_number].y = pSnom->h-pt.y;
+					pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+((pSnom->h-pt.y)*pSnom->w)];
 					// mask
 					if(  pBmp->pMaske  ) {
 						double size = pSnom->fX*pSnom->w*pSnom->fY*pSnom->h;
@@ -2874,7 +2913,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						{
 							char str2[256];
 							sprintf( str2, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/size );
-							sprintf( (LPSTR)str, "%sx(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", str2, (int)pt.x, (double)pt.x*pSnom->fX, (int)(pSnom->h-pt.y), (double)(pSnom->h-pt.y)*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pBmp->dot_histogramm[pBmp->dot_number-1]*pBild->fSkal, pBild->strZUnit );
+							sprintf( (LPSTR)str, "%sx(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", str2, (int)pt.x, (double)pt.x*pSnom->fX, (int)(pSnom->h-pt.y), (double)(pSnom->h-pt.y)*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pBmp->dot_histogramm[pBmp->dot_number-1].hgt*pBild->fSkal, pBild->strZUnit );
 						}
 						StatusLine( str );
 						pBmp->IsDirty = TRUE;
@@ -3001,6 +3040,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, &pCoord, 0, pBmp->pCacheBits );
 					DrawScanLine( hdc, pBmp, 1.0/fZoom );
 					DrawScanLinePlot( hdc, pBmp, 1.0/fZoom, TRUE );
+					DrawDotsPlot( hdc, pBmp, 1.0/fZoom );
 					//  pBmp->fZoom = fZoom;	// Damit die nächste Scanline richtig markiert wird ...
 				}
 				else
@@ -3018,6 +3058,7 @@ DrawScanLinePlot( hdc, pBmp, 1.0, FALSE );}else{
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, NULL, wZoomFaktor, pBmp->pCacheBits );
 					DrawScanLine( hdc, pBmp, wZoomFaktor );
 					DrawScanLinePlot( hdc, pBmp, wZoomFaktor, TRUE );
+					DrawDotsPlot( hdc, pBmp, wZoomFaktor );
 					pBmp->fZoom = 1.0/(double)wZoomFaktor;
 				}
 			}

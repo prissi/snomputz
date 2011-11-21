@@ -134,7 +134,7 @@ BOOLEAN	BildFFTFilter( LPBILD pBild, LONG w, LONG h, LPFLOAT pfFilter, int iSize
 
 ASSERT( pBild!=NULL  &&  pBild->puDaten!=NULL  &&  w<=iSize  &&  pfFilter!=NULL );
 
-	pfData = pMalloc( sizeof(float)*iSize );
+	pfData = (LPFLOAT)pMalloc( sizeof(float)*iSize );
 	if(  pfData==NULL  )
 	{
 		FehlerRsc( E_MEMORY );
@@ -199,7 +199,7 @@ ASSERT( pfZiel!=NULL  &&  pfDaten!=NULL  &&  iMaxPts>0  );
 	if(  pfZiel==pfDaten  )
 	{
 		pfTemp = pfZiel;
-		pfZiel = pMalloc( iMaxPts*sizeof(float) );
+		pfZiel = (LPFLOAT)pMalloc( iMaxPts*sizeof(float) );
 		if(  pfZiel==NULL  )
 			return FALSE;
 	}
@@ -340,17 +340,17 @@ void	AddPoint( float *pfDaten, long rx, long ry, long w, long h, double ave, dou
 void	CorrelationFunction( HFILE hFile, LPUWORD puDaten, long w, long h, double dSkal )
 {
 	char	str[256];
-	long		x, y, radius, i;
+	long		y, radius, i;
 	long		rx, ry, d, rmax;
 	LONG		*iPts;
 	double	*fC;
-	double	dAverage=0.0, d0;
+	double	dAverage=0.0;
 	float		*pfDaten;
 
 	rmax = sqrt((double)w*(double)w+(double)h*(double)h);
-	iPts = pMalloc(rmax*sizeof(LONG));
-	fC = pMalloc(rmax*sizeof(double));
-	pfDaten = pMalloc(w*h*sizeof(float));
+	iPts = (LONG *)pMalloc(rmax*sizeof(LONG));
+	fC = (double *)pMalloc(rmax*sizeof(double));
+	pfDaten = (float *)pMalloc(w*h*sizeof(float));
 	if(  pfDaten==NULL  )
 	{
 		StatusLineRsc( E_MEMORY );
@@ -387,7 +387,7 @@ void	CorrelationFunction( HFILE hFile, LPUWORD puDaten, long w, long h, double d
 			AddPoint( pfDaten, +ry, -rx, w, h, dAverage, &(fC[radius]), &(iPts[radius]) );
 			AddPoint( pfDaten, -rx, -ry, w, h, dAverage, &(fC[radius]), &(iPts[radius]) );
 			AddPoint( pfDaten, -ry, -rx, w, h, dAverage, &(fC[radius]), &(iPts[radius]) );
-			YieldApp( FALSE );
+//			YieldApp( FALSE );
 			if(  d<0  )
 				d = d + 4*rx + 6;
 			else
@@ -537,9 +537,8 @@ void	MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 							 double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS )
 {
 	HgtRecordT max[65536];
-	LONG		i, j, pts;
+	LONG		i, j;
 	LPUWORD		puPtr;
-	unsigned long k;
 
 	double fMean=0.0, fSD=0.0;
 
@@ -768,7 +767,7 @@ BOOLEAN	BildCalcConst( LPBILD pDestBild, LONG w, LONG h, UCHAR cOperand, double 
 										*puZeile++ %= uWert;
 									break;
 				case 'l': for(  x=0;  x<w;  x++, puZeile++  )
-										*puZeile = (UWORD)(log(*puZeile+1)*wert+0.5);
+										*puZeile = (UWORD)(log((*puZeile)+1.0)*wert+0.5);
 									break;
 			}
 		}
@@ -861,7 +860,7 @@ BOOLEAN	BildCalcConst( LPBILD pDestBild, LONG w, LONG h, UCHAR cOperand, double 
 										*puZeile++ %= uWert;
 									break;
 				case 'l': for(  x=0;  x<w;  x++, puZeile++  )
-										*puZeile = (UWORD)(log(*puZeile+1)*wert+0.5);
+										*puZeile = (UWORD)(log(*puZeile+1.0)*wert+0.5);
 									break;
 			}
 		}
@@ -1450,14 +1449,18 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 {
 	LPUWORD pZeile;
 	LPBYTE	pMaske;
-	LONG		x, y, i, lWert, lPolyWert, lMin, lMax;
+	LONG		x, y, i;
 	LPLONG	pMittel;
 	LPLONG	pAnzahl;
+	LPUWORD pY;
+	int *pX;
 	LPDOUBLE	(pCovar[10]);
 	double		CoMem[100], chi;
 
 	if(  (pAnzahl = (LPLONG)pMalloc(sizeof(long)*max(w,h) ))==NULL  ||
-			 (pMittel = (LPLONG)pMalloc(sizeof(long)*max(w,h) ))==NULL  )
+		 (pMittel = (LPLONG)pMalloc(sizeof(long)*max(w,h) ))==NULL  ||
+		 (pX = (int *)pMalloc(sizeof(int)*max(w,h) ))==NULL  ||
+		 (pY = (LPUWORD)pMalloc(sizeof(UWORD)*max(w,h) ))==NULL  )
 	{
 		StatusLineRsc( E_MEMORY );
 		return FALSE;
@@ -1496,17 +1499,18 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	{
 		if(  pAnzahl[y]>0  )	// Gar keine Punkte zum Fitten übrig?
 		{
-			pAnzahl[i] = pMittel[y]/pAnzahl[y];	// Y-Wert aller Zeilen
-			pMittel[i] = y;	// dito. X-Wert
+			pY[i] = pMittel[y]/pAnzahl[y];	// Y-Wert aller Zeilen
+			pX[i] = y;	// dito. X-Wert
 			i ++;
 		}
 	}
 
 	// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
-	if(  i==0  ||  !lfit( pMittel, pAnzahl, i, y_poly, n, pCovar, &chi, fpoly )  )
-	{
+	if(  i==0  ||  !lfit( pX, pY, i, y_poly, n, pCovar, &chi, fpoly )  ) {
 		MemFree( pAnzahl );
 		MemFree( pMittel );
+		MemFree( pX );
+		MemFree( pY );
 		return FALSE;
 	}
 
@@ -1539,22 +1543,25 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	{
 		if(  pAnzahl[x]>0  )	// Gar keine Punkte zum Fitten übrig?
 		{
-			pAnzahl[i] = pMittel[x]/pAnzahl[x];	// Y-Wert aller Zeilen
-			pMittel[i] = x;	// dito. X-Wert
+			pY[i] = pMittel[x]/pAnzahl[x];	// Y-Wert aller Zeilen
+			pX[i] = x;	// dito. X-Wert
 			i ++;
 		}
 	}
 
 	// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
-	if(  i==0  ||  !lfit( pMittel, pAnzahl, i, x_poly, n, pCovar, &chi, fpoly )  )
-	{
+	if(  i==0  ||  !lfit( pX, pY, i, x_poly, n, pCovar, &chi, fpoly )  ) {
 		MemFree( pAnzahl );
 		MemFree( pMittel );
+		MemFree( pX );
+		MemFree( pY );
 		return FALSE;
 	}
 
 	MemFree( pAnzahl );
 	MemFree( pMittel );
+	MemFree( pX );
+	MemFree( pY );
 	return TRUE;
 }
 // 1.7.2002
@@ -1573,15 +1580,19 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 	LONG		x, y, i, lWert, lPolyWert, lMin, lMax;
 	LPLONG	pMittel;
 	LPUWORD	pAnzahl;
+	int *pX;
+	UWORD *pY;
 	LPDOUBLE	(pCovar[10]);
-	double		CoMem[100], chi, a[10];
+	double		CoMem[100], a[10], chi;
 
 	n ++;
 	if(  pBmp==NULL  ||  pBild==NULL  ||  n>10  ||  (xy_what&3)==0  )	// Nur bis max. 9. Ordnung
 		return FALSE;
 
-	if(  (pAnzahl = (LPUWORD)pMalloc(sizeof(WORD)*max(w,h) ))==NULL  ||
-			 (pMittel = (LPLONG)pMalloc(sizeof(long)*max(w,h) ))==NULL  )
+	if(  (pAnzahl = (LPWORD)pMalloc(sizeof(long)*max(w,h) ))==NULL  ||
+		 (pMittel = (LPLONG)pMalloc(sizeof(long)*max(w,h) ))==NULL  ||
+		 (pX = (int *)pMalloc(sizeof(int)*max(w,h) ))==NULL  ||
+		 (pY = (LPUWORD)pMalloc(sizeof(UWORD)*max(w,h) ))==NULL  )
 	{
 		StatusLineRsc( E_MEMORY );
 		return FALSE;
@@ -1619,17 +1630,19 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		{
 			if(  pAnzahl[y]>0  )	// Gar keine Punkte zum Fitten übrig?
 			{
-				pAnzahl[i] = pMittel[y]/pAnzahl[y];	// Y-Wert aller Zeilen
-				pMittel[i] = y;	// dito. X-Wert
+				pY[i] = pMittel[y]/pAnzahl[y];	// Y-Wert aller Zeilen
+				pX[i] = y;	// dito. X-Wert
 				i ++;
 			}
 		}
 
 		// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
-		if(  i==0  ||  !lfit( pMittel, pAnzahl, i, a, n, pCovar, &chi, fpoly )  )
+		if(  i==0  ||  !lfit( pX, pY, i, a, n, pCovar, &chi, fpoly )  )
 		{
 			MemFree( pAnzahl );
 			MemFree( pMittel );
+			MemFree( pX );
+			MemFree( pY );
 			return FALSE;
 		}
 
@@ -1691,19 +1704,26 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		{
 			if(  pAnzahl[x]>0  )	// Gar keine Punkte zum Fitten übrig?
 			{
-				pAnzahl[i] = pMittel[x]/pAnzahl[x];	// Y-Wert aller Zeilen
-				pMittel[i] = x;	// dito. X-Wert
+				pY[i] = pMittel[x]/pAnzahl[x];	// Y-Wert aller Zeilen
+				pX[i] = x;	// dito. X-Wert
 				i ++;
 			}
 		}
 
 		// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
-		if(  i==0  ||  !lfit( pMittel, pAnzahl, i, a, n, pCovar, &chi, fpoly )  )
+		if(  i==0  ||  !lfit( pX, pY, i, a, n, pCovar, &chi, fpoly )  )
 		{
 			MemFree( pAnzahl );
 			MemFree( pMittel );
+			MemFree( pX );
+			MemFree( pY );
 			return FALSE;
 		}
+
+		MemFree( pAnzahl );
+		MemFree( pMittel );
+		MemFree( pX );
+		MemFree( pY );
 
 		lMin = 32767l;	// Größte Differenz zum MittelWert, deshalb mit 0 init.
 		lMax = -32768l;
@@ -1727,15 +1747,10 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		// Und mitteln ...
 		if(  !BildMinMax( pBild, lMin, lMax, w, h )  )
 		{
-			MemFree( pAnzahl );
-			MemFree( pMittel );
 			return FALSE;
 		}
 		// if y-Mitteln
 	}
-
-	MemFree( pAnzahl );
-	MemFree( pMittel );
 	return TRUE;
 }
 // 24.2.00
@@ -1785,7 +1800,7 @@ VOID	AreaFill( WORD xt, WORD yt )
 	if(  !CheckFillPixel(xt,yt)  )
 		return;
 
-	pSave = pMalloc(iQueueSize*sizeof(WORD));
+	pSave = (WORD *)pMalloc(iQueueSize*sizeof(WORD));
 	//memset(pSave,qSsz*sizeof(WORD),0); //Clear the contents
 	pStart = pRead = pSave;
 
@@ -1871,3 +1886,5 @@ double	TriangleArea( UWORD z00, UWORD z01, UWORD z11, double x2, double y2, doub
 	return	sqrt(s*(s-a)*(s-b)*(s-c));
 }
 // 14.6.02
+
+

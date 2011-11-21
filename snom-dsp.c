@@ -2473,6 +2473,42 @@ void	DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 
 
 
+// Quantenpunkte im "Koordinatensystem" zeichnen
+void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
+{
+	HGDIOBJ			hOld;
+	BOOLEAN			bRahmenZeichnen=TRUE;
+	LPSNOMDATA		pSnom=&pBmp->pSnom[pBmp->iAktuell];
+	LPFLOAT			pfTemp[4];
+	LPUWORD			puTemp;
+	int				i, j, iSize=2;
+	WORD			wModus;	// Was ist zu zeichnen
+
+	if(  pBmp->dot_histogramm_count==0  )
+		return;
+
+	hOld = SelectObject( hdc, CreatePen( PS_SOLID, 1, cMarkierungLinks ) );
+	for(  j=i=0;  i<pBmp->dot_histogramm_count;  i++  ) {
+	
+		POINT pt;
+
+		pt.x = pBmp->rectLinks.left + pBmp->dot_histogramm[i].x/fScale;
+		pt.y = pBmp->rectLinks.top + pBmp->dot_histogramm[i].y/fScale;
+
+		// make a cross
+		MoveToEx( hdc, pt.x-5,  pt.y, NULL );
+		LineTo( hdc, pt.x+5, pt.y );
+		MoveToEx( hdc, pt.x,  pt.y-5, NULL );
+		LineTo( hdc, pt.x, pt.y+5 );
+	}
+	DeleteObject( SelectObject( hdc, hOld ) );
+	return;
+}
+// 9.11.98
+// 22.11.97
+
+
+
 // Stellt eine Dib dar (NO_PALETTE: RGB-Farben verwenden
 void	DisplayDib( HDC hdc, LPBITMAPINFO lpDib, HWND TopHwnd, LPRECT pCoord, WORD wZoom, LPUCHAR lpDibBits )
 {

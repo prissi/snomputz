@@ -3,6 +3,11 @@
 //#include <wingdi.h>
 #include <windows.h>
 
+// XXX Workaround: Old GCCs choke on type check.
+#if defined __cplusplus
+extern C {
+#endif
+
 // Sendet an alle Childs ein Redraw
 #define UPDATE 1
 #define CLEAR3D 2
@@ -61,9 +66,17 @@ void	DrawScanLine( HDC hdc, LPBMPDATA pBmp, double fScale );
 void	DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut );
 // 22.11.97
 
+// Quantenpunkte im "Koordinatensystem" zeichnen
+void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale );
+// 21.11.11
+
 // Stellt die aktuelle Dib im Cache dar
 void	DisplayDib( HDC hdc, LPBITMAPINFO lpDib, HWND TopHwnd, LPRECT pCoord, WORD wZoom, LPUCHAR lpDibBits );
 // 27.7.97
 
 // Malt eine waagerechte Achse
 void	DrawHorizontalAxis( HDC hDC, int x, int y, int weite, int min, int max, double MaxWeite, double offset, const char *label, const char *alt_label );
+
+#if defined __cplusplus
+};
+#endif

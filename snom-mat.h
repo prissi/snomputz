@@ -83,3 +83,4 @@ void MarkUpperArea( LPUWORD puData, LONG w, LONG h, LPBYTE pArea, LONG iAreaWW, 
 // Calc triangle surface area (not trivial!)
 double	TriangleArea( UWORD z00, UWORD z01, UWORD z11, double x2, double y2, double z2 );
 // 14.6.02
+

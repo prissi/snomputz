@@ -186,6 +186,7 @@
 #define IDM_INVERT_MASKE                560
 #define IDM_KONTOUR                     574
 #define IDM_DOTS						674
+#define IDM_DOTS_AUTO					675
 #define IDM_LOESCHE_MASKE               562
 #define IDM_MASKE_HORIZONTAL_MITTELN    563
 #define IDM_MASKE_VERTIKAL_MITTELN      564

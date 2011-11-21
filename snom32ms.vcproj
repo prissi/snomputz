@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Snom32ms"
 	ProjectGUID="{D73023C9-FB88-4C2F-AE28-A2186E973B77}"
 	TargetFrameworkVersion="131072"
@@ -49,7 +49,9 @@
 				Optimization="0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
+				ExceptionHandling="0"
 				RuntimeLibrary="1"
+				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=".\Debug/Snom32ms.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -57,6 +59,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
+				CompileAs="0"
 				DisableSpecificWarnings="4996"
 			/>
 			<Tool
@@ -217,6 +220,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						PreprocessorDefinitions=""
+						CompileAs="2"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -389,7 +393,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-mat.c"
+				RelativePath=".\Snom-mat.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -397,6 +401,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						PreprocessorDefinitions=""
+						CompileAs="0"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -487,6 +492,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\snom_fmax.cc"
+				>
 			</File>
 			<File
 				RelativePath="Snomputz.c"

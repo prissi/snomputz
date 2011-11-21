@@ -93,6 +93,13 @@ typedef struct
 } SNOMDATA;
 
 
+typedef struct {
+	UWORD x;
+	UWORD y;
+	UWORD hgt;
+} XYZ_COORD;
+
+
 // Struktur, die einem Fenster zugeordnet wird, und in der ALLES zur Darstellung versammelt ist
 typedef struct
 {
@@ -131,7 +138,7 @@ typedef struct
 	UWORD		dot_radius;
 	UWORD		dot_mean_level;			// zero level
 	UWORD		dot_quantisation;	// how many height level are one hist level
-	UWORD		*dot_histogramm;	// height data for each dot
+	XYZ_COORD	*dot_histogramm;	// height data for each dot
 	UWORD		dot_histogramm_count;	// height data for each dot
 
 	BOOL		bMarkScanLine;	// TRUE, wenn gerade Scanline markiert wird
