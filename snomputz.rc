@@ -158,23 +158,21 @@ BEGIN
         MENUITEM SEPARATOR
 		MENUITEM "Apply to all",				IDM_TRACK_ALL
     END
+    POPUP "&Flatten"
+    BEGIN
+        MENUITEM "&Line fit ...",               IDM_ZEILENMITTEL
+        MENUITEM "&Plane fit ...",              IDM_3DMITTEL
+        MENUITEM "&X-Deviations",               IDM_NULL
+        MENUITEM "&Y-Deviations",               IDM_DIFF_NULL
+    END
     POPUP "&Manipulation"
     BEGIN
+        MENUITEM "&Averaging ...",              IDM_GLEITEND_MITTEL
+        MENUITEM "&FFT-Smoothing ...",          IDM_FFT_MITTEL
+        MENUITEM "Max/Min &Interpolation ...",  IDM_DESPIKE
+        MENUITEM "&Medianfiltering ...",        IDM_MEDIAN
+        MENUITEM SEPARATOR
         MENUITEM "Rotate &right 90°",           IDM_DREHEN
-        POPUP "&Flatten"
-        BEGIN
-            MENUITEM "&Line fit ...",               IDM_ZEILENMITTEL
-            MENUITEM "&Plane fit ...",              IDM_3DMITTEL
-            MENUITEM "&X-Deviations",               IDM_NULL
-            MENUITEM "&Y-Deviations",               IDM_DIFF_NULL
-        END
-        POPUP "&Filters"
-        BEGIN
-            MENUITEM "&Averaging ...",              IDM_GLEITEND_MITTEL
-            MENUITEM "&FFT-Smoothing ...",          IDM_FFT_MITTEL
-            MENUITEM "Max/Min &Interpolation ...",  IDM_DESPIKE
-            MENUITEM "&Medianfiltering ...",        IDM_MEDIAN
-        END
         MENUITEM "Resize ...",                  IDM_GROESSE
         MENUITEM SEPARATOR
         MENUITEM "&Invert Data",                IDM_NEGATIV
@@ -195,9 +193,16 @@ BEGIN
         MENUITEM "Interpolate Region &horizontal", IDM_MASKE_HORIZONTAL_MITTELN
         MENUITEM SEPARATOR
         MENUITEM "Mark I&solines ...",          IDM_KONTOUR
-        MENUITEM "Count dots ...",				IDM_DOTS
-        MENUITEM "Count dots (automatic) ...",	IDM_DOTS_AUTO
     END
+    POPUP "&Dots"
+	BEGIN
+        MENUITEM "&Add dots",		IDM_DOTS_ADD
+        MENUITEM "&Remove dots",	IDM_DOTS_REMOVE
+        MENUITEM "&Count dots ...",	IDM_DOTS_AUTO
+        MENUITEM SEPARATOR
+        MENUITEM "Clea&r dots",	IDM_DOTS_CLEAR
+        MENUITEM "Save dot statistics ...",	IDM_DOTS_SAVE
+	END
     POPUP "A&nalysis"
     BEGIN
         MENUITEM "&RMS ...",                    IDM_RMS
@@ -428,8 +433,7 @@ BEGIN
     SCROLLBAR       FARB_START,10,18,124,12,WS_TABSTOP
 	LTEXT           "",FARB_KONT_EINHEIT,10,34,124,14
 	LTEXT           "",FARB_KONT_DIST,10,46,124,8
-    DEFPUSHBUTTON   "OK",IDOK,144,26,52,14
-    PUSHBUTTON      "Clear",IDCANCEL,144,45,52,14
+    DEFPUSHBUTTON   "OK",IDOK,144,6,52,14
     PUSHBUTTON      "Help",9,144,64,52,14
 END
 

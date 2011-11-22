@@ -133,7 +133,7 @@ typedef struct
 	RECT		rectFenster;	// Ausmaﬂe des gesamten Fensters (Bilder+Scanlines+Text)
 	RECT		rectPlot;			// Plotkoordinaten (in BITMAPKOORDINATEN!)
 
-	BOOL		bCountDots;	// TRUE, wenn gerade dots gez‰hlt werden
+	BYTE		bCountDots;	// 1, if countin, 2 if removing
 	UWORD		dot_number;
 	UWORD		dot_radius;
 	UWORD		dot_mean_level;			// zero level

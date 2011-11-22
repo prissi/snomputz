@@ -49,8 +49,8 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 	static BOOL		bMouseMove;	// Damit nicht ein Stau beim Mousemove-Messages entsteht ...
 	static POINT	OldPt;
 	LPBMPDATA 		pBmp;
-	HDC             hdc ;
-	PAINTSTRUCT     ps ;
+//	HDC             hdc ;
+//	PAINTSTRUCT     ps ;
 	HCURSOR			hCurSave;
 	WORD			wButton;
 
@@ -142,12 +142,6 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 		break;
 
 		case WM_KEYDOWN:
-#if 0
-{
-	wsprintf( str, "%u:%u", 255&(WORD)(lParam>>16), (WORD)wParam );
-	MessageBox( hwndFrame, str, NULL, MB_ICONSTOP|MB_OK );
-}
-#endif
 		if(  wZoomFaktor!=0  )
 		{
 			UINT		wMessage=NONE;
@@ -393,7 +387,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					BitBlt( hDC2, 0, 0, w, h, NULL, 0, 0, WHITENESS );
 					DrawScanLine( hDC2, pBmp, 1 );
 					DrawScanLinePlot( hDC2, pBmp, 1, FALSE );
-					DrawDotsPlot( hdc, pBmp, 1.0 );
+					DrawDotsPlot( hDC2, pBmp, 1.0 );
 
 					// Testfarben ermitteln!
 					SelectObject( hDC2, CreatePen( PS_INSIDEFRAME, 1, cMarkierungRechts ) );
@@ -475,7 +469,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 								DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 								DrawScanLine( hDC2, pBmp, 1.0 );
 								DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
-								DrawDotsPlot( hdc, pBmp, 1.0 );
+								DrawDotsPlot( hDC2, pBmp, 1.0 );
 								lf.lfHeight /= (int)fZoom;
 								RecalcCache( pBmp, FALSE, FALSE );
 								CloseEnhMetaFile( hDC2 );
@@ -528,7 +522,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						lf.lfHeight *= (int)fZoom;
 						DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 						DrawScanLine( hDC2, pBmp, 1.0 );
-						DrawDotsPlot( hdc, pBmp, 1.0 );
+						DrawDotsPlot( hDC2, pBmp, 1.0 );
 						DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
 						lf.lfHeight /= (int)fZoom;
 						hDC2 = CloseEnhMetaFile( hDC2 );
@@ -632,7 +626,6 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					pDib->bmiHeader.biYPelsPerMeter = 0;
 					pDib->bmiHeader.biClrUsed = 0;
 					pDib->bmiHeader.biClrImportant = 0;
-					faktor = 255.0/(double)(max-min);
 
 					switch(wParam)
 					{
@@ -730,7 +723,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							DisplayDib( PDlg.hDC, pBmp->pDib, NULL, &p_rect, 0, pBmp->pCacheBits );
 							DrawScanLine( PDlg.hDC, pBmp, 1.0/hfaktor );
 							DrawScanLinePlot( PDlg.hDC, pBmp, 1.0/hfaktor, FALSE );
-							DrawDotsPlot( hdc, pBmp, 1.0/hfaktor );
+							DrawDotsPlot( PDlg.hDC, pBmp, 1.0/hfaktor );
 							StatusLineRsc( I_PRINTING );
 							EndPage( PDlg.hDC );
 							EndDoc( PDlg.hDC );
@@ -1908,80 +1901,74 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				break;
 
 
-				// dots manuell zählen
-				case IDM_DOTS:
-				if(  !pBmp->bCountDots  )
-				{
-					LONG			x, y, w, h;
-					WORD			iAkt=pBmp->iAktuell;
-					UWORD			last_kontur, bw, *pLine;
-					WORD			iType=NONE;
-					LPBILD			pData=NULL;
-					double Median, MedianRMS;
-
-					// Erst einmal aktuelle Pointer ermitteln
-					if(  modus&TOPO  &&  pBmp->pSnom[iAkt].Topo.puDaten  )
-					{
-						if(  (LONG)pBmp->pSnom[iAkt].Topo.puDaten<256l  )
-							pData = &(pBmp->pSnom[(WORD)pBmp->pSnom[iAkt].Topo.puDaten-1].Topo);
-						else
-							pData = &(pBmp->pSnom[iAkt].Topo);
-						iType = TOPO;
-					}
-					else if(  modus&ERRO  &&  pBmp->pSnom[iAkt].Error.puDaten  )
-					{
-						if(  (LONG)pBmp->pSnom[iAkt].Error.puDaten<256l  )
-							pData = &(pBmp->pSnom[(WORD)pBmp->pSnom[iAkt].Error.puDaten-1].Error);
-						else
-							pData = &(pBmp->pSnom[iAkt].Error);
-						iType = ERRO;
-					}
-					else if(  modus&LUMI  &&  pBmp->pSnom[iAkt].Lumi.puDaten  )
-					{
-						if(  (LONG)pBmp->pSnom[iAkt].Lumi.puDaten<256l  )
-							pData = &(pBmp->pSnom[(WORD)pBmp->pSnom[iAkt].Lumi.puDaten-1].Lumi);
-						else
-							pData = &(pBmp->pSnom[iAkt].Lumi);
-						iType = LUMI;
-					}
-					if(  pData==NULL  )
-					{
-						WarnungRsc( W_NIX );
-						break;
-					}
-					MeadianArea( GetDataPointer(pBmp,iType), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, 1.0, pData->uMaxDaten, &Median, &MedianRMS );
-					pBmp->dot_mean_level = Median;
-					pBmp->dot_quantisation = MedianRMS;
-					free( pBmp->dot_histogramm );
-					pBmp->dot_histogramm_count = 0;
-					pBmp->dot_histogramm = NULL;
-
-					w = pBmp->pSnom[iAkt].w;
-					h = pBmp->pSnom[iAkt].h;
-
-					// Maskespeicher anlegen
-					if(  pBmp->pMaske==NULL  )
-					{
-						pBmp->wMaskeW = (WORD)(pBmp->pSnom[pBmp->iAktuell].w+7u) / 8;
-						pBmp->pMaske = pMalloc( pBmp->wMaskeW*(pBmp->pSnom[pBmp->iAktuell].h) );
-						if(  pBmp->pMaske==NULL  )
-						{
-							pBmp->rectMaske.left = pBmp->rectMaske.right = 0;
-							FehlerRsc( E_MEMORY );
-							break;
-						}
+				// dots overlay löschen
+				case IDM_DOTS_CLEAR:
+					if(  pBmp->dot_number > 0 ) {
+						free( pBmp->dot_histogramm );
+						pBmp->dot_histogramm_count = 0;
+						pBmp->dot_histogramm = NULL;
 						pBmp->dot_number = 0;
+						EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+						InvalidateRect( hwnd, NULL, TRUE );
+						ClearStatusLine();
 					}
+					break;
 
-					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
-					StatusLine( str );
-					pBmp->bCountDots = TRUE;
-				}
+				// dots manuell zählen
+				case IDM_DOTS_ADD:
+				case IDM_DOTS_REMOVE:
+					if(  pBmp->pSnom[0].Topo.puDaten  ) {
+						LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
+						if(  pBmp->dot_number == 0 ) {
+							double Median, MedianRMS;
+							MeadianArea( GetDataPointer(pBmp,TOPO), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+							pBmp->dot_mean_level = Median;
+							pBmp->dot_quantisation = MedianRMS;
+						}
+						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
+						StatusLine( str );
+						pBmp->bCountDots = LOWORD(wParam)-IDM_DOTS_ADD+1;
+					}
 				break;
 
 				// dots automatisch zählen
 				case IDM_DOTS_AUTO:
 					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
+				break;
+
+				case IDM_DOTS_SAVE:
+					if(  pBmp->dot_number>0  ) {
+						HFILE hFile;
+						OFSTRUCT	of;
+
+						szFselHelpStr = STR_HFILE_HIST;
+						lstrcpy( str, pBmp->szName );
+						ChangeExt( str, ".hst" );
+						if(  CMUFileSave( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+							(hFile=OpenFile(str,&of,OF_CREATE))!=HFILE_ERROR  ) {
+							LPBILD	pBild=GetBildPointer(pBmp,pBmp->Links);
+							LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
+							int i;
+							
+							int len = sprintf( str, "List of dot heights\xD\xA" );
+							_lwrite( hFile, str, len );
+
+							len = sprintf( str, "zero=%f +/- %f\xD\xA", pBmp->dot_mean_level*pBild->fSkal, pBmp->dot_quantisation*pBild->fSkal );
+							_lwrite( hFile, str, len );
+
+							len = sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
+							_lwrite( hFile, str, len );
+							_lwrite( hFile, "\xD\xA", 2 );
+
+							for(  i=0;  i<pBmp->dot_number;  i++  ) {
+								len = sprintf( str, "%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt );
+								_lwrite( hFile, str, len );
+							}
+							_lclose( hFile );
+						}
+					}
 				break;
 
 				case IDM_MATHE:
@@ -2027,7 +2014,6 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					{
 						pf1 = pMalloc( sizeof(float)*pSnom->w*pSnom->h );
 						pf2 = pMalloc( sizeof(float)*pSnom->w*pSnom->h );
-#if 1
 						/*** Die Autokorrelation ist folgendermaßen definiert:
 						 *** G(l,m) := 1/((H-m)*(W-l)) \sum_{j=1}^{H-m} \sum_{i=1}^{W-l} z_{i,j}*z_{i+l,j+m}
 						 *** ACHTUNG: Die Einheit ist Länge^2!
@@ -2075,41 +2061,6 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							}
 							DestroyWindow( hwndPB );
 							DestroyWindow( hProgress );
-#else
-						// Does not work -- phase is lost!!!
-
-						// do use of the autocorrelation funktion!
-						w = pSnom->w;
-						h = pSnom->h;
-
-						// substract mean value before starting
-						for(  i=0;  i<w*h;  i++  )
-							fTemp += pf2[i] = puDaten[i]*pSnom->Topo.fSkal;
-						fMittel = fTemp/(w*h);	// mittelwert für Autokorrelation
-						for(  i=0;  i<w*h;  i++  )
-							pf2[i] -= fMittel;
-
-						// do autocorrelation in x axis
-						for(  y=0;  y<h;  y++  )
-							Autokorrelation( pf1+(y*w), pf2+(y*w), w, TRUE );
-						// turn right
-						for(  y=0;  y<w;  y++  )
-						{
-							for(  x=0;  x<h;  x++  )
-								pf2[x+y*h] = pf1[(h-x-1)*w+y];
-						}
-						// beware now w is heigth and h is width!
-						// so x ist y ...
-						for(  x=0;  x<w;  x++  )
-							Autokorrelation( pf1+(x*h), pf2+(x*h), h, TRUE );
-						// And now we need to turn this back ...
-						for(  y=0;  y<h;  y++  )
-						{
-							for(  x=0;  x<w;  x++  )
-								pf2[x+y*w] = pf1[h*x+y];
-						}
-						// result is now in pf2!
-#endif
 						// Neu Skalieren
 						for(  i=0;  i<pSnom->w*pSnom->h;  i++  )
 						{
@@ -2530,6 +2481,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				if(  pBmp->bAddMaske  )
 				{
 					HBRUSH		hOld;
+					HDC		hdc;
 					LONG			x, y;
 
 					ReleaseCapture();
@@ -2653,8 +2605,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				{
 					double	dWinkel;
 					int			iScan=pBmp->lMaxScan-1;
-
-					hdc = GetDC( hwnd );
+					HDC hdc = GetDC( hwnd );
 					SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ), GetScrollPos( hwnd, SB_VERT), NULL );
 					SetROP2( hdc, R2_XORPEN );
 					DrawScanLine( hdc, pBmp, 1.0/pBmp->fZoom );
@@ -2701,8 +2652,7 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				if(  pBmp->bAddMaske  &&  wParam&MK_RBUTTON  )
 				{
 					HBRUSH	hOld;
-
-					hdc = GetDC( hwnd );
+					HDC hdc = GetDC( hwnd );
 					SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ), GetScrollPos( hwnd, SB_VERT), NULL );
 					SelectObject( hdc, GetStockObject( NULL_PEN ) );
 
@@ -2780,38 +2730,6 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 			// Start Maske (=Ausschlussregion) markieren
 			case WM_RBUTTONDOWN:
 			if(  pBmp->bCountDots  ) {
-				if(  pBmp->dot_number>0  &&  MessageBox( hwnd, "Do you want to save the results?", NULL, MB_ICONQUESTION|MB_YESNO )==IDYES  ) {
-					HFILE hFile;
-					OFSTRUCT	of;
-
-					szFselHelpStr = STR_HFILE_HIST;
-					lstrcpy( str, pBmp->szName );
-					ChangeExt( str, ".hst" );
-					if(  CMUFileSave( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
-						(hFile=OpenFile(str,&of,OF_CREATE))!=HFILE_ERROR  ) {
-						LPBILD	pBild=GetBildPointer(pBmp,pBmp->Links);
-						LPSNOMDATA pSnom = &(pBmp->pSnom[pBmp->iAktuell]);
-						int i;
-						
-						int len = sprintf( str, "List of dot heights\xD\xA" );
-						_lwrite( hFile, str, len );
-
-						len = sprintf( str, "zero=%f +/- %f\xD\xA", pBmp->dot_mean_level*pBild->fSkal, pBmp->dot_quantisation*pBild->fSkal );
-						_lwrite( hFile, str, len );
-
-						len = sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
-						_lwrite( hFile, str, len );
-						_lwrite( hFile, "\xD\xA", 2 );
-
-						for(  i=0;  i<pBmp->dot_number;  i++  ) {
-							len = sprintf( str, "%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt );
-							_lwrite( hFile, str, len );
-						}
-						_lclose( hFile );
-					}
-
-					
-				}
 				pBmp->bCountDots = FALSE;
 				break;
 			}
@@ -2861,18 +2779,42 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					LPBILD		pBild=GetBildPointer(pBmp,pBmp->Links);
 					// offset and invert h
 					pt.x -= pBmp->rectLinks.left;
-					pt.y = pSnom->h - (pt.y-pBmp->rectLinks.top);
-					// add to histogramm
-					if(  pBmp->dot_histogramm_count<=pBmp->dot_number+1  ) {
-						pBmp->dot_histogramm = realloc( pBmp->dot_histogramm, sizeof(XYZ_COORD)*(pBmp->dot_histogramm_count+512) );
-						pBmp->dot_histogramm_count += 512;
+					pt.y = (pt.y-pBmp->rectLinks.top);
+					if(  pBmp->bCountDots==1  ) {
+						// add to histogramm
+						if(  pBmp->dot_histogramm_count<=pBmp->dot_number+1  ) {
+							pBmp->dot_histogramm = realloc( pBmp->dot_histogramm, sizeof(XYZ_COORD)*(pBmp->dot_histogramm_count+512) );
+							pBmp->dot_histogramm_count += 512;
+						}
+						pBmp->dot_histogramm[pBmp->dot_number].x = pt.x;
+						pBmp->dot_histogramm[pBmp->dot_number].y = pt.y;
+						pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+pt.y*pSnom->w];
+						pBmp->dot_number ++;
 					}
-					pBmp->dot_histogramm[pBmp->dot_number].x = pt.x;
-					pBmp->dot_histogramm[pBmp->dot_number].y = pSnom->h-pt.y;
-					pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+((pSnom->h-pt.y)*pSnom->w)];
-					pBmp->dot_number ++;
-
-					{
+					else {
+						// remove from histogramm
+						int i;
+						for(  i=0;  i<pBmp->dot_number;  i++  ) {
+							if(  abs(pt.x-pBmp->dot_histogramm[i].x)<=1  &&  abs(pt.y-pBmp->dot_histogramm[i].y)<=1  ) {
+								if(  pBmp->dot_number==1  ) {
+									pBmp->dot_number = 0;
+									free( pBmp->dot_histogramm );
+									pBmp->dot_histogramm = 0;
+									pBmp->dot_histogramm_count = 0;
+									pBmp->bCountDots = 0;
+								}
+								else {
+									if(  i+1 < pBmp->dot_number  ) {
+										memmove( pBmp->dot_histogramm+i, pBmp->dot_histogramm+i+1, (pBmp->dot_number-i-1)*sizeof(pBmp->dot_histogramm[0]) );
+									}
+									pBmp->dot_number --;
+								}
+								break;
+							}
+						}
+					}
+					// tell new result
+					if(  pBmp->dot_number>0  ) {
 						char str2[256];
 						sprintf( str2, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
 						sprintf( (LPSTR)str, "%sx(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", str2, (int)pt.x, (double)pt.x*pSnom->fX, (int)(pSnom->h-pt.y), (double)(pSnom->h-pt.y)*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pBmp->dot_histogramm[pBmp->dot_number-1].hgt*pBild->fSkal, pBild->strZUnit );
@@ -2883,6 +2825,16 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						DrawDotsPlot( hdc, pBmp, 1.0/pBmp->fZoom );
 						ReleaseDC( hwnd, hdc );
 					}
+				}
+				if(  pBmp->dot_number>0  ) {
+					EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_ENABLED );
+					EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_ENABLED );
+					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_ENABLED );
+				}
+				else {
+					EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+					EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
 				}
 			}
 			// ok, no masking any more ...
@@ -2954,8 +2906,9 @@ long WINAPI	BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 		{
 			HWND	TopHwnd=NULL;
 			RECT	pCoord;
+			PAINTSTRUCT     ps ;
 
-			hdc = BeginPaint (hwnd, &ps) ;
+			HDC hdc = BeginPaint (hwnd, &ps) ;
 			if(  pBmp->IsDirty  )
 				RecalcCache( pBmp, TRUE, TRUE );
 			if(  hwnd==GetTopWindow(hwndClient)  )
@@ -3023,6 +2976,16 @@ DrawScanLinePlot( hdc, pBmp, 1.0, FALSE );}else{
 					pBmp->fZoom = 1.0/(double)wZoomFaktor;
 				}
 			}
+			if(  pBmp->dot_number>0  ) {
+				EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_ENABLED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_ENABLED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_ENABLED );
+			}
+			else {
+				EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+			}
 			EnableMenuItem( hMenuBmp, IDM_SCANLINE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
 			SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_COPY_SCANLINE, FALSE );
 			if(  pBmp->bIsScanLine  )
@@ -3042,6 +3005,7 @@ DrawScanLinePlot( hdc, pBmp, 1.0, FALSE );}else{
 			// Eingabefokus wechselt hierher?
 			if ((HWND)lParam == hwnd)
 			{
+				HDC hdc;
 				// Zeigen, welche Angezeigt werden
 				if(  pBmp->Links  ||  pBmp->Rechts  )
 				{

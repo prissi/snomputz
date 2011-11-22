@@ -2996,8 +2996,9 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_INITDIALOG:
 			hwnd = (HWND)lParam;
 			pBmp = (LPBMPDATA)GetWindowLong( hwnd, 0 );
-			if(  pBmp==NULL  )
+			if(  pBmp==NULL  &&  pBmp->pSnom[0].Topo.puDaten==0  ) {
 				EndDialog( hdlg, wParam!=IDOK );
+			}
 			// Ok, valid pointers ...
 			pSnom = pBmp->pSnom+pBmp->iAktuell;
 			// Scrolly Initialisieren
@@ -3008,11 +3009,11 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText( hdlg, FARB_KONT_EINHEIT, unit_str );
 			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/(pSnom->fX*pSnom->w*pSnom->fY*pSnom->h) );
 			SetDlgItemText( hdlg, FARB_KONT_DIST, result_str );
-		return TRUE;
+			return TRUE;
 
 
 		case WM_NOTIFY:
-			SetScrollPos( hfStart, SB_CTL, (WORD)(pBmp->dot_quantisation), TRUE );
+			SetScrollPos( hfStart, SB_CTL, (WORD)(pBmp->dot_radius), TRUE );
 			InvalidateRect( hdlg, NULL, FALSE );
 		break;
 
@@ -3072,6 +3073,16 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 					sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h) );
 					StatusLine( str );
 					InvalidateRect( hwnd, NULL, FALSE );
+					if(  pBmp->dot_number>0  ) {
+						EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_ENABLED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_ENABLED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_ENABLED );
+					}
+					else {
+						EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+						EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+					}
 				}
 			}
 			break;
@@ -3083,18 +3094,8 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 				WinHelp(hwndFrame,szHilfedatei,HELP_KEY,(DWORD)(LPSTR)STR_HELP_FARBEN);
 			break;
 
-			case IDCANCEL:
-				// clear dot count
-				if(  pBmp->dot_histogramm_count  ) {
-					free( pBmp->dot_histogramm );
-				}
-				pBmp->dot_histogramm = NULL;
-				pBmp->dot_histogramm_count = pBmp->dot_number = 0;
-				return TRUE;
-
 			case IDOK:
 			{
-				pBmp->dot_radius = 3;	// to conitnue
 				EndDialog( hdlg, TRUE );
 				InvalidateRect( hwnd, NULL, FALSE );
 				return TRUE;
