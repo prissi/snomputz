@@ -14,7 +14,7 @@ DWORD CMUFileOpen( HWND hWnd, LPCSTR	strTitel, LPSTR strName, LPCSTR strTemp );
 // Fileselctor for multiple files (s.a. for single files)
 DWORD CMUFileOpenMultiImg( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp );
 /* Datei speichern Auswahldialog */
-DWORD CMUFileSave( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp, LPSTR wFilterIndex );
+DWORD CMUFileSave( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp, LPDWORD wFilterIndex );
 
 /* Get Directory Name */
 BOOL CMUGetFolderName( const HWND hwndOwner, LPCSTR lpszTitle, LPSTR strSelFolder );

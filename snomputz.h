@@ -477,3 +477,4 @@
 #if !defined(SS_BITMAP)
 #define SS_BITMAP           0x0000000EL
 #endif
+

@@ -233,6 +233,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\dbgheap.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Dsp-mes.c"
 				>
 				<FileConfiguration

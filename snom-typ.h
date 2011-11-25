@@ -100,6 +100,12 @@ typedef struct {
 } XYZ_COORD;
 
 
+typedef struct {
+	UWORD x;
+	UWORD y;
+} XY_COORD;
+
+
 // Struktur, die einem Fenster zugeordnet wird, und in der ALLES zur Darstellung versammelt ist
 typedef struct
 {

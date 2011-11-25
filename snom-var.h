@@ -88,7 +88,7 @@ extern HWND	hwndToolbar;
 extern char  szFrameClass [];
 extern char  szBmpClass[];
 extern char  szHilfedatei[256];
-extern LPSTR	szFselHelpStr;
+extern LPCSTR	szFselHelpStr;
 
 // Zeichenparamenter
 extern double	fPiezoSkalX, fPiezoSkalY, fPiezoSkalZ, fIntens;
