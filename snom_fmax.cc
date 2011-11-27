@@ -117,11 +117,11 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 			pList[0] = maxpts[iMax];
 			maxmap[ offset0 ] |= ( EQUAL|LISTED ); //mark first point as equal height (to itself) and listed
 
-			do { //while neigbor list is not fully processed (to listLen)
+			do {
+				//while neigbor list is not fully processed (to listLen)
 				int x = pList[listI].x;
 				int y = pList[listI].y;
-				//if(x==18&&y==20)IJ.write("x0,y0="+x0+","+y0+"@18,20;v0="+v0+" sortingError="+sortingError);
-				boolean isInner = ( y != 0 && y != height-1 ) && ( x != 0 && x != width-1 ); //not necessary, but faster than isWithin
+
 				for( int d = 0; d < 8; d++ ) {
 					int x2 = x+next_neighbour_x[d];
 					int y2 = y+next_neighbour_y[d];
