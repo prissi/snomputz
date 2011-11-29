@@ -640,8 +640,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							if( pSrc != NULL  &&  (LONG)pSrc <= 256 ) {
 								pSrc = pBmp->pSnom[(WORD)pSrc-1].Topo.puDaten;
 							}
-							min = ( pSnom->Topo.fStart*(double)pSnom->Topo.uMaxDaten/100.0+0.5 );
-							max = ( pSnom->Topo.fEnde*(double)pSnom->Topo.uMaxDaten/100.0+0.5 );
+							min = pSnom->Topo.fStart*(double)pSnom->Topo.uMaxDaten/100.0+0.5;
+							max = min + (pSnom->Topo.fEnde*(double)pSnom->Topo.uMaxDaten/100.0+0.5);
 							SetDibPaletteColors( pDib, pSnom->Topo.Farben, &( pSnom->Topo ), 0, 255, 0, 255 );
 							break;
 
@@ -650,8 +650,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							if( pSrc != NULL  &&  (LONG)pSrc <= 256 ) {
 								pSrc = pBmp->pSnom[(WORD)pSrc-1].Lumi.puDaten;
 							}
-							min = ( pSnom->Lumi.fStart*(double)pSnom->Lumi.uMaxDaten/100.0+0.5 );
-							max = ( pSnom->Lumi.fEnde*(double)pSnom->Lumi.uMaxDaten/100.0+0.5 );
+							min = pSnom->Lumi.fStart*(double)pSnom->Lumi.uMaxDaten/100.0+0.5;
+							max = min + (pSnom->Lumi.fEnde*(double)pSnom->Lumi.uMaxDaten/100.0+0.5);
 							SetDibPaletteColors( pDib, pSnom->Lumi.Farben, &( pSnom->Lumi ), 0, 255, 0, 255 );
 							break;
 					}
@@ -2188,8 +2188,12 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						pNeuBmp->pDib = NULL;
 						pNeuBmp->pCacheBits = NULL;
 						pNeuBmp->pScanLine = NULL;
-						pNeuBmp->pExtra = pMalloc( pBmp->lExtraLen );
-						MemMove( pNeuBmp->pExtra, pBmp->pExtra, pBmp->lExtraLen );
+						pNeuBmp->pExtra = NULL;
+						pNeuBmp->lExtraLen = pBmp->lExtraLen;
+						if(  pBmp->lExtraLen  ) {
+							pNeuBmp->pExtra = pMalloc( pBmp->lExtraLen );
+							MemMove( pNeuBmp->pExtra, pBmp->pExtra, pBmp->lExtraLen );
+						}
 
 						pBmp->bIsScanLine = FALSE;
 						pBmp->lMaxScan = 0;

@@ -1156,10 +1156,10 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 				// Skalierung z-Achse
 				if( !pLinks->bShowNoZ )	{
 					if( pLinks->bSpecialZUnit ) {
-						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*( pLinks->fEnde-pLinks->fStart )/100.0, 0.0, pLinks->strZUnit, NULL );
+						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, pLinks->strZUnit, NULL );
 					}
 					else {
-						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*( pLinks->fEnde-pLinks->fStart )/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
+						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
 					}
 				}
 			}
@@ -1186,10 +1186,10 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 				// Skalierung z-Achse
 				if( !pRechts->bShowNoZ ) {
 					if( pRechts->bSpecialZUnit ) {
-						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*( pRechts->fEnde-pRechts->fStart )/100.0, 0.0, pRechts->strZUnit, NULL );
+						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, pRechts->strZUnit, NULL );
 					}
 					else {
-						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*( pRechts->fEnde-pRechts->fStart )/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
+						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
 					}
 				}
 			}
@@ -1262,8 +1262,8 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			lowlim = 0;
 			if( DontEmulContrast ) {
 				lowlim = pLinks->fStart*pLinks->uMaxDaten/100.0;
-				maxlinks = pLinks->fEnde*pLinks->uMaxDaten/100.0;
-				lScaleFactor = 1024.0*( pLinks->fEnde-pLinks->fStart )/( maxlinkscol*100.0 );
+				maxlinks = lowlim + pLinks->fEnde*pLinks->uMaxDaten/100.0;
+				lScaleFactor = 1024.0*( pLinks->fEnde )/( maxlinkscol*100.0 );
 			}
 
 			if( pColorConvert  &&  !pBmp->pMaske ) {
@@ -1410,8 +1410,8 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			lLowlim = 0;
 			if( DontEmulContrast ) {
 				lLowlim = ( pRechts->fStart*pRechts->uMaxDaten )/100.0;
-				maxrechts = pRechts->fEnde*pRechts->uMaxDaten/100.0;
-				lScaleFactor = 1024.0*( pRechts->fEnde-pRechts->fStart )/( maxrechtscol*100.0 );
+				maxrechts = lLowlim + pRechts->fEnde*pRechts->uMaxDaten/100.0;
+				lScaleFactor = 1024.0*( pRechts->fEnde )/( maxrechtscol*100.0 );
 			}
 
 			if( pColorConvert  &&  !pBmp->pMaske ) {
@@ -1586,10 +1586,10 @@ int Draw2DAxisDC( HDC hDC, LPBILD pBild, LPBITMAPINFO pDib, RECT xywh )
 	// Skalierung z-Achse
 	if( !pBild->bShowNoZ ) {
 		if( pBild->bSpecialZUnit ) {
-			iWidth = DrawVerticalAxis( hDC, xywh.left+xywh.right, xywh.top, xywh.bottom, 2, 10, pBild->uMaxDaten*pBild->fSkal*( pBild->fEnde-pBild->fStart )/100.0, 0.0, pBild->strZUnit, NULL );
+			iWidth = DrawVerticalAxis( hDC, xywh.left+xywh.right, xywh.top, xywh.bottom, 2, 10, pBild->uMaxDaten*pBild->fSkal*pBild->fEnde/100.0, 0.0, pBild->strZUnit, NULL );
 		}
 		else {
-			iWidth = DrawVerticalAxis( hDC, xywh.left+xywh.right, xywh.top, xywh.bottom, 2, 10, pBild->uMaxDaten*pBild->fSkal*( pBild->fEnde-pBild->fStart )/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
+			iWidth = DrawVerticalAxis( hDC, xywh.left+xywh.right, xywh.top, xywh.bottom, 2, 10, pBild->uMaxDaten*pBild->fSkal*pBild->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
 		}
 	}
 	return ( iWidth+xywh.right );
@@ -1657,7 +1657,7 @@ int DrawBildDC( HDC hDC, LPBMPDATA pBmp, LPBILD pBild, LPBITMAPINFO pDib, RECT x
 		endcol = 255;
 	}
 	lowlim = pBild->fStart*pBild->uMaxDaten/100.0;
-	maxlim = pBild->fEnde*(double)pBild->uMaxDaten/100.0;
+	maxlim = lowlim + pBild->fEnde*(double)pBild->uMaxDaten/100.0;
 	ScaleFactor = endcol/(double)( maxlim-lowlim ); // max 253 colors ...
 	SetDibPaletteColors( pDib, (COLORREF HUGE*)( pBild->Farben ), pBild, 0, endcol, 0, endcol );
 

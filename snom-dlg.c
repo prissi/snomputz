@@ -849,7 +849,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	static HBRUSH hBrush[3];
 	static WORKMODE	IsMode = NONE;
 	static HFONT hSetFont;
-	BYTE buffer[16];
+	BYTE buffer[128];
 	WORD i = 0;
 
 	i = 0;
@@ -860,7 +860,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			if( pBmp == NULL ) {
 				EndDialog( hdlg, wParam != IDOK );
 			}
-			// Die Daten werden Online ver�ndert!
+			// Die Daten werden Online verändert!
 			if( ( pSnom = pAllocNewSnom( pBmp, 0 ) ) == NULL ) {
 				StatusLineRsc( E_MEMORY );
 				EndDialog( hdlg, FALSE );
@@ -951,7 +951,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 		case WM_NOTIFY:
 		{
 			NMHDR *nm = (LPNMHDR)lParam;
-			if( nm->code == TCN_SELCHANGING  &&  pBild != NULL ) {
+			if( pBild != NULL ) {
 				GetDlgItemText( hdlg, FARB_KONT_DIST, buffer, 15 );
 				pBild->uKontur = (WORD)( atof( buffer )/pBild->fSkal+0.5 );
 				GetDlgItemText( hdlg, FARB_MOD_DIST, buffer, 15 );
@@ -961,7 +961,10 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				pBild->bShowNoZ = !IsDlgButtonChecked( hdlg, FARB_Z_ACHSE );
 				GetDlgItemText( hdlg, FARB_Z_UNIT, pBild->strZUnit, 8 );
 				GetDlgItemText( hdlg, FARB_TITEL, pBild->strTitel, 32 );
-				break;
+				GetDlgItemText( hdlg, FARB_START_ZAHL, buffer, 128 );
+				pBild->fStart = 100.000000001*atof( buffer )/(pBild->fSkal*pBild->uMaxDaten);
+				GetDlgItemText( hdlg, FARB_WEITE_ZAHL, buffer, 128 );
+				pBild->fEnde = 100.000000001*atof( buffer )/(pBild->fSkal*pBild->uMaxDaten) ;
 			}
 			if( nm->code != TCN_SELCHANGE ) {
 				break;
@@ -995,9 +998,11 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			SetDlgItemText(	hdlg, FARB_KONT_DIST, gcvt( pBild->uKontur*pBild->fSkal, 5, buffer ) );
 			SetDlgItemInt(	hdlg, FARB_KONT_TOL, pBild->uKonturToleranz, FALSE );
 			SetScrollPos( hfStart, SB_CTL, (WORD)( pBild->fStart*10.0+0.5 ), TRUE );
-			SetScrollPos( hfEnd, SB_CTL, (WORD)( ( pBild->fEnde-pBild->fStart )*10.0+0.5 ), TRUE );
-			SetDlgItemText(	hdlg, FARB_START_ZAHL, gcvt( pBild->uMaxDaten*pBild->fStart*pBild->fSkal*1000.0, 4, buffer ) );
-			SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, ltoa( pBild->uMaxDaten*(long)( ( pBild->fEnde-pBild->fStart )*pBild->fSkal*1000.0+0.5 ), buffer, 10 ) );
+			SetScrollPos( hfEnd, SB_CTL, (WORD)( pBild->fEnde*10.0+0.5 ), TRUE );
+			sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+			SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
+			sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+			SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
 			if( hBrush[0] != NULL )	{
 				DeleteObject( hBrush[0] );
 				DeleteObject( hBrush[1] );
@@ -1117,23 +1122,65 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 #endif
 					break;
 			}
-			SetScrollPos( GET_SCROLL_HANDLE( lParam ), SB_CTL, (WORD)iOffset, TRUE );
-			pBild->fStart = GetScrollPos( hfStart, SB_CTL )/10.0;
-			pBild->fEnde = GetScrollPos( hfEnd, SB_CTL )/10.0+pBild->fStart;
-			if( pBild->fStart >= pBild->fEnde ) {
-				pBild->fEnde = pBild->fStart+0.33;
+			if(  LOWORD( wParam ) != SB_ENDSCROLL  ) {
+				// not end of scrolling, further action needed
+				SetScrollPos( GET_SCROLL_HANDLE( lParam ), SB_CTL, (WORD)iOffset, TRUE );
+				pBild->fStart = GetScrollPos( hfStart, SB_CTL )/10.0;
+				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+				SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
+				pBild->fEnde = GetScrollPos( hfEnd, SB_CTL )/10.0;
+				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+				SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
+				// Bitmap updaten!
+				RecalcCache( pBmp, FALSE, FALSE );
+				InvalidateRect( hwnd, NULL, FALSE );
+				InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 			}
-			SetDlgItemText(	hdlg, FARB_START_ZAHL, gcvt( pBild->uMaxDaten*pBild->fStart*pBild->fSkal, 4, buffer ) );
-			SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, ltoa( pBild->uMaxDaten*(long)( ( pBild->fEnde-pBild->fStart )*pBild->fSkal+0.5 ), buffer, 10 ) );
-			// Bitmap updaten!
-			RecalcCache( pBmp, FALSE, FALSE );
-			InvalidateRect( hwnd, NULL, FALSE );
-			InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 			break;
 		}
 
 		case WM_COMMAND:
-			switch( wParam ) {
+			switch( LOWORD( wParam ) ) {
+
+				case FARB_START_ZAHL:
+				case FARB_WEITE_ZAHL:
+#ifdef BIT32
+					if( HIWORD( wParam ) == EN_CHANGE )
+#else
+					if( HIWORD( lParam ) == EN_CHANGE )
+#endif
+					{
+						BOOL update = FALSE;
+						double newstart = pBild->fStart, newend = pBild->fEnde;
+
+						if(  LOWORD( wParam ) == FARB_START_ZAHL  ) {
+							GetDlgItemText( hdlg, FARB_START_ZAHL, buffer, 128 );
+							newstart = 100.0*atof( buffer )/(pBild->fSkal*pBild->uMaxDaten);
+						}
+						if(  LOWORD( wParam ) == FARB_WEITE_ZAHL  ) {
+							GetDlgItemText( hdlg, FARB_WEITE_ZAHL, buffer, 128 );
+							newend = 100.0*atof( buffer )/(pBild->fSkal*pBild->uMaxDaten) ;
+						}
+
+						if(  fabs(newstart-pBild->fStart)>.5  ) {
+							pBild->fStart = newstart;
+							SetScrollPos( hfStart, SB_CTL, (WORD)( newstart*10.0+0.5 ), TRUE );
+							update = TRUE;
+						}
+						if(  fabs(newend-pBild->fEnde)>.5  ) {
+							pBild->fEnde = newend;
+							SetScrollPos( hfEnd, SB_CTL, (WORD)( newend*10.0+0.5 ), TRUE );
+							update = TRUE;
+						}
+						if(  update  ) {
+							// Bitmap updaten!
+							RecalcCache( pBmp, FALSE, FALSE );
+							InvalidateRect( hwnd, NULL, FALSE );
+							InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
+						}
+					}
+					break;
+
 				case FARB_LOAD_LUT:
 				{       //Loading new LUT
 					TCHAR datei[MAX_PATH];
@@ -1213,7 +1260,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						pBild->bModuloKonturen = FALSE;
 						CheckDlgButton( hdlg, FARB_MOD, FALSE );
 					}
-					RecalcCache( pBmp, TRUE, FALSE );
+					RecalcCache( pBmp, TRUE, TRUE );
 					InvalidateRect( hwnd, NULL, FALSE );
 					break;
 
@@ -1222,7 +1269,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 					break;
 
 				case IDCANCEL:
-					// Neue Bitmap wieder l�schen
+					// Neue Bitmap wieder löschen
 					pBmp->iAktuell--;
 					pBmp->iMax--;
 					RecalcCache( pBmp, TRUE, TRUE );
