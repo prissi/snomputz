@@ -121,7 +121,7 @@ HWND hModeLess = NULL;
 HACCEL hAccel;
 HMENU hMenuInitRecent, hMenuBmpRecent, hMenuInitWindow, hMenuBmpWindow;
 
-char sRecentFiles[4][256];
+char sRecentFiles[4][1024];
 char sIniFileName[] = "Snomputz.ini";
 
 
@@ -134,15 +134,15 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 {
 	// Zur initialisierung ...
 	CLIENTCREATESTRUCT clientcreate;
-	char szBuf[256];
+	char szBuf[1024];
 	DWORD dwVersion;
 	MSG msg ;
 	WNDCLASS wndclass;
 	HKEY hRegKey;
-	extern CHAR strLastOpenPath[256];
-	extern CHAR strLastSavePath[256];
-	extern CHAR strDspDllPath[256];
-	extern CHAR strDspPrgPath[256];
+	extern CHAR strLastOpenPath[1024];
+	extern CHAR strLastSavePath[1024];
+	extern CHAR strDspDllPath[1024];
+	extern CHAR strDspPrgPath[1024];
 	//INITCOMMONCONTROLSEX	ie={sizeof(ie),ICC_WIN95_CLASSES};
 
 #ifdef _TWO_DIGIT_EXPONENT
@@ -292,6 +292,101 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	hMenuInitRecent  = GetSubMenu( hMenuInit, 0 );
 	hMenuBmpRecent = GetSubMenu( hMenuBmp, 0 );
 
+#if(WINVER >= 0x0400)
+	if( RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz", &hRegKey ) == ERROR_SUCCESS ) {
+		// Zuletzt benutzt Dateien eintragen ...
+		HKEY hSubkey;
+		BYTE name[256];
+		LONG len;
+		int i, j;
+
+		for( i = j = 0;  i < 4;  i++ ) {
+			wsprintf( (LPSTR)szBuf, "Software\\Snomputz\\Recent\\File %i", i+1 );
+			RegCreateKey( HKEY_CURRENT_USER, szBuf, &hSubkey );
+			len = 1024;
+			if(  RegQueryValue( hSubkey, NULL, sRecentFiles[i], &len )==ERROR_SUCCESS  ||  len>0  ) {
+				wsprintf( (LPSTR)szBuf, "%d: %s", i+1, (LPSTR)sRecentFiles[i] );
+				InsertMenu( hMenuInitRecent, ( INIT_MENU_RECENT+j ), MF_STRING|MF_BYPOSITION, IDM_RECENT1+j, szBuf );
+				InsertMenu( hMenuBmpRecent, ( BITMAP_MENU_RECENT+j ), MF_STRING|MF_BYPOSITION, IDM_RECENT1+j, szBuf );
+				j ++;
+			}
+			RegCloseKey( hSubkey );
+		}
+		InsertMenu( hMenuInitRecent, INIT_MENU_RECENT+4, MF_BYPOSITION|MF_SEPARATOR, 0xFFFFFFFFul, NULL );
+		InsertMenu( hMenuBmpRecent, BITMAP_MENU_RECENT+4, MF_BYPOSITION|MF_SEPARATOR, 0xFFFFFFFFul, NULL );
+
+		// Restliche Initwerte lesen ...
+		RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz\\Last save", &hSubkey );
+		len = 1024;
+		RegQueryValue( hSubkey, NULL, strLastSavePath, &len );
+		RegCloseKey( hSubkey );
+		RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz\\Last open", &hSubkey );
+		len = 1024;
+		RegQueryValue( hSubkey, NULL, strLastOpenPath, &len );
+		RegCloseKey( hSubkey );
+		RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz\\DSP Dll", &hSubkey );
+		len = 1024;
+		if(  RegQueryValue( hSubkey, NULL, strDspDllPath, &len )!=ERROR_SUCCESS  ||  len==0  ) {
+			lstrcpy( strDspDllPath, "PC32DLL.DLL" );
+		}
+		RegCloseKey( hSubkey );
+		RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz\\DSP Out", &hSubkey );
+		len = 1024;
+		if(  RegQueryValue( hSubkey, NULL, strDspPrgPath, &len )!=ERROR_SUCCESS  ||  len==0  ) {
+			lstrcpy( strDspPrgPath, "DSP\\SNOMPUTZ.OUT" );
+		}
+		RegCloseKey( hSubkey );
+	}
+
+	GetPrivateProfileString( "3D", "XY angle", "0.5", (LPSTR)szBuf, 80, sIniFileName );
+	f3DXYWinkel = atof( szBuf );
+	GetPrivateProfileString( "3D", "Z angle", "0.5", (LPSTR)szBuf, 80, sIniFileName );
+	f3DZWinkel = atof( szBuf );
+	GetPrivateProfileString( "3D", "Z factor", "1.0", (LPSTR)szBuf, 80, sIniFileName );
+	f3DZSkal = atof( szBuf );
+	w3DZoom = GetPrivateProfileInt( "3D", "Draft", 2, sIniFileName );
+	Show3D = GetPrivateProfileInt( "3D", "Show 3D", 0, sIniFileName );
+
+	// Farben
+	GetPrivateProfileString( "Colors", "Front", "0", (LPSTR)szBuf, 80, sIniFileName );
+	cVorn = atol( szBuf );
+	GetPrivateProfileString( "Colors", "Back", "16777215", (LPSTR)szBuf, 80, sIniFileName );
+	cHinten = atol( szBuf );
+	GetPrivateProfileString( "Colors", "Mark left", "33023", (LPSTR)szBuf, 80, sIniFileName );
+	cMarkierungLinks = atol( szBuf );
+	GetPrivateProfileString( "Colors", "Mark right", "16744192", (LPSTR)szBuf, 80, sIniFileName );
+	cMarkierungRechts = atol( szBuf );
+
+	// Zeichensatz
+	GetPrivateProfileString( "Font", "Face", "MS Sans Serif", (LPSTR)lf.lfFaceName, LF_FACESIZE, sIniFileName );
+	lf.lfHeight = GetPrivateProfileInt( "Font", "Size", -12, sIniFileName );
+	if( abs( lf.lfHeight ) > 50000 ) {
+		lf.lfHeight = -12;
+	}
+
+	// Skalierung
+	GetPrivateProfileString( "Scale", "X", "1.0", (LPSTR)szBuf, 80, sIniFileName );
+	fPiezoSkalX = atof( szBuf );
+	GetPrivateProfileString( "Scale", "Y", "1.0", (LPSTR)szBuf, 80, sIniFileName );
+	fPiezoSkalY = atof( szBuf );
+	GetPrivateProfileString( "Scale", "Z", "1.0", (LPSTR)szBuf, 80, sIniFileName );
+	fPiezoSkalZ = atof( szBuf );
+	GetPrivateProfileString( "Scale", "L", "1.0", (LPSTR)szBuf, 80, sIniFileName );
+
+	// Profildaten: Was kopieren/speichern?
+	wProfilMode = GetPrivateProfileInt( "Profil", "Mode", 7, sIniFileName );
+	wProfilFlags = GetPrivateProfileInt( "Profil", "Flags", P_DIST|P_Z, sIniFileName );
+
+	// Sonstiges
+	fIntens = atof( szBuf );
+	PlotsUnten = GetPrivateProfileInt( "Misc", "Plot below", FALSE, sIniFileName );
+
+	// evt. Registry Updaten
+	if( GetProfileString( "Extensions", "hdf", "", (LPSTR)szBuf, 80 ) == 0  ||  strstr( szBuf, "SNOMPUTZ" ) == NULL ) {
+		lstrcpy( (LPSTR)szBuf+GetModuleFileName( hInst, szBuf, 80 ), " ^.hdf" );
+		WriteProfileString( "Extensions", "hdf", (LPSTR)szBuf );
+	}
+#else
 	// Zuletzt benutzt Dateien eintragen ...
 	if( GetPrivateProfileString( "Recent Files", "File 1", "", szBuf, 80, sIniFileName ) ) {
 		BYTE prf[] = "File 1";
@@ -366,6 +461,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		lstrcpy( (LPSTR)szBuf+GetModuleFileName( hInst, szBuf, 80 ), " ^.hdf" );
 		WriteProfileString( "Extensions", "hdf", (LPSTR)szBuf );
 	}
+#endif
 
 	// Schlüssel gibt es schon?
 	if( RegOpenKey( HKEY_CLASSES_ROOT, ".hdf", &hRegKey ) == ERROR_SUCCESS ) {
@@ -535,6 +631,73 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 #endif
 	DestroyMenu( hMenuBmp );
 
+#if(WINVER >= 0x0400)
+	// Einstellung in INI-Datei speichern
+	// Zuerst: benutze Dateien
+	{
+		// Zuletzt benutzt Dateien eintragen ...
+		BYTE str[256];
+		int i;
+
+		for( i = 0;  i < 4;  i++ ) {
+			wsprintf( (LPSTR)szBuf, "Software\\Snomputz\\Recent\\File %i", i+1 );
+			RegSetValue( HKEY_CURRENT_USER, szBuf, REG_SZ, sRecentFiles[i], 0 );
+		}
+
+		// Write paths
+		RegSetValue( HKEY_CURRENT_USER, "Software\\Snomputz\\Last save", REG_SZ, strLastSavePath, 0 );
+		RegSetValue( HKEY_CURRENT_USER, "Software\\Snomputz\\Last open", REG_SZ, strLastOpenPath, 0 );
+		RegSetValue( HKEY_CURRENT_USER, "Software\\Snomputz\\DSP DLL", REG_SZ, strDspDllPath, 0 );
+		RegSetValue( HKEY_CURRENT_USER, "Software\\Snomputz\\DSP Out", REG_SZ, strDspPrgPath, 0 );
+
+		// Winkel
+		gcvt( f3DXYWinkel, 4, str );
+		WritePrivateProfileString( "3D", "XY angle", (LPSTR)str, sIniFileName );
+		gcvt( f3DZWinkel, 4, str );
+		WritePrivateProfileString( "3D", "Z angle", (LPSTR)str, sIniFileName );
+		gcvt( f3DZSkal, 4, str );
+		WritePrivateProfileString( "3D", "Z factor", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%d", w3DZoom );
+		WritePrivateProfileString( "3D", "Draft", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%d", Show3D );
+		WritePrivateProfileString( "3D", "Show 3D", (LPSTR)str, sIniFileName );
+
+		// Farben
+		wsprintf( str, "%ld", cVorn );
+		WritePrivateProfileString( "Colors", "Front", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%ld", cHinten );
+		WritePrivateProfileString( "Colors", "Back", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%ld", cMarkierungLinks );
+		WritePrivateProfileString( "Colors", "Mark left", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%ld", cMarkierungRechts );
+		WritePrivateProfileString( "Colors", "Mark right", (LPSTR)str, sIniFileName );
+
+		// Profildaten: Was kopieren/speichern?
+		wsprintf( str, "%ld", (ULONG)wProfilMode );
+		WritePrivateProfileString( "Profil", "Mode", (LPSTR)str, sIniFileName );
+		wsprintf( str, "%ld", (ULONG)wProfilFlags );
+		WritePrivateProfileString( "Profil", "Flags", (LPSTR)str, sIniFileName );
+
+		// Zeichensatz
+		WritePrivateProfileString( "Font", "Face", (LPSTR)lf.lfFaceName, sIniFileName );
+		wsprintf( str, "%ld", lf.lfHeight );
+		WritePrivateProfileString( "Font", "Size", (LPSTR)str, sIniFileName );
+
+		// Skalierung
+		gcvt( fPiezoSkalX, 10, str );
+		WritePrivateProfileString( "Scale", "X", (LPSTR)str, sIniFileName );
+		gcvt( fPiezoSkalY, 10, str );
+		WritePrivateProfileString( "Scale", "Y", (LPSTR)str, sIniFileName );
+		gcvt( fPiezoSkalZ, 10, str );
+		WritePrivateProfileString( "Scale", "Z", (LPSTR)str, sIniFileName );
+		gcvt( fIntens, 10, str );
+		WritePrivateProfileString( "Scale", "L", (LPSTR)str, sIniFileName );
+
+		// Sonstiges
+		wsprintf( str, "%d", PlotsUnten );
+		WritePrivateProfileString( "Misc", "Plot below", (LPSTR)str, sIniFileName );
+	}
+#else
 	// Einstellung in INI-Datei speichern
 	// Zuerst: benutze Dateien
 	{
@@ -601,6 +764,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		wsprintf( str, "%d", PlotsUnten );
 		WritePrivateProfileString( "Misc", "Plot below", (LPSTR)str, sIniFileName );
 	}
+#endif
 	MemFree( pColorConvert );
 	return ( msg.wParam );
 }
