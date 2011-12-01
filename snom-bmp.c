@@ -1940,6 +1940,153 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				// dots automatisch zühlen
 				case IDM_DOTS_AUTO:
 					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
+
+					if( pBmp->pSnom[0].Topo.puDaten &&  pBmp->dot_number>0  ) {
+						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
+						const LPUWORD puData = GetDataPointer( pBmp, TOPO );
+						LPBYTE	pMaskRow;
+						const WORD w = pSnom->w;
+						const WORD h = pSnom->h;
+						WORD x, y, i;
+						const int MeanPts = 3;	// averaging over how many points
+
+						// for each line with QD do flattening
+						LPLONG plMittel = (LPLONG)pMalloc( sizeof(LONG)*max(h,w) );
+						if( plMittel == NULL ) {
+							FehlerRsc( E_MEMORY );
+							break;
+						}
+
+						// add Mask (if not already there
+						if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
+							MemFree( pBmp->pMaske );
+							pBmp->pMaske = NULL;
+						}
+						if( pBmp->pMaske == NULL ) {
+							pBmp->wMaskeW = (WORD)( pBmp->pSnom[pBmp->iAktuell].w+7u ) / 8;
+							pBmp->pMaske = pMalloc( pBmp->wMaskeW*( pBmp->pSnom[pBmp->iAktuell].h ) );
+							if( pBmp->pMaske == NULL ) {
+								MemFree( plMittel );
+								FehlerRsc( E_MEMORY );
+								break;
+							}
+						}
+						for(  i=0;  i<pBmp->dot_number;  i++  ) {
+							UWORD *puZeile = puData+(pBmp->dot_histogramm[i].y)*w;
+							UWORD start_h;
+							int j, diff;
+
+							// average each dot containing line
+							for( x = 0;  x < w;  x++ ) {
+								plMittel[x] = 0;
+								for( j = x-MeanPts; j <= x+MeanPts; j++ ) {
+									if( j < 0 ) {
+										plMittel[x] += puZeile[0];
+									}
+									else if( j >= w ) {
+										plMittel[x] += puZeile[w-1];
+									}
+									else {
+										plMittel[x] += puZeile[j];
+									}
+								}
+								plMittel[x] /= 2*MeanPts+1;
+							}
+							// now try to get a volume out of the dot
+							x = pBmp->dot_histogramm[i].x;
+							start_h = (plMittel[x]*7 + pBmp->dot_mean_level)/8;
+							pMaskRow = pBmp->pMaske + pBmp->wMaskeW*pBmp->dot_histogramm[i].y;
+
+							// mark everything up to half level
+							diff = 0;
+							for(  j=x+1;  j<w;  j++  ) {
+								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
+									break;
+								}
+								if(  plMittel[j]<start_h  ) {
+									if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
+										break;
+									}
+									if(  diff < plMittel[j-1]-plMittel[j]  ) {
+										diff = plMittel[j-1]-plMittel[j];
+									}
+								}
+							}
+							pBmp->dot_histogramm[i].radius = j;
+							diff = 0;
+							for(  j=(int)x-1;  j>=0;  j--  ) {
+								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
+									break;
+								}
+								if(  plMittel[j]<start_h  ) {
+									if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
+										break;
+									}
+									if(  diff < plMittel[j+1]-plMittel[j]  ) {
+										diff = plMittel[j+1]-plMittel[j];
+									}
+								}
+							}
+							pBmp->dot_histogramm[i].radius -= j;
+#if 0
+							// average each dot row
+							puZeile = puData+x;
+							for( y = 0;  y < h;  y++ ) {
+								plMittel[y] = 0;
+								for( j = y-MeanPts; j <= y+MeanPts; j++ ) {
+									if( j < 0 ) {
+										plMittel[y] += puZeile[0];
+									}
+									else if( j >= h ) {
+										plMittel[y] += puZeile[(h-1)*w];
+									}
+									else {
+										plMittel[y] += puZeile[j];
+									}
+								}
+								plMittel[y] /= 2*MeanPts+1;
+							}
+							// now try to get a volume out of the dot
+							y = pBmp->dot_histogramm[i].y;
+							start_h = (plMittel[y]*3 + pBmp->dot_mean_level)/4;
+							pMaskRow = pBmp->pMaske + pBmp->wMaskeW*pBmp->dot_histogramm[i].y;
+							// mark everything up to half level
+							for(  j=y+1;  j<h;  j++  ) {
+								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
+									break;
+								}
+								if(  plMittel[j]<start_h  &&  plMittel[j-1]-plMittel[j]<pBmp->dot_quantisation  ) {
+									break;
+								}
+							}
+							pBmp->dot_histogramm[i].radius += j-y;
+							for(  j=(int)y-1;  j>=0;  j--  ) {
+								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
+									break;
+								}
+								if(  plMittel[j]<start_h  &&  plMittel[j+1]-plMittel[j]<pBmp->dot_quantisation  ) {
+									break;
+								}
+							}
+							pBmp->dot_histogramm[i].radius += y-j;
+#endif
+							// mask dot
+							pBmp->dot_histogramm[i].radius /= 2;
+							if(  pBmp->dot_histogramm[i].radius>0  ) {
+								int h = pSnom->h, r=pBmp->dot_histogramm[i].radius;
+								int dx, dy;
+								x = pBmp->dot_histogramm[i].x;
+								y = pBmp->dot_histogramm[i].y;
+								for(  dy=-r;  dy<r;  dy++  ) {
+									for(  dx=-r;  dx<r;  dx++  ) {
+										if(  x+dx>=0  &&  x+dx<w  &&  y+dy>=0  &&  y+dy<h  &&  (dx*dx+dy*dy)<r*r  ) {
+											pBmp->pMaske[ (pSnom->h-1-(y+dy))*pBmp->wMaskeW + ((x+dx)>>3) ] |= 1<<(7-((x+dx)&7));
+										}
+									}
+								}
+							}
+						}
+					}
 					break;
 
 				case IDM_DOTS_SAVE:
@@ -1967,7 +2114,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							_lwrite( hFile, "\xD\xA", 2 );
 
 							for( i = 0;  i < pBmp->dot_number;  i++ ) {
-								len = sprintf( str, "%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt );
+								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt, pSnom->fX*pBmp->dot_histogramm[i].radius );
 								_lwrite( hFile, str, len );
 							}
 							_lclose( hFile );

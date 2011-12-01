@@ -46,7 +46,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 	int nResult = 0;
 	XYZ_COORD *maxpts = (XYZ_COORD*)pMalloc( ( width*height )*sizeof( XYZ_COORD ) );
 	XYZ_COORD *pResult = 0;
-	XYZ_COORD *pList = 0;
+	XY_COORD *pList = 0;
 
 	bool excludeEdges = true;
 
@@ -88,7 +88,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 	// now we have a list of all local maxima 0> sort
 	qsort( maxpts, nMax, sizeof( *maxpts ), CompareXYZ_COORD );
 
-	pList = (XYZ_COORD*)pMalloc( width*height*sizeof( XY_COORD ) );  // temporary
+	pList = (XY_COORD*)pMalloc( width*height*sizeof( XY_COORD ) );  // temporary
 	pResult = (XYZ_COORD*)pMalloc( (nMax+1)*sizeof( XYZ_COORD ) );     // final ... );
 
 	// now process all maximas, heighest first
@@ -114,7 +114,8 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 			int nEqual = 1; //counts xEqual/yEqual points that we use for averaging
 			sortingError = false; //if sorting was inaccurate: a higher maximum was not handled so far
 
-			pList[0] = maxpts[iMax];
+			pList[0].x = maxpts[iMax].x;
+			pList[0].y = maxpts[iMax].y;
 			maxmap[ offset0 ] |= ( EQUAL|LISTED ); //mark first point as equal height (to itself) and listed
 
 			do {
@@ -202,8 +203,10 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 					long offset = y*ww + x;
 					maxmap[offset] |= MAX_POINT;
 					if( !( excludeEdges && isEdgeMaximum ) ) {
-						pList[nearestI].hgt = puData[ x + y*ww ];
-						pResult[nResult++] = pList[nearestI];
+						pResult[nResult].hgt = puData[ x + y*ww ];
+						pResult[nResult].x = pList[nearestI].x;
+						pResult[nResult].y = pList[nearestI].y;
+						nResult++;
 					}
 				}
 			} //if !sortingError
