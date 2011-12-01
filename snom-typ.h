@@ -97,7 +97,8 @@ typedef struct {
 	UWORD x;
 	UWORD y;
 	UWORD hgt;
-	UWORD radius;
+	UWORD radius_x;
+	UWORD radius_y;
 } XYZ_COORD;
 
 

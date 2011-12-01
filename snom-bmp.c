@@ -1930,6 +1930,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							MeadianArea( GetDataPointer( pBmp, TOPO ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
 							pBmp->dot_mean_level = Median;
 							pBmp->dot_quantisation = MedianRMS;
+							if(  pBmp->dot_radius == 0  ) {
+								pBmp->dot_radius = pBmp->dot_quantisation;
+							}
 						}
 						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 						StatusLine( str );
@@ -1979,8 +1982,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							}
 							// now try to get a volume out of the dot
 							x = pBmp->dot_histogramm[i].x;
-							start_h = (plMittel[x]*7 + pBmp->dot_mean_level)/8;
-
+							start_h = plMittel[x]-pBmp->dot_radius/4;
 							// mark everything up to half level
 							diff = 0;
 							for(  j=x+1;  j<w;  j++  ) {
@@ -1996,7 +1998,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									}
 								}
 							}
-							pBmp->dot_histogramm[i].radius = j;
+							pBmp->dot_histogramm[i].radius_x = j;
 							diff = 0;
 							for(  j=(int)x-1;  j>=0;  j--  ) {
 								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
@@ -2011,8 +2013,11 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									}
 								}
 							}
-							pBmp->dot_histogramm[i].radius -= j;
-#if 0
+							// move x center ...
+							pBmp->dot_histogramm[i].x = (pBmp->dot_histogramm[i].radius_x+j)/2;
+							pBmp->dot_histogramm[i].radius_x -= j;
+							pBmp->dot_histogramm[i].radius_x /= 2;
+
 							// average each dot row
 							puZeile = puData+x;
 							for( y = 0;  y < h;  y++ ) {
@@ -2025,36 +2030,47 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 										plMittel[y] += puZeile[(h-1)*w];
 									}
 									else {
-										plMittel[y] += puZeile[j];
+										plMittel[y] += puZeile[j*w];
 									}
 								}
 								plMittel[y] /= 2*MeanPts+1;
 							}
 							// now try to get a volume out of the dot
 							y = pBmp->dot_histogramm[i].y;
-							start_h = (plMittel[y]*3 + pBmp->dot_mean_level)/4;
-							pMaskRow = pBmp->pMaske + pBmp->wMaskeW*pBmp->dot_histogramm[i].y;
-							// mark everything up to half level
-							for(  j=y+1;  j<h;  j++  ) {
+							start_h = plMittel[y]-pBmp->dot_radius/4;
+							diff = 0;
+							for(  j=(int)y+1;  j<h;  j++  ) {
 								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
 									break;
 								}
-								if(  plMittel[j]<start_h  &&  plMittel[j-1]-plMittel[j]<pBmp->dot_quantisation  ) {
-									break;
+								if(  plMittel[j]<start_h  ) {
+									if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
+										break;
+									}
+									if(  diff < plMittel[j-1]-plMittel[j]  ) {
+										diff = plMittel[j-1]-plMittel[j];
+									}
 								}
 							}
-							pBmp->dot_histogramm[i].radius += j-y;
+							pBmp->dot_histogramm[i].radius_y = j;
+							diff = 0;
 							for(  j=(int)y-1;  j>=0;  j--  ) {
 								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
 									break;
 								}
-								if(  plMittel[j]<start_h  &&  plMittel[j+1]-plMittel[j]<pBmp->dot_quantisation  ) {
-									break;
+								if(  plMittel[j]<start_h  ) {
+									if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
+										break;
+									}
+									if(  diff < plMittel[j+1]-plMittel[j]  ) {
+										diff = plMittel[j+1]-plMittel[j];
+									}
 								}
 							}
-							pBmp->dot_histogramm[i].radius += y-j;
-#endif
-							pBmp->dot_histogramm[i].radius /= 2;
+							// center als Y
+							pBmp->dot_histogramm[i].y = (pBmp->dot_histogramm[i].radius_y+j)/2;
+							pBmp->dot_histogramm[i].radius_y -= j;
+							pBmp->dot_histogramm[i].radius_y /= 2;
 						}
 					}
 					break;
@@ -2081,14 +2097,15 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						}
 						// mask dot
 						for(  i=0;  i<pBmp->dot_number;  i++  ) {
-							if(  pBmp->dot_histogramm[i].radius>0  ) {
-								const int r=pBmp->dot_histogramm[i].radius;
+							if(  pBmp->dot_histogramm[i].radius_x > 0  &&  pBmp->dot_histogramm[i].radius_y > 0  ) {
+								const int rx= pBmp->dot_histogramm[i].radius_x;
+								const int ry = pBmp->dot_histogramm[i].radius_y;
 								const int x = pBmp->dot_histogramm[i].x;
 								const int y = pBmp->dot_histogramm[i].y;
 								int dx, dy;
-								for(  dy=-r;  dy<r;  dy++  ) {
-									for(  dx=-r;  dx<r;  dx++  ) {
-										if(  x+dx>=0  &&  x+dx<w  &&  y+dy>=0  &&  y+dy<h  &&  (dx*dx+dy*dy)<r*r  ) {
+								for(  dy=-ry;  dy<ry;  dy++  ) {
+									for(  dx=-rx;  dx<rx;  dx++  ) {
+										if(  x+dx>=0  &&  x+dx<w  &&  y+dy>=0  &&  y+dy<h  &&  (dx*dx*ry*ry+dy*dy*rx*rx)<rx*rx*ry*ry  ) {
 											pBmp->pMaske[ (h-1-(y+dy))*pBmp->wMaskeW + ((x+dx)>>3) ] |= 1<<(7-((x+dx)&7));
 										}
 									}
@@ -2125,7 +2142,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							_lwrite( hFile, "\xD\xA", 2 );
 
 							for( i = 0;  i < pBmp->dot_number;  i++ ) {
-								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*pBmp->dot_histogramm[i].hgt, pSnom->fX*pBmp->dot_histogramm[i].radius );
+								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*(pBmp->dot_histogramm[i].hgt-pBmp->dot_mean_level), pSnom->fX*pBmp->dot_histogramm[i].radius_x, pSnom->fX*pBmp->dot_histogramm[i].radius_y );
 								_lwrite( hFile, str, len );
 							}
 							_lclose( hFile );
