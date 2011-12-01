@@ -133,11 +133,6 @@
 #define MOVIE_ZOFFSET	812
 #define MOVIE_XOFFSET	813
 
-#define OVER_CHANGE_DIR	15
-#define OVER_FLATTEN	16
-#define OVER_INVERT	17
-#define OVER_SMOOTH	18
-
 #define IDM_1ZU1                        586
 #define IDM_1ZU2                        587
 #define IDM_1ZU3                        588
@@ -386,14 +381,18 @@
 
 #define OVERRUN_OVERFLOW                102
 #define OVERRUN_UNDERFLOW               103
-#define OVER_DATE	11
+
 #define OVER_DIR	10
-#define OVER_LIST	14
-#define OVER_NAME	13
+#define OVER_DATE	11
 #define OVER_NUMBER	12
-#define OVER_FLATTEN	16
-#define OVER_INVERT	17
-#define OVER_SMOOTH	18
+#define OVER_NAME	13
+#define OVER_LIST	14
+#define OVER_CHANGE_DIR	15
+#define OVER_INVERT	16
+#define OVER_SMOOTH	17
+#define OVER_FLATTEN	18
+#define OVER_FLATTEN_LINE	18
+#define OVER_FLATTEN_3D	19
 
 #define PROFIL_AMPLITUDE                118
 #define PROFIL_AUTOKORRELATION          116

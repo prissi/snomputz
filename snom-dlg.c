@@ -387,9 +387,9 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 {
 	extern HWND hwndFrame;
 	static LPBITMAPINFO pDib;
-	static HWND hwnd, hComboAverage;
+	static HWND hwnd, hComboAverage, hComboFlatten;
 	static HPALETTE	hPal;
-	static BOOL flatten = TRUE;
+	static WORD flatten = 1;
 	static BOOL invert = FALSE;
 	static WORD averaging = 1;
 
@@ -417,7 +417,13 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 			SendMessage( hComboAverage, CB_ADDSTRING, 0, (LPARAM) (LPCSTR)"Area 5" );
 			SendMessage( hComboAverage, CB_SETCURSEL, averaging, 0 );
 
-			CheckDlgButton( hdlg, OVER_FLATTEN, flatten );
+			hComboFlatten = GetDlgItem( hdlg, OVER_FLATTEN );
+			SendMessage( hComboFlatten, CB_RESETCONTENT, 0, 0 );
+			SendMessage( hComboFlatten, CB_ADDSTRING, 0, (LPARAM) (LPCSTR)"no flatten" );
+			SendMessage( hComboFlatten, CB_ADDSTRING, 0, (LPARAM) (LPCSTR)"by line" );
+			SendMessage( hComboFlatten, CB_ADDSTRING, 0, (LPARAM) (LPCSTR)"by plane" );
+			SendMessage( hComboFlatten, CB_SETCURSEL, flatten, 0 );
+
 			CheckDlgButton( hdlg, OVER_INVERT, invert );
 
 			// Create Bitmap for Display
@@ -428,8 +434,7 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 			pDib->bmiHeader.biPlanes = 1;
 			pDib->bmiHeader.biBitCount = 8;
 			pDib->bmiHeader.biCompression = BI_RGB;
-			pDib->bmiHeader.biClrUsed =
-			        pDib->bmiHeader.biClrImportant = 256;
+			pDib->bmiHeader.biClrUsed = pDib->bmiHeader.biClrImportant = 256;
 			SetDibPaletteColors( pDib, Greys, (LPBILD)1, 0, 255, 0, 255 );
 
 			// Try to make Palette
@@ -513,7 +518,14 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 							BildNegieren( &( pBmp->pSnom[0].Topo ), 128, 128 );
 						}
 						//  and do a second order fit ...
-						if( flatten ) {
+						if( flatten==2 ) {
+							if( pBmp->pSnom[0].Topo.uMaxDaten > 8096u ) {
+								BildCalcConst( &( pBmp->pSnom[0].Topo ), 128, 128, '/', pBmp->pSnom[0].Topo.uMaxDaten/8096.0, FALSE );
+							}
+							BildSteigungY( &( pBmp->pSnom[0].Topo ), 0, 128, 128 );
+							MittelFit3DBild( pBmp, &( pBmp->pSnom[0].Topo ), 128, 128, 2, 3 );
+						}
+						if( flatten==1 ) {
 							if( pBmp->pSnom[0].Topo.uMaxDaten > 8096u ) {
 								BildCalcConst( &( pBmp->pSnom[0].Topo ), 128, 128, '/', pBmp->pSnom[0].Topo.uMaxDaten/8096.0, FALSE );
 							}
@@ -612,17 +624,17 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 					break;
 				}
 
-				case OVER_FLATTEN:
 				case OVER_INVERT:
 				case OVER_SMOOTH:
+				case OVER_FLATTEN:
 				{
-					BOOL new_flatten = IsDlgButtonChecked( hdlg, OVER_FLATTEN );
 					BOOL new_invert = IsDlgButtonChecked( hdlg, OVER_INVERT );
 					WORD new_average = SendMessage( hComboAverage, CB_GETCURSEL, 0, 0 );
+					WORD new_flatten = SendMessage( hComboFlatten, CB_GETCURSEL, 0, 0 );
 					if( new_flatten != flatten  ||  new_invert != invert  ||  new_average != averaging ) {
 						CHAR path[MAX_PATH];
-						flatten = new_flatten;
 						invert = new_invert;
+						flatten = new_flatten;
 						averaging = new_average;
 						GetDlgItemText( hdlg, OVER_DIR, path, 1024 );
 						AddFilesToListbox( GetDlgItem( hdlg, OVER_LIST ), path );
@@ -650,12 +662,24 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 								continue;
 							}
 							// post processing?
-							if( flatten ) {
+							if( flatten==1 ) {
 								LPSNOMDATA pSnom = pAllocNewSnom( pBmp, TOPO );
 								if( pSnom == NULL ) {
 									continue;
 								}
 								MittelFitBild( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, 2 );
+							}
+							if( flatten==2 ) {
+								LPSNOMDATA pSnom = pAllocNewSnom( pBmp, TOPO );
+								if( pSnom == NULL ) {
+									continue;
+								}
+								BildSteigungY( &( pSnom->Topo ), 1, pSnom->w, pSnom->h );
+								pSnom = pAllocNewSnom( pBmp, TOPO );
+								if( pSnom == NULL ) {
+									continue;
+								}
+								MittelFit3DBild( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, 2, 3 );
 							}
 							if( invert ) {
 								LPSNOMDATA pSnom = pAllocNewSnom( pBmp, TOPO );
@@ -690,8 +714,6 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 	}
 	return ( FALSE );
 }
-
-
 // 29.8.2001
 
 
@@ -825,8 +847,6 @@ BOOL WINAPI RohImportDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	return ( FALSE );
 }
-
-
 // 9.8.97
 
 
@@ -1300,8 +1320,6 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	}
 	return ( FALSE );
 }
-
-
 /* 21.5.97 */
 
 
@@ -1448,9 +1466,6 @@ Redraw3D:
 				HRGN hRgn;
 				WORD dx, dy; // Offsets zum Zentrieren
 
-#if 0
-				SetDlgItemInt( hdlg, ANSICHT_HOEHE_EDIT, fZSkal*100.0+0.5, FALSE );
-#endif
 				InvalidateRect( hAnsicht, NULL, FALSE );
 				UpdateWindow( hAnsicht );
 				hDC = GetDC( hAnsicht );
@@ -1592,7 +1607,7 @@ LPBMPDATA MakeHwndName( HWND hwnd )
 }
 
 
-//**** Callback f�r das Neuzeichnen der Fenster
+//**** Callback für das Neuzeichnen der Fenster
 BOOL CALLBACK EnumSetComboNames( HWND hwnd, LPARAM lparm )
 {
 	LPBMPDATA pBmp;
@@ -1657,8 +1672,6 @@ BOOL CALLBACK EnumSetComboNames( HWND hwnd, LPARAM lparm )
 	}
 	return ( TRUE );
 }
-
-
 // 3.5.97
 
 
@@ -1680,7 +1693,7 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			hwnd = (HWND)lParam;
 			pSrc = (LPBMPDATA)GetWindowLong( hwnd, 0 );
 			if( pSrc == NULL ) {
-				return ( FALSE );   // Das war kein g�ltiger Pointer ...
+				return ( FALSE );   // Das war kein gültiger Pointer ...
 			}
 			// ComboBoxen initialisieren
 			hComboSrc = GetDlgItem( hdlg, MATHE_QUELLE );
@@ -1769,9 +1782,9 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 					}
 					overflow = IsDlgButtonChecked( hdlg, MATHE_OVERFLOW );
 
-					// Alle m�glichen Fehler abfangen
+					// Alle möglichen Fehler abfangen
 					if( op == 0 ) {
-						// Keinen g�ltigen Operator ausgew�hlt
+						// Keinen gültigen Operator ausgewählt
 						goto MatheFehler;
 					}
 					if( fest  &&  wert == 0.0  &&  op == MATHE_GETEILT ) {
@@ -1779,11 +1792,11 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 						goto MatheFehler;
 					}
 					if( !fest  &&  ( pSrc == NULL || pSrcTyp == 0 ) ) {
-						// Keine g�ltigen 2. Operanden ausgew�hlt!
+						// Keine gültigen 2. Operanden ausgewählt!
 						goto MatheFehler;
 					}
 					if( pDest == NULL  ||  pDestTyp == NONE  ||  ( pSnom = pAllocNewSnom( pDest, pDestTyp ) ) == NULL ) {
-						// Keine g�ltigen Zieldaten ausgew�hlt!
+						// Keine gültigen Zieldaten ausgewählt!
 						goto MatheFehler;
 					}
 					if( fest ) {
@@ -1795,7 +1808,7 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 
 					RecalcCache( pDest, TRUE, TRUE );
 					InvalidateRect( hwnd, NULL, TRUE );
-// Hier bei schweren Fehlern bei Dialog ausf�llen
+// Hier bei schweren Fehlern bei Dialog ausfüllen
 MatheFehler:
 					InvalidateRect( DestHwnd, NULL, TRUE );
 					EndDialog( hdlg, TRUE );
@@ -1810,8 +1823,6 @@ MatheFehler:
 	}
 	return ( FALSE );
 }
-
-
 /* 14.6.97 */
 
 
@@ -1846,7 +1857,7 @@ BOOL WINAPI UnitDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			else {
 				char txt[1024]; // Largest for Windows ...
 
-				// Sonderbehandlung f�r z-Skalierung ...
+				// Sonderbehandlung für z-Skalierung ...
 				SetDlgItemText( hdlg, HUB_Z_UNIT, pBmp->pSnom[pBmp->iAktuell].Topo.strZUnit );
 				SetDlgItemText( hdlg, HUB_LUMI_UNIT, pBmp->pSnom[pBmp->iAktuell].Lumi.strZUnit );
 				SetDlgItemText( hdlg, HUB_Z, gcvt( pBmp->pSnom[pBmp->iAktuell].Topo.fSkal, 8, str ) );
@@ -1865,8 +1876,8 @@ BOOL WINAPI UnitDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				SetDlgItemText( hdlg, HUB_Y_OFF, gcvt( pBmp->pSnom[pBmp->iAktuell].fYOff, 7, str ) );
 
 				sprintf( txt, "MaxTopo:\t%u\r\nMaxLumi:\t%u\r\n"
-				         "Weite:\t%0g\r\nH�he:\t%0g\r\n"
-				         "Zeile/s:\t%0g\r\nWinkel:\t%0g\r\n"
+				         "Width:\t%0g\r\nHeight:\t%0g\r\n"
+				         "Line/s:\t%0g\r\nAngle:\t%0g\r\n"
 				         "ZGain:\t%0g\r\nZGainUnit:\t%s\r\n",
 				         pBmp->pSnom[pBmp->iAktuell].Topo.uMaxDaten, pBmp->pSnom[pBmp->iAktuell].Lumi.uMaxDaten,
 				         pBmp->pPsi.fW, pBmp->pPsi.fH, pBmp->pPsi.fLinePerSec, pBmp->pPsi.fRot,	pBmp->pPsi.fZGain, pBmp->pPsi.cZGainUnit );
@@ -1950,8 +1961,6 @@ BOOL WINAPI UnitDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-
-
 // 6.8.97
 
 /************************************************************************************/
@@ -2070,8 +2079,6 @@ BOOL WINAPI MittelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-
-
 // 26.11.97
 
 
@@ -2237,7 +2244,7 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						Is2D = FALSE;
 					}
 					else {
-						// Fl�chenmittelung
+						// Flächenmittelung
 						double dMean, dRMS, dAnzahl, dTempMean, dTempRMS, fSkal, fX;
 						LPFLOAT	pQuadrate;
 						BYTE str[128];
@@ -2332,8 +2339,6 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	}
 	return ( FALSE );
 }
-
-
 // 22.2.98
 
 
@@ -2392,7 +2397,7 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				nm.code = TCN_SELCHANGE;
 				SendMessage( hdlg, WM_NOTIFY, 0, (LPARAM)&nm );
 			}
-			// Is �berhaupt was zu tun? (Sollte immer wahr sein!)
+			// Is überhaupt was zu tun? (Sollte immer wahr sein!)
 			if( SpikeModus == NONE ) {
 				EndDialog( hdlg, TRUE );
 			}
@@ -2485,8 +2490,6 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-
-
 // 24.6.98
 
 
@@ -2586,15 +2589,13 @@ BOOL WINAPI MedianDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-
-
 // 24.6.98
 
 
 /***************************************************************************************/
 
 
-/* F�r Winkelverteilung */
+/* Winkelverteilung */
 BOOL WINAPI WinkelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	switch( message ) {
@@ -2631,8 +2632,6 @@ BOOL WINAPI WinkelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-
-
 // 24.6.98
 
 
@@ -2757,7 +2756,7 @@ BOOL WINAPI TutorDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 // 12.7.98
 
 
-/* Verwaltet H�henprofildialog: Was speichern? */
+/* Verwaltet Höhenprofildialog: Was speichern? */
 BOOL WINAPI ProfilDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	switch( message ) {
@@ -2828,7 +2827,7 @@ BOOL WINAPI ProfilDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 
 /***************************************************************************************/
 
-// berechnet die Filtercurve f�r die FFT-Filterung ...
+// berechnet die Filtercurve für die FFT-Filterung ...
 void CalcFFTResponse( float *pf, int iAnzahl, int iLowF, int iLowW, int iHighF, int iHighW )
 {
 	int i, j;
