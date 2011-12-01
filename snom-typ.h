@@ -97,6 +97,7 @@ typedef struct {
 	UWORD x;
 	UWORD y;
 	UWORD hgt;
+	UWORD radius;
 } XYZ_COORD;
 
 
@@ -162,7 +163,7 @@ typedef struct
 	PSI_HEADER	pPsi;		// PSI-HDF-Header
 	EXTRADATA	Typ;			// Typ der importiereten Datei und der Extradaten (Topografie hat Vorrang!)
 	LPUCHAR		pExtra;		// Entweder Pointer auf Ascii-Header oder HDF-Header
-	LONG 			lExtraLen;	// L‰nge der Extradaten auf die pExtra zeigt
+	LONG 		lExtraLen;	// L‰nge der Extradaten auf die pExtra zeigt
 	double		fZoom;		// Zoomfaktor (ist nur bei Bild=Fenstergroﬂ wichtig)
 }
 BMPDATA;

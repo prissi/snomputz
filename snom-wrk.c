@@ -171,7 +171,7 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 /* Berechnet die häufigste Differenz zweier Zeilen und zieht diese ab
  * TRUE, wenn erfolgreich
  */
-BOOLEAN	BildSteigungY( LPBILD pBild, const LONG lTeiler, const LONG w, const LONG h )
+BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const LONG h )
 {
 	LPSWORD	psDelta;
 	LPUWORD	puDaten = pBild->puDaten;
@@ -265,6 +265,106 @@ BOOLEAN	BildSteigungY( LPBILD pBild, const LONG lTeiler, const LONG w, const LON
 	return ( TRUE );
 }
 // 24.10.98
+
+
+#define DIFF_COUNT (256)
+typedef struct {
+	int count;
+	int hgt;
+} DIFFS;
+
+
+int CompareDIFFS( const void *a, const void *b )
+{
+	return ( (int)( ( *(DIFFS*)b ).count ) - (int)( ( *(DIFFS*)a ).count ) );
+}
+
+/* Berechnet die häufigste Differenz zweier Zeilen und zieht diese ab
+ * TRUE, wenn erfolgreich
+ */
+BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG h )
+{
+	double	fYDiff;
+	SWORD	*psDelta;
+	LPUWORD	puZeile, puZeileDavor;
+	DIFFS plAnzahl[DIFF_COUNT];
+	LONG lDelta;
+	LONG lMin, lMax;
+	LONG x, y, i, cnt;
+
+	ASSERT(  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256 );
+
+	// Array für temporär Daten
+	psDelta = (LPSWORD)pMalloc( sizeof( psDelta )*h );
+	if( psDelta == NULL ) {
+		StatusLineRsc( E_MEMORY );
+		return ( FALSE );
+	}
+
+	puZeile = pBild->puDaten;
+	fYDiff = 0;
+	psDelta[0] = 0;
+
+	// Zuerst Häufigkeiten der Steigung im Bild bestimmen
+	// Es werden nur "kleine" Steigungn um +- DIFF_COUNT/2 Unterschied pro Pixel berücktsichtigt
+	for( y = 1;  y < h;  y++ ) {
+		for( i = 0;  i < DIFF_COUNT;  i++ ) {
+			plAnzahl[i].count = 0;
+			plAnzahl[i].hgt = i-(DIFF_COUNT/2);
+		}
+		puZeileDavor = puZeile;
+		puZeile += w;
+
+		// Differenzen zählen
+		for( x = 0;  x < w;  x++ ) {
+			lDelta = (DIFF_COUNT/2) + ( (LONG)(ULONG)puZeileDavor[x]-(LONG)(ULONG)puZeile[x] );
+			if( lDelta > 0  &&  lDelta < DIFF_COUNT ) {
+				plAnzahl[lDelta].count ++;
+			}
+		}
+
+		// sort for most often
+		qsort( plAnzahl, DIFF_COUNT, sizeof(*plAnzahl), CompareDIFFS );
+
+		// take most often slope (at least 5 % of the points)
+		lDelta = 0;
+		for(  i = cnt = 0;  cnt<=(w/20);  i++  ) {
+			cnt += plAnzahl[i].count;
+			lDelta += (plAnzahl[i].count*plAnzahl[i].hgt);
+		}
+		fYDiff += ((double)lDelta / (double)cnt);
+		psDelta[y] = fYDiff;
+	}
+
+	lMax = 0;
+	lMin = 1000000;
+	for( y = 0; y < h;  y++ ) {
+		puZeile = pBild->puDaten+y*w;
+		lDelta = psDelta[y];
+		for( x = 0;  x < w;  x++ ) {
+			i = (LONG)(ULONG)puZeile[x];
+			i += lDelta;
+			puZeile[x] = (UWORD)i;
+			if(  lMax < i  ) {
+				lMax = i;
+			}
+			if(  lMin > i  ) {
+				lMin = i;
+			}
+		}
+	}
+	for( y = 0; y < h;  y++ ) {
+		puZeile = pBild->puDaten+y*w;
+		for( x = 0;  x < w;  x++ ) {
+			puZeile[x] -= lMin;
+		}
+	}
+	MemFree( psDelta );
+	pBild->uMaxDaten = lMax-lMin;
+
+	return i<=65535;
+}
+// 1.12.2011
 
 
 // Berechnet ein gleitendes Mittel

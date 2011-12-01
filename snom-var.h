@@ -49,7 +49,7 @@ WORD	w3DZoom;	// 2=Draft
 COLORREF	cVorn, cHinten, cMarkierungLinks, cMarkierungRechts;
 
 // Was bearbeiten?
-WORKMODE	modus=LUMI|ERRO|TOPO;
+WORKMODE	modus=LUMI|TOPO;
 WORKMODE	show=LUMI|ERRO|TOPO;
 
 // Berechnungs-Cache

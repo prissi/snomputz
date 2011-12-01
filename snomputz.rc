@@ -153,7 +153,7 @@ BEGIN
         MENUITEM "&Paste\t^V",                  IDM_PASTE, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "Work with &Topography",       IDM_NUR_TOPO, CHECKED
-        MENUITEM "Work with &Error",            IDM_NUR_ERROR, CHECKED
+        MENUITEM "Work with &Error",            IDM_NUR_ERROR
         MENUITEM "Work with &Luminescence",     IDM_NUR_LUMI, CHECKED
         MENUITEM SEPARATOR
 		MENUITEM "Apply to all",				IDM_TRACK_ALL

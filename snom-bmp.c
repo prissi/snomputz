@@ -1081,10 +1081,13 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						WarnungRsc( W_NIX );
 						break;
 					}
+#if 0
+					// only needed for old routine
 					lTeiler = DialogBoxParam( hInst, "SteigungNull", hwnd, StdDialog, (LPARAM)1 );
 					if( lTeiler <= 0 ) {
 						break;
 					}
+#endif
 					StatusLineRsc( I_Y_DIFF );
 					pSnom = pAllocNewSnom( pBmp, modus );
 					if( pSnom != NULL ) {
