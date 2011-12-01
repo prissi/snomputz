@@ -188,8 +188,9 @@
 #define IDM_DOTS_ADD					674
 #define IDM_DOTS_REMOVE					675
 #define IDM_DOTS_AUTO					676
-#define IDM_DOTS_CLEAR					677
-#define IDM_DOTS_SAVE					678
+#define IDM_DOTS_MARK					677
+#define IDM_DOTS_CLEAR					678
+#define IDM_DOTS_SAVE					679
 #define IDM_LOESCHE_MASKE               562
 #define IDM_MASKE_HORIZONTAL_MITTELN    563
 #define IDM_MASKE_VERTIKAL_MITTELN      564

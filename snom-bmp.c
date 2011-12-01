@@ -1944,7 +1944,6 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					if( pBmp->pSnom[0].Topo.puDaten &&  pBmp->dot_number>0  ) {
 						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
 						const LPUWORD puData = GetDataPointer( pBmp, TOPO );
-						LPBYTE	pMaskRow;
 						const WORD w = pSnom->w;
 						const WORD h = pSnom->h;
 						WORD x, y, i;
@@ -1957,20 +1956,6 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							break;
 						}
 
-						// add Mask (if not already there
-						if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
-							MemFree( pBmp->pMaske );
-							pBmp->pMaske = NULL;
-						}
-						if( pBmp->pMaske == NULL ) {
-							pBmp->wMaskeW = (WORD)( pBmp->pSnom[pBmp->iAktuell].w+7u ) / 8;
-							pBmp->pMaske = pMalloc( pBmp->wMaskeW*( pBmp->pSnom[pBmp->iAktuell].h ) );
-							if( pBmp->pMaske == NULL ) {
-								MemFree( plMittel );
-								FehlerRsc( E_MEMORY );
-								break;
-							}
-						}
 						for(  i=0;  i<pBmp->dot_number;  i++  ) {
 							UWORD *puZeile = puData+(pBmp->dot_histogramm[i].y)*w;
 							UWORD start_h;
@@ -1995,7 +1980,6 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							// now try to get a volume out of the dot
 							x = pBmp->dot_histogramm[i].x;
 							start_h = (plMittel[x]*7 + pBmp->dot_mean_level)/8;
-							pMaskRow = pBmp->pMaske + pBmp->wMaskeW*pBmp->dot_histogramm[i].y;
 
 							// mark everything up to half level
 							diff = 0;
@@ -2070,22 +2054,49 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							}
 							pBmp->dot_histogramm[i].radius += y-j;
 #endif
-							// mask dot
 							pBmp->dot_histogramm[i].radius /= 2;
+						}
+					}
+					break;
+
+				case IDM_DOTS_MARK:
+					if( pBmp->pSnom[0].Topo.puDaten &&  pBmp->dot_number>0  ) {
+						LPBYTE	pMaskRow;
+						const WORD w = pBmp->pSnom[pBmp->iAktuell].w;
+						const WORD h = pBmp->pSnom[pBmp->iAktuell].h;
+						WORD i;
+
+						// add Mask (if not already there
+						if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
+							MemFree( pBmp->pMaske );
+							pBmp->pMaske = NULL;
+						}
+						if( pBmp->pMaske == NULL ) {
+							pBmp->wMaskeW = (WORD)( pBmp->pSnom[pBmp->iAktuell].w+7u ) / 8;
+							pBmp->pMaske = pMalloc( pBmp->wMaskeW*( pBmp->pSnom[pBmp->iAktuell].h ) );
+							if( pBmp->pMaske == NULL ) {
+								FehlerRsc( E_MEMORY );
+								break;
+							}
+						}
+						// mask dot
+						for(  i=0;  i<pBmp->dot_number;  i++  ) {
 							if(  pBmp->dot_histogramm[i].radius>0  ) {
-								int h = pSnom->h, r=pBmp->dot_histogramm[i].radius;
+								const int r=pBmp->dot_histogramm[i].radius;
+								const int x = pBmp->dot_histogramm[i].x;
+								const int y = pBmp->dot_histogramm[i].y;
 								int dx, dy;
-								x = pBmp->dot_histogramm[i].x;
-								y = pBmp->dot_histogramm[i].y;
 								for(  dy=-r;  dy<r;  dy++  ) {
 									for(  dx=-r;  dx<r;  dx++  ) {
 										if(  x+dx>=0  &&  x+dx<w  &&  y+dy>=0  &&  y+dy<h  &&  (dx*dx+dy*dy)<r*r  ) {
-											pBmp->pMaske[ (pSnom->h-1-(y+dy))*pBmp->wMaskeW + ((x+dx)>>3) ] |= 1<<(7-((x+dx)&7));
+											pBmp->pMaske[ (h-1-(y+dy))*pBmp->wMaskeW + ((x+dx)>>3) ] |= 1<<(7-((x+dx)&7));
 										}
 									}
 								}
 							}
 						}
+						RecalcCache( pBmp, TRUE, TRUE );
+						InvalidateRect( hwnd, NULL, TRUE );
 					}
 					break;
 
