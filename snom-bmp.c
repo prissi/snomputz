@@ -2072,12 +2072,26 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							pBmp->dot_histogramm[i].radius_y -= j;
 							pBmp->dot_histogramm[i].radius_y /= 2;
 						}
+						// next: Delete Dots closer than 3 pixels
+						if(  pBmp->dot_number > 1  ) {
+							for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
+								const min_dist = max( 3, (pBmp->dot_histogramm[i].radius_x+pBmp->dot_histogramm[i].radius_y)/4 );
+								int j;
+								for(  j=i+1;  j<pBmp->dot_number;  j++  ) {
+									if(  abs(pBmp->dot_histogramm[i].x-pBmp->dot_histogramm[j].x)+abs(pBmp->dot_histogramm[i].y-pBmp->dot_histogramm[j].y) <= min_dist  ) {
+										// too close => delete
+										pBmp->dot_number--;
+										MemMove( pBmp->dot_histogramm+j, pBmp->dot_histogramm+j+1, sizeof(pBmp->dot_histogramm[0])*(pBmp->dot_number-j) );
+										j --;
+									}
+								}
+							}
+						}
 					}
 					break;
 
 				case IDM_DOTS_MARK:
 					if( pBmp->pSnom[0].Topo.puDaten &&  pBmp->dot_number>0  ) {
-						LPBYTE	pMaskRow;
 						const WORD w = pBmp->pSnom[pBmp->iAktuell].w;
 						const WORD h = pBmp->pSnom[pBmp->iAktuell].h;
 						WORD i;
@@ -2142,7 +2156,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							_lwrite( hFile, "\xD\xA", 2 );
 
 							for( i = 0;  i < pBmp->dot_number;  i++ ) {
-								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fXOff+pSnom->fY*pBild->fSkal*pBmp->dot_histogramm[i].y, pBild->fSkal*(pBmp->dot_histogramm[i].hgt-pBmp->dot_mean_level), pSnom->fX*pBmp->dot_histogramm[i].radius_x, pSnom->fX*pBmp->dot_histogramm[i].radius_y );
+								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->dot_histogramm[i].x, pSnom->fYOff+pSnom->fY*pBmp->dot_histogramm[i].y, pBild->fSkal*(pBmp->dot_histogramm[i].hgt-pBmp->dot_mean_level), pSnom->fX*pBmp->dot_histogramm[i].radius_x, pSnom->fX*pBmp->dot_histogramm[i].radius_y );
 								_lwrite( hFile, str, len );
 							}
 							_lclose( hFile );
@@ -2368,6 +2382,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						pNeuBmp->pScanLine = NULL;
 						pNeuBmp->pExtra = NULL;
 						pNeuBmp->lExtraLen = pBmp->lExtraLen;
+						pNeuBmp->dot_histogramm = NULL;
+						pNeuBmp->dot_histogramm_count = 0;
+						pNeuBmp->dot_number = 0;
 						if(  pBmp->lExtraLen  ) {
 							pNeuBmp->pExtra = pMalloc( pBmp->lExtraLen );
 							MemMove( pNeuBmp->pExtra, pBmp->pExtra, pBmp->lExtraLen );
@@ -2752,7 +2769,7 @@ FertigMaske:
 			}
 
 			// Ansonsten einfach markieren
-			if( pBmp->bMarkScanLine  &&  wParam&MK_LBUTTON ) {
+			if( !pBmp->bCountDots  &&  pBmp->bMarkScanLine  &&  wParam&MK_LBUTTON ) {
 				double dWinkel;
 				int iScan = pBmp->lMaxScan-1;
 				HDC hdc = GetDC( hwnd );
@@ -2927,6 +2944,10 @@ FertigMaske:
 					pt.y = ( pt.y-pBmp->rectLinks.top );
 					if( pBmp->bCountDots == 1 ) {
 						// add to histogramm
+						if(  pBmp->dot_histogramm == NULL  ) {
+							pBmp->dot_histogramm = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( 512 ) );
+							pBmp->dot_histogramm_count = 512;
+						}
 						if( pBmp->dot_histogramm_count <= pBmp->dot_number+1 ) {
 							XYZ_COORD *tmp = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( pBmp->dot_number+512 ) );
 							MemMove( tmp, pBmp->dot_histogramm, sizeof( XYZ_COORD )*pBmp->dot_number );
@@ -2935,6 +2956,8 @@ FertigMaske:
 						pBmp->dot_histogramm[pBmp->dot_number].x = pt.x;
 						pBmp->dot_histogramm[pBmp->dot_number].y = pt.y;
 						pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+pt.y*pSnom->w];
+						pBmp->dot_histogramm[pBmp->dot_number].radius_x = 0;
+						pBmp->dot_histogramm[pBmp->dot_number].radius_y = 0;
 						pBmp->dot_number++;
 					}
 					else {
@@ -2983,8 +3006,8 @@ FertigMaske:
 					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
 				}
 			}
-			// ok, no masking any more ...
-			{
+			// sacnlines?
+			else {
 				POINT pt;
 				int iScan = pBmp->lMaxScan-1;
 

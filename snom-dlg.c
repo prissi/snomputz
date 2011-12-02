@@ -1,5 +1,5 @@
 /****************************************************************************************
-****	Dialogverwaltung f�r SNOMPUTZ
+****	Dialogverwaltung für SNOMPUTZ
 ****************************************************************************************/
 
 #include <math.h>
@@ -714,7 +714,6 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 	}
 	return ( FALSE );
 }
-// 29.8.2001
 
 
 /*****************************************************************************************
@@ -847,7 +846,6 @@ BOOL WINAPI RohImportDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	return ( FALSE );
 }
-// 9.8.97
 
 
 /***************************************************************************************/
@@ -1320,7 +1318,6 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	}
 	return ( FALSE );
 }
-/* 21.5.97 */
 
 
 /***************************************************************************************/
@@ -1672,7 +1669,6 @@ BOOL CALLBACK EnumSetComboNames( HWND hwnd, LPARAM lparm )
 	}
 	return ( TRUE );
 }
-// 3.5.97
 
 
 /***********************************************************************************************/
@@ -1823,7 +1819,6 @@ MatheFehler:
 	}
 	return ( FALSE );
 }
-/* 14.6.97 */
 
 
 /*************************************************************************************************/
@@ -1961,7 +1956,7 @@ BOOL WINAPI UnitDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-// 6.8.97
+
 
 /************************************************************************************/
 
@@ -2079,7 +2074,6 @@ BOOL WINAPI MittelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-// 26.11.97
 
 
 /************************************************************************************/
@@ -2339,7 +2333,6 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	}
 	return ( FALSE );
 }
-// 22.2.98
 
 
 /***************************************************************************************/
@@ -2490,7 +2483,6 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-// 24.6.98
 
 
 /***************************************************************************************/
@@ -2589,7 +2581,6 @@ BOOL WINAPI MedianDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-// 24.6.98
 
 
 /***************************************************************************************/
@@ -2632,7 +2623,6 @@ BOOL WINAPI WinkelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 	}
 	return ( FALSE );
 }
-// 24.6.98
 
 
 BOOL WINAPI GrossDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
@@ -2683,13 +2673,13 @@ BOOL WINAPI GrossDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 						pSnom->w = NeuW;
 						pSnom->h = NeuH;
 
-						// Um ung�ltige Pointer zu vermeiden => Scanline auf Null
+						// Um ungültige Pointer zu vermeiden => Scanline auf Null
 						pBmp->bIsScanLine = FALSE;
 						pBmp->lMaxScan = 0;
 						pBmp->rectScan[0].left = pBmp->rectScan[0].right = 0;
 						pBmp->rectScan[0].top =	pBmp->rectScan[0].bottom = 0;
 
-						// Maske wird gel�scht ...
+						// Maske wird gelöscht ...
 						if( pBmp->pMaske ) {
 							MemFree( pBmp->pMaske );
 							pBmp->pMaske = NULL;
@@ -2751,9 +2741,6 @@ BOOL WINAPI TutorDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-
-
-// 12.7.98
 
 
 /* Verwaltet Höhenprofildialog: Was speichern? */
@@ -2881,9 +2868,6 @@ void CalcFFTResponse( float *pf, int iAnzahl, int iLowF, int iLowW, int iHighF, 
 		}
 	}
 }
-
-
-// 8.2.99
 
 
 /* 3D-Ansicht-Dialog */
@@ -3014,7 +2998,7 @@ int WINAPI FFTDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				{
 					LPSNOMDATA pSnom;
 
-					// Filterarry fPts ist gef�llt, ansonsten einfach:
+					// Filterarry fPts ist gefüllt, ansonsten einfach:
 					// SendMessage( hdlg, WM_PAINT, 0, 0 );
 					// FFT-Filterung
 					if( ( pSnom = pAllocNewSnom( pBmp, modus ) ) == NULL ) {
@@ -3048,9 +3032,6 @@ int WINAPI FFTDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	return ( FALSE );
 }
 
-
-// 3.5.97
-// 19.11.97
 
 /* 3D-Ansicht-Dialog */
 int WINAPI VolumeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
@@ -3134,9 +3115,6 @@ int WINAPI VolumeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-
-
-// 25.4.2002
 
 
 /***************************************************************************************/
@@ -3270,9 +3248,6 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	}
 	return ( FALSE );
 }
-
-
-/* 21.5.97 */
 
 
 /***************************************************************************************/

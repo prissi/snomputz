@@ -169,7 +169,7 @@ BOOL SetDibPaletteColors( LPBITMAPINFO pDib, COLORREF HUGE *Farbe, LPBILD pBild,
 	}
 
 	// und der naechste Farbverlauf
-	ende = maxuse-( j-StartFarbe );
+	ende = max(1,maxuse-( j-StartFarbe ));
 	eRed = GetRValue( Farbe[2] );
 	eGreen = GetGValue( Farbe[2] );
 	eBlue = GetBValue( Farbe[2] );
@@ -2503,7 +2503,7 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 	}
 
 	hOld = SelectObject( hdc, CreatePen( PS_SOLID, 1, cMarkierungLinks ) );
-	for( j = i = 0;  i < pBmp->dot_histogramm_count;  i++ ) {
+	for( j = i = 0;  i < pBmp->dot_number;  i++ ) {
 
 		POINT pt;
 

@@ -128,7 +128,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 					int y2 = y+next_neighbour_y[d];
 					long offset2 = ( y2*width )+x2;
 					// compare with the 8 neighbor pixels
-					if( ( x2 >= 0  &&  x2 < width  &&  y2 >= 0  &&  y2 < width )  &&  ( maxmap[offset2]&LISTED ) == 0 ) {
+					if( ( x2 >= 0  &&  x2 < width  &&  y2 >= 0  &&  y2 < height )  &&  ( maxmap[offset2]&LISTED ) == 0 ) {
 						if( ( maxmap[offset2]&PROCESSED ) != 0 ) {
 							maxPossible = false; //we have reached a point processed previously, thus it is no maximum now
 							//if(x0<25&&y0<20)IJ.write("x0,y0="+x0+","+y0+":stop at processed neighbor from x,y="+x+","+y+", dir="+d);
