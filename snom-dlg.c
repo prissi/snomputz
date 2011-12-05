@@ -3141,13 +3141,13 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			// Ok, valid pointers ...
 			pSnom = pBmp->pSnom+pBmp->iAktuell;
 			// Scrolly Initialisieren
-			hfStart = GetDlgItem( hdlg, FARB_START );
+			hfStart = GetDlgItem( hdlg, QD_SCROLL_TOLERANCE );
 			SetScrollRange( hfStart, SB_CTL, 1, pSnom->Topo.uMaxDaten/4, FALSE );
-			SetScrollPos( hfStart, SB_CTL, pBmp->dot_radius, TRUE );
-			sprintf( unit_str, "Tolerance %i (%lf.4 nm)", pBmp->dot_radius, pSnom->Topo.fSkal*pBmp->dot_radius );
-			SetDlgItemText( hdlg, FARB_KONT_EINHEIT, unit_str );
+			SetScrollPos( hfStart, SB_CTL, pBmp->dot_radius==0 ? pSnom->Topo.uMaxDaten/16 : pBmp->dot_radius, TRUE );
+			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*GetScrollPos( hfStart, SB_CTL ), pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
+			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
 			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
-			SetDlgItemText( hdlg, FARB_KONT_DIST, result_str );
+			SetDlgItemText( hdlg, QD_RESULT, result_str );
 			return ( TRUE );
 
 
@@ -3210,10 +3210,10 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				pBmp->dot_histogramm = NULL;
 				pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &( pBmp->dot_histogramm ) );
 				pBmp->dot_histogramm_count = pBmp->dot_number;
-				sprintf( unit_str, "Tolerance %i (%.3lf nm)", pBmp->dot_radius, pSnom->Topo.fSkal*pBmp->dot_radius );
-				SetDlgItemText( hdlg, FARB_KONT_EINHEIT, unit_str );
+				sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
+				SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
 				sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
-				SetDlgItemText( hdlg, FARB_KONT_DIST, result_str );
+				SetDlgItemText( hdlg, QD_RESULT, result_str );
 				pBmp->bCountDots = ( pBmp->dot_number > 0 );
 				sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
 				StatusLine( str );

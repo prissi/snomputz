@@ -473,6 +473,17 @@
 #define W_OVERFLOW                      2
 #define W_STATISTIK                     16
 
+#define QD_SCROLL_TOLERANCE 500
+#define QD_EDIT_TOLERANCE 501
+#define QD_CENTER_ON_DOT 502
+#define QD_REMOVE_ASSYMETRIC 503
+#define QD_EDIT_ASSYMETRIC 504
+#define QD_REMOVE_TOO_HIGH 505
+#define QD_EDIT_TOO_HIGH 506
+#define QD_REMOVE_OVERLAP 507
+#define QD_EDIT_OVERLAP 508
+#define QD_RESULT 509
+
 //
 #if !defined(SS_BITMAP)
 #define SS_BITMAP           0x0000000EL

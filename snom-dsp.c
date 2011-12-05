@@ -2505,16 +2505,27 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 	hOld = SelectObject( hdc, CreatePen( PS_SOLID, 1, cMarkierungLinks ) );
 	for( j = i = 0;  i < pBmp->dot_number;  i++ ) {
 
-		POINT pt;
+		POINT pt, d;
 
 		pt.x = ( pBmp->rectLinks.left + pBmp->dot_histogramm[i].x )/fScale;
 		pt.y = ( pBmp->rectLinks.top + pBmp->dot_histogramm[i].y )/fScale;
+		d.x = max(2,pBmp->dot_histogramm[i].radius_x/fScale);
+		d.y = max(2,pBmp->dot_histogramm[i].radius_y/fScale);
 
 		// make a cross
-		MoveToEx( hdc, pt.x-5, pt.y, NULL );
-		LineTo( hdc, pt.x+5, pt.y );
-		MoveToEx( hdc, pt.x, pt.y-5, NULL );
-		LineTo( hdc, pt.x, pt.y+5 );
+		MoveToEx( hdc, pt.x-d.x, pt.y, NULL );
+		LineTo( hdc, pt.x+d.x, pt.y );
+		MoveToEx( hdc, pt.x, pt.y-d.y, NULL );
+		LineTo( hdc, pt.x, pt.y+d.y );
+		// and mark the ends
+		MoveToEx( hdc, pt.x-2, pt.y-d.y, NULL );
+		LineTo( hdc, pt.x+2, pt.y-d.y );
+		MoveToEx( hdc, pt.x-2, pt.y+d.y, NULL );
+		LineTo( hdc, pt.x+2, pt.y+d.y );
+		MoveToEx( hdc, pt.x-d.x, pt.y-2, NULL );
+		LineTo( hdc, pt.x-d.x, pt.y+2 );
+		MoveToEx( hdc, pt.x+d.x, pt.y-2, NULL );
+		LineTo( hdc, pt.x+d.x, pt.y+2 );
 	}
 	DeleteObject( SelectObject( hdc, hOld ) );
 }
