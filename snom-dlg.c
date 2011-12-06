@@ -28,12 +28,11 @@
 #include "snom-win.h"
 #include "snom-dsp.h"
 #include "snom-mat.h"
+#include "snom-fmax.h"
 
 #ifndef M_PI
 #define M_PI        3.14159265358979323846
 #endif
-
-UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
 
 
 /************************************************************************************/
@@ -1082,11 +1081,11 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				if( pDib == NULL ) {
 					break;
 				}
-				p = pDib;
+				p = (BYTE *)pDib;
 				p += sizeof( BITMAPINFOHEADER );
 				SetDibPaletteColors( pDib, pBild->Farben, pBild, 0, 64, 0, 64 );
 				// Set Bitmap Data
-				p = pDib;
+				p = (BYTE *)pDib;
 				p += sizeof( BITMAPINFOHEADER )+sizeof( RGBQUAD )*256l;
 				for( i = 0;  i < 64;  i++ ) {
 					p[i] = i;
@@ -3126,6 +3125,7 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 	static LPBMPDATA pBmp;
 	static LPSNOMDATA pSnom;
 	static HWND hwnd, hfStart;
+	static BOOL bCenter = TRUE;
 	BYTE str[128];
 	static char unit_str[128], result_str[128];
 	WORD i = 0;
@@ -3140,21 +3140,24 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			}
 			// Ok, valid pointers ...
 			pSnom = pBmp->pSnom+pBmp->iAktuell;
+			// init controls
+			CheckDlgButton( hdlg, QD_CENTER_ON_DOT, bCenter );
 			// Scrolly Initialisieren
 			hfStart = GetDlgItem( hdlg, QD_SCROLL_TOLERANCE );
 			SetScrollRange( hfStart, SB_CTL, 1, pSnom->Topo.uMaxDaten/4, FALSE );
-			SetScrollPos( hfStart, SB_CTL, pBmp->dot_radius==0 ? pSnom->Topo.uMaxDaten/16 : pBmp->dot_radius, TRUE );
-			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*GetScrollPos( hfStart, SB_CTL ), pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
-			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
-			SetDlgItemText( hdlg, QD_RESULT, result_str );
+			SetScrollPos( hfStart, SB_CTL, pBmp->dot_radius, TRUE );
+			if(  pBmp->dot_radius==0  &&  pBmp->dot_number==0  ) {
+				SetScrollPos( hfStart, SB_CTL, pSnom->Topo.uMaxDaten/16+1, TRUE );
+				goto RecalcDot;
+			}
+			else {
+				sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*GetScrollPos( hfStart, SB_CTL ), pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
+				SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
+				sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+				SetDlgItemText( hdlg, QD_RESULT, result_str );
+			}
 			return ( TRUE );
 
-
-		case WM_NOTIFY:
-			SetScrollPos( hfStart, SB_CTL, (WORD)( pBmp->dot_radius ), TRUE );
-			InvalidateRect( hdlg, NULL, FALSE );
-			break;
 
 		case WM_HSCROLL:
 		{
@@ -3194,46 +3197,18 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 					break;
 			}
 			SetScrollPos( GET_SCROLL_HANDLE( lParam ), SB_CTL, (WORD)iOffset, TRUE );
-			iOffset = GetScrollPos( hfStart, SB_CTL );
-			if( iOffset != pBmp->dot_radius ) {
-				double Median, MedianRMS;
-				LPUWORD pData = GetDataPointer( pBmp, TOPO );
-				pBmp->dot_radius = iOffset;
-				MeadianArea( pData, pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
-				pBmp->dot_mean_level = Median;
-				pBmp->dot_quantisation = MedianRMS;
-				if( pBmp->dot_number > 0 ) {
-					MemFree( pBmp->dot_histogramm );
-				}
-				pBmp->dot_number = 0;
-				pBmp->dot_histogramm_count = 0;
-				pBmp->dot_histogramm = NULL;
-				pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->w, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &( pBmp->dot_histogramm ) );
-				pBmp->dot_histogramm_count = pBmp->dot_number;
-				sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
-				SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-				sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
-				SetDlgItemText( hdlg, QD_RESULT, result_str );
-				pBmp->bCountDots = ( pBmp->dot_number > 0 );
-				sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
-				StatusLine( str );
-				InvalidateRect( hwnd, NULL, FALSE );
-				if( pBmp->dot_number > 0 ) {
-					EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_ENABLED );
-					EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_ENABLED );
-					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_ENABLED );
-				}
-				else {
-					EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
-					EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
-					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
-				}
-			}
-			break;
+			SendMessage( hwnd, WM_NOTIFY, 0, 0 );
+			goto RecalcDot;
 		}
+		break;
+
+		case WM_NOTIFY:
 
 		case WM_COMMAND:
 			switch( wParam ) {
+				case QD_CENTER_ON_DOT:
+					goto RecalcDot;
+		
 				case IDHELP:
 					WinHelp( hwndFrame, szHilfedatei, HELP_KEY, (DWORD)(LPSTR)STR_HELP_FARBEN );
 					break;
@@ -3247,6 +3222,53 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			}
 	}
 	return ( FALSE );
+
+RecalcDot:
+	{
+		int iOffset = GetScrollPos( hfStart, SB_CTL );
+		BOOL new_center = IsDlgButtonChecked( hdlg, QD_CENTER_ON_DOT );
+		if( iOffset != pBmp->dot_radius  ||  new_center != bCenter  ) {
+			double Median, MedianRMS;
+			LPUWORD pData = GetDataPointer( pBmp, TOPO );
+
+			bCenter = new_center;
+			pBmp->dot_radius = iOffset;
+
+			MeadianArea( pData, pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+			pBmp->dot_mean_level = Median;
+			pBmp->dot_quantisation = MedianRMS;
+			if( pBmp->dot_number > 0 ) {
+				MemFree( pBmp->dot_histogramm );
+			}
+			pBmp->dot_number = 0;
+			pBmp->dot_histogramm_count = 0;
+			pBmp->dot_histogramm = NULL;
+			pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &( pBmp->dot_histogramm ) );
+			pBmp->dot_histogramm_count = pBmp->dot_number;
+			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter );
+			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
+			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
+			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+			SetDlgItemText( hdlg, QD_RESULT, result_str );
+			pBmp->bCountDots = ( pBmp->dot_number > 0 );
+			sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
+			StatusLine( str );
+			InvalidateRect( hwnd, NULL, FALSE );
+			if( pBmp->dot_number > 0 ) {
+				EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_ENABLED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_ENABLED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_ENABLED );
+			}
+			else {
+				EnableMenuItem( hMenuBmp, IDM_DOTS_REMOVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_CLEAR, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+				EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
+			}
+			SetScrollPos( hfStart, SB_CTL, (WORD)( pBmp->dot_radius ), TRUE );
+			CheckDlgButton( hdlg, QD_CENTER_ON_DOT, bCenter );
+		}
+	}
+	return message==WM_INITDIALOG;
 }
 
 

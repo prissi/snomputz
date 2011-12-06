@@ -9,6 +9,7 @@ extern "C" {
 #include "snomputz.h"
 #include "snom-typ.h"
 #include "snom-mem.h"
+#include "snom-win.h"
 };
 
 int CompareXYZ_COORD( const void *a, const void *b )
@@ -33,10 +34,11 @@ static int next_neighbour_x[8] = { -1, -1, -1, 0, 1, 1, 1, 0 };
 static int next_neighbour_y[8] = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
 
-extern "C" UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
+extern "C" UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
+extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter );
 
 
-UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord )
+UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord )
 {
 	char *maxmap = (char*)pMalloc( width*height );
 
@@ -56,7 +58,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 
 		for( int x = 1; x < width-1; x++ ) {      // for better performance with rois, restrict search to roi
 
-			UWORD vTrue = puData[( y*ww )+x];
+			UWORD vTrue = puData[( y*width )+x];
 			boolean isMax = true;
 
 			/* check wheter we have a local maximum.
@@ -68,7 +70,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 				// compare with the 8 neighbor pixels
 //				if(  check_x>=0  &&  width>check_x  &&  check_y>=0  &&  height>check_y  ) {
 				{
-					UWORD vNeighborTrue = puData[( check_y*ww )+check_x];
+					UWORD vNeighborTrue = puData[( check_y*width )+check_x];
 					if( vNeighborTrue > vTrue ) {
 						isMax = false;
 						break;
@@ -134,7 +136,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 							//if(x0<25&&y0<20)IJ.write("x0,y0="+x0+","+y0+":stop at processed neighbor from x,y="+x+","+y+", dir="+d);
 							break;
 						}
-						LONG v2 = puData[x2 + ( ww*y2 )];
+						LONG v2 = puData[x2 + ( width*y2 )];
 						if( v2 > v0 + maxSortingError ) {
 							maxPossible = false; //we have reached a higher point, thus it is no maximum
 							//if(x0<25&&y0<20)IJ.write("x0,y0="+x0+","+y0+":stop at higher neighbor from x,y="+x+","+y+", dir="+d+",value,value2,v2-v="+v0+","+v2+","+(v2-v0));
@@ -182,7 +184,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 				for( listI = 0; listI < listLen; listI++ ) {
 					int x = pList[listI].x;
 					int y = pList[listI].y;
-					long offset = y*ww + x;
+					long offset = y*width + x;
 					maxmap[offset] &= resetMask;            //reset attributes no longer needed
 					maxmap[offset] |= PROCESSED;            //mark as processed
 					if( maxPossible ) {
@@ -200,10 +202,10 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 					// add them to list
 					int x = pList[listI].x;
 					int y = pList[listI].y;
-					long offset = y*ww + x;
+					long offset = y*width + x;
 					maxmap[offset] |= MAX_POINT;
 					if( !( excludeEdges && isEdgeMaximum ) ) {
-						pResult[nResult].hgt = puData[ x + y*ww ];
+						pResult[nResult].hgt = puData[ x + y*width ];
 						pResult[nResult].x = pList[nearestI].x;
 						pResult[nResult].y = pList[nearestI].y;
 						nResult++;
@@ -225,3 +227,160 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, LONG ww, UWORD uMax
 }
 
 
+// calc radius and possibly recenter on dot
+void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter )
+{
+	WORD x, y, i;
+	const int MeanPts = 3;	// averaging over how many points
+
+	// for each line with QD do flattening
+	LPLONG plMittel = (LPLONG)pMalloc( sizeof(LONG)*max(h,w) );
+	if( plMittel == NULL ) {
+		FehlerRsc( E_MEMORY );
+		return;
+	}
+
+	for(  i=0;  i<iDotNr;  i++  ) {
+		UWORD *puZeile = puData+(pDots[i].y)*w;
+		UWORD start_h;
+		int j, diff;
+
+		// average each dot containing line
+		for( x = 0;  x < w;  x++ ) {
+			plMittel[x] = 0;
+			for( j = x-MeanPts; j <= x+MeanPts; j++ ) {
+				if( j < 0 ) {
+					plMittel[x] += puZeile[0];
+				}
+				else if( j >= w ) {
+					plMittel[x] += puZeile[w-1];
+				}
+				else {
+					plMittel[x] += puZeile[j];
+				}
+			}
+			plMittel[x] /= 2*MeanPts+1;
+		}
+		// now try to get a volume out of the dot
+		x = pDots[i].x;
+		start_h = plMittel[x]-zero_level/4;
+		// mark everything up to half level
+		diff = 0;
+		for(  j=x+1;  j<w;  j++  ) {
+			if(  plMittel[j] < zero_level-quantisation  ) {
+				break;
+			}
+			if(  plMittel[j]<start_h  ) {
+				if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
+					break;
+				}
+				if(  diff < plMittel[j-1]-plMittel[j]  ) {
+					diff = plMittel[j-1]-plMittel[j];
+				}
+			}
+		}
+		pDots[i].radius_x = j;
+		diff = 0;
+		for(  j=(int)x-1;  j>=0;  j--  ) {
+			if(  plMittel[j] < zero_level-quantisation  ) {
+				break;
+			}
+			if(  plMittel[j]<start_h  ) {
+				if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
+					break;
+				}
+				if(  diff < plMittel[j+1]-plMittel[j]  ) {
+					diff = plMittel[j+1]-plMittel[j];
+				}
+			}
+		}
+		// move x center ...
+		if(  recenter  ) {
+			pDots[i].x = (pDots[i].radius_x+j)/2;
+		}
+		pDots[i].radius_x -= j;
+		pDots[i].radius_x /= 2;
+
+		// average each dot row
+		puZeile = puData+x;
+		for( y = 0;  y < h;  y++ ) {
+			plMittel[y] = 0;
+			for( j = y-MeanPts; j <= y+MeanPts; j++ ) {
+				if( j < 0 ) {
+					plMittel[y] += puZeile[0];
+				}
+				else if( j >= h ) {
+					plMittel[y] += puZeile[(h-1)*w];
+				}
+				else {
+					plMittel[y] += puZeile[j*w];
+				}
+			}
+			plMittel[y] /= 2*MeanPts+1;
+		}
+		// now try to get a volume out of the dot
+		y = pDots[i].y;
+		start_h = plMittel[y]-zero_level/4;
+		diff = 0;
+		for(  j=(int)y+1;  j<h;  j++  ) {
+			if(  plMittel[j] < zero_level-quantisation  ) {
+				break;
+			}
+			if(  plMittel[j]<start_h  ) {
+				if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
+					break;
+				}
+				if(  diff < plMittel[j-1]-plMittel[j]  ) {
+					diff = plMittel[j-1]-plMittel[j];
+				}
+			}
+		}
+		pDots[i].radius_y = j;
+		diff = 0;
+		for(  j=(int)y-1;  j>=0;  j--  ) {
+			if(  plMittel[j] < zero_level-quantisation  ) {
+				break;
+			}
+			if(  plMittel[j]<start_h  ) {
+				if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
+					break;
+				}
+				if(  diff < plMittel[j+1]-plMittel[j]  ) {
+					diff = plMittel[j+1]-plMittel[j];
+				}
+			}
+		}
+		// center als Y
+		if(  recenter  ) {
+			pDots[i].y = (pDots[i].radius_y+j)/2;
+		}
+		pDots[i].radius_y -= j;
+		pDots[i].radius_y /= 2;
+	}
+}
+
+
+/*
+ * delete dots that are very xy-anisotropic, very height, or with 1/overlapping of their radius
+ * set unused paramter to zero
+ * returns ne number of dots
+ */
+WORD CleanDots( UWORD iDotNr, XYZ_COORD *pDots, int xy_anisotropy, int aspect_ratio, int overlapping )
+{
+	// Delete Dots closer than 3 pixels
+	if(  iDotNr > 1  ) {
+		for(  int i=0;  i<iDotNr-1;  i++  ) {
+			const int min_dist = max( 3, (pDots[i].radius_x+pDots[i].radius_y)/4 );
+			int j;
+			for(  j=i+1;  j<iDotNr;  j++  ) {
+				if(  abs(pDots[i].x-pDots[j].x)+abs(pDots[i].y-pDots[j].y) <= min_dist  ) {
+					// too close => delete
+					iDotNr--;
+					MemMove( pDots+j, pDots+j+1, sizeof(pDots[0])*(iDotNr-j) );
+					j --;
+				}
+			}
+		}
+	}
+	return iDotNr;
+}

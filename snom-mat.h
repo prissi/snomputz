@@ -2,7 +2,6 @@
 ****	Mathematische und verwandte Routinen
 **************************************************************************************/
 
-
 /* Achtung: NR => Basis der Array ist a[1]!!! */
 void realft(LPFLOAT data, LONG n, int isign);
 
@@ -26,8 +25,7 @@ BOOLEAN	Differential( LPFLOAT pfDaten, int iPunkte );
 void	CorrelationFunction( HFILE hFile, LPUWORD puDaten, LONG w, LONG h, double dSkal );
 
 /****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe im Bild ****/
-void	RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
-							 double dSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS, LPFLOAT pfQuadrate );
+void	RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS, LPFLOAT pfQuadrate );
 // 18.2.98
 
 void	MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS );
@@ -83,4 +81,3 @@ void MarkUpperArea( LPUWORD puData, LONG w, LONG h, LPBYTE pArea, LONG iAreaWW, 
 // Calc triangle surface area (not trivial!)
 double	TriangleArea( UWORD z00, UWORD z01, UWORD z11, double x2, double y2, double z2 );
 // 14.6.02
-

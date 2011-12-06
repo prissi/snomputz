@@ -1943,151 +1943,6 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				// dots automatisch zühlen
 				case IDM_DOTS_AUTO:
 					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
-
-					if( pBmp->pSnom[0].Topo.puDaten &&  pBmp->dot_number>0  ) {
-						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
-						const LPUWORD puData = GetDataPointer( pBmp, TOPO );
-						const WORD w = pSnom->w;
-						const WORD h = pSnom->h;
-						WORD x, y, i;
-						const int MeanPts = 3;	// averaging over how many points
-
-						// for each line with QD do flattening
-						LPLONG plMittel = (LPLONG)pMalloc( sizeof(LONG)*max(h,w) );
-						if( plMittel == NULL ) {
-							FehlerRsc( E_MEMORY );
-							break;
-						}
-
-						for(  i=0;  i<pBmp->dot_number;  i++  ) {
-							UWORD *puZeile = puData+(pBmp->dot_histogramm[i].y)*w;
-							UWORD start_h;
-							int j, diff;
-
-							// average each dot containing line
-							for( x = 0;  x < w;  x++ ) {
-								plMittel[x] = 0;
-								for( j = x-MeanPts; j <= x+MeanPts; j++ ) {
-									if( j < 0 ) {
-										plMittel[x] += puZeile[0];
-									}
-									else if( j >= w ) {
-										plMittel[x] += puZeile[w-1];
-									}
-									else {
-										plMittel[x] += puZeile[j];
-									}
-								}
-								plMittel[x] /= 2*MeanPts+1;
-							}
-							// now try to get a volume out of the dot
-							x = pBmp->dot_histogramm[i].x;
-							start_h = plMittel[x]-pBmp->dot_radius/4;
-							// mark everything up to half level
-							diff = 0;
-							for(  j=x+1;  j<w;  j++  ) {
-								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
-									break;
-								}
-								if(  plMittel[j]<start_h  ) {
-									if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
-										break;
-									}
-									if(  diff < plMittel[j-1]-plMittel[j]  ) {
-										diff = plMittel[j-1]-plMittel[j];
-									}
-								}
-							}
-							pBmp->dot_histogramm[i].radius_x = j;
-							diff = 0;
-							for(  j=(int)x-1;  j>=0;  j--  ) {
-								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
-									break;
-								}
-								if(  plMittel[j]<start_h  ) {
-									if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
-										break;
-									}
-									if(  diff < plMittel[j+1]-plMittel[j]  ) {
-										diff = plMittel[j+1]-plMittel[j];
-									}
-								}
-							}
-							// move x center ...
-							pBmp->dot_histogramm[i].x = (pBmp->dot_histogramm[i].radius_x+j)/2;
-							pBmp->dot_histogramm[i].radius_x -= j;
-							pBmp->dot_histogramm[i].radius_x /= 2;
-
-							// average each dot row
-							puZeile = puData+x;
-							for( y = 0;  y < h;  y++ ) {
-								plMittel[y] = 0;
-								for( j = y-MeanPts; j <= y+MeanPts; j++ ) {
-									if( j < 0 ) {
-										plMittel[y] += puZeile[0];
-									}
-									else if( j >= h ) {
-										plMittel[y] += puZeile[(h-1)*w];
-									}
-									else {
-										plMittel[y] += puZeile[j*w];
-									}
-								}
-								plMittel[y] /= 2*MeanPts+1;
-							}
-							// now try to get a volume out of the dot
-							y = pBmp->dot_histogramm[i].y;
-							start_h = plMittel[y]-pBmp->dot_radius/4;
-							diff = 0;
-							for(  j=(int)y+1;  j<h;  j++  ) {
-								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
-									break;
-								}
-								if(  plMittel[j]<start_h  ) {
-									if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
-										break;
-									}
-									if(  diff < plMittel[j-1]-plMittel[j]  ) {
-										diff = plMittel[j-1]-plMittel[j];
-									}
-								}
-							}
-							pBmp->dot_histogramm[i].radius_y = j;
-							diff = 0;
-							for(  j=(int)y-1;  j>=0;  j--  ) {
-								if(  plMittel[j] < pBmp->dot_radius-pBmp->dot_quantisation  ) {
-									break;
-								}
-								if(  plMittel[j]<start_h  ) {
-									if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
-										break;
-									}
-									if(  diff < plMittel[j+1]-plMittel[j]  ) {
-										diff = plMittel[j+1]-plMittel[j];
-									}
-								}
-							}
-							// center als Y
-							pBmp->dot_histogramm[i].y = (pBmp->dot_histogramm[i].radius_y+j)/2;
-							pBmp->dot_histogramm[i].radius_y -= j;
-							pBmp->dot_histogramm[i].radius_y /= 2;
-						}
-						// next: Delete Dots closer than 3 pixels
-						if(  pBmp->dot_number > 1  ) {
-							for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
-								const min_dist = max( 3, (pBmp->dot_histogramm[i].radius_x+pBmp->dot_histogramm[i].radius_y)/4 );
-								int j;
-								for(  j=i+1;  j<pBmp->dot_number;  j++  ) {
-									if(  abs(pBmp->dot_histogramm[i].x-pBmp->dot_histogramm[j].x)+abs(pBmp->dot_histogramm[i].y-pBmp->dot_histogramm[j].y) <= min_dist  ) {
-										// too close => delete
-										pBmp->dot_number--;
-										MemMove( pBmp->dot_histogramm+j, pBmp->dot_histogramm+j+1, sizeof(pBmp->dot_histogramm[0])*(pBmp->dot_number-j) );
-										j --;
-									}
-								}
-							}
-						}
-					}
 					break;
 
 				case IDM_DOTS_MARK:
@@ -2958,6 +2813,7 @@ FertigMaske:
 						pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+pt.y*pSnom->w];
 						pBmp->dot_histogramm[pBmp->dot_number].radius_x = 0;
 						pBmp->dot_histogramm[pBmp->dot_number].radius_y = 0;
+						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0 );
 						pBmp->dot_number++;
 					}
 					else {
@@ -2978,6 +2834,7 @@ FertigMaske:
 									}
 									pBmp->dot_number--;
 								}
+								InvalidateRect( hwnd, NULL, FALSE );
 								break;
 							}
 						}
