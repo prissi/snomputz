@@ -855,6 +855,9 @@ DWORD cColors[16];
 
 BOOL no_update = FALSE;
 
+// set this to zero for LUT update only
+#define FULL_IMG_UPDATE (1)
+
 /* Verwaltet Falschfarben-Dialog */
 DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -1149,7 +1152,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
 				SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
 				// Bitmap updaten!
-				RecalcCache( pBmp, FALSE, FALSE );
+				RecalcCache( pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE );
 				InvalidateRect( hwnd, NULL, FALSE );
 				InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 			}
@@ -1191,7 +1194,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						}
 						if(  update  ) {
 							// Bitmap updaten!
-							RecalcCache( pBmp, FALSE, FALSE );
+							RecalcCache( pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE );
 							InvalidateRect( hwnd, NULL, FALSE );
 							InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 						}
@@ -1224,7 +1227,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				case FARB_LUT:
 					pBild->bNoLUT = !IsDlgButtonChecked( hdlg, FARB_LUT );
 					// Bitmap updaten!
-					RecalcCache( pBmp, FALSE, FALSE );
+					RecalcCache( pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE );
 					InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 					InvalidateRect( hwnd, NULL, FALSE );
 					break;
@@ -1247,7 +1250,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 					hBrush[i] = CreateSolidBrush( cc.rgbResult );
 					InvalidateRect( h[i], NULL, FALSE );
 					// Bitmap updaten!
-					RecalcCache( pBmp, FALSE, FALSE );
+					RecalcCache( pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE );
 					InvalidateRect( hwnd, NULL, FALSE );
 					InvalidateRect( GetDlgItem( hdlg, FARB_SHOW_LUT ), NULL, FALSE );
 					break;
