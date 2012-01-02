@@ -960,6 +960,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				hBrush[0] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[0] );
 				hBrush[1] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[1] );
 				hBrush[2] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[2] );
+				pBild = 0;
 				SendMessage( hdlg, WM_NOTIFY, 0, (LPARAM)&nm );
 			}
 			return ( TRUE ) ;
@@ -992,47 +993,47 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			IsMode = SendMessage( nm->hwndFrom, TCM_GETCURSEL, 0, 0l );
 			IsMode = Modes[IsMode];
 		}
-			if( IsMode == TOPO ) {
-				pBild = &( pSnom->Topo );
-			}
-			if( IsMode == ERRO ) {
-				pBild = &( pSnom->Error );
-			}
-			if( IsMode == LUMI ) {
-				pBild = &( pSnom->Lumi );
-			}
-			if( pBild == NULL ) {
-				break;
-			}
-			SetDlgItemText( hdlg, FARB_TITEL, pBild->strTitel );
-			CheckDlgButton( hdlg, FARB_LUT, !( pBild->bNoLUT ) );
-			if( pBild->iNumColors == 0 ) {
-				EnableWindow( GetDlgItem( hdlg, FARB_LUT ), FALSE );
-			}
-			CheckDlgButton( hdlg, FARB_3D, pBild->bPseudo3D );
-			CheckDlgButton( hdlg, FARB_KONT, pBild->bKonturen );
-			CheckDlgButton( hdlg, FARB_SPEZ_Z, pBild->bSpecialZUnit );
-			SetDlgItemText( hdlg, FARB_Z_UNIT, pBild->strZUnit );
-			CheckDlgButton( hdlg, FARB_Z_ACHSE, !pBild->bShowNoZ );
-			SetDlgItemText(	hdlg, FARB_MOD_DIST, gcvt( pBild->uModulo*pBild->fSkal, 5, buffer ) );
-			SetDlgItemText(	hdlg, FARB_KONT_DIST, gcvt( pBild->uKontur*pBild->fSkal, 5, buffer ) );
-			SetDlgItemInt(	hdlg, FARB_KONT_TOL, pBild->uKonturToleranz, FALSE );
-			SetScrollPos( hfStart, SB_CTL, (WORD)( pBild->fStart*10.0+0.5 ), TRUE );
-			SetScrollPos( hfEnd, SB_CTL, (WORD)( pBild->fEnde*10.0+0.5 ), TRUE );
-			sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
-			SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
-			sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
-			SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
-			if( hBrush[0] != NULL )	{
-				DeleteObject( hBrush[0] );
-				DeleteObject( hBrush[1] );
-				DeleteObject( hBrush[2] );
-			}
-			hBrush[0] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[0] );
-			hBrush[1] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[1] );
-			hBrush[2] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[2] );
-			InvalidateRect( hdlg, NULL, FALSE );
+		if( IsMode == TOPO ) {
+			pBild = &( pSnom->Topo );
+		}
+		if( IsMode == ERRO ) {
+			pBild = &( pSnom->Error );
+		}
+		if( IsMode == LUMI ) {
+			pBild = &( pSnom->Lumi );
+		}
+		if( pBild == NULL ) {
 			break;
+		}
+		SetDlgItemText( hdlg, FARB_TITEL, pBild->strTitel );
+		CheckDlgButton( hdlg, FARB_LUT, !( pBild->bNoLUT ) );
+		if( pBild->iNumColors == 0 ) {
+			EnableWindow( GetDlgItem( hdlg, FARB_LUT ), FALSE );
+		}
+		CheckDlgButton( hdlg, FARB_3D, pBild->bPseudo3D );
+		CheckDlgButton( hdlg, FARB_KONT, pBild->bKonturen );
+		CheckDlgButton( hdlg, FARB_SPEZ_Z, pBild->bSpecialZUnit );
+		SetDlgItemText( hdlg, FARB_Z_UNIT, pBild->strZUnit );
+		CheckDlgButton( hdlg, FARB_Z_ACHSE, !pBild->bShowNoZ );
+		SetDlgItemText(	hdlg, FARB_MOD_DIST, gcvt( pBild->uModulo*pBild->fSkal, 5, buffer ) );
+		SetDlgItemText(	hdlg, FARB_KONT_DIST, gcvt( pBild->uKontur*pBild->fSkal, 5, buffer ) );
+		SetDlgItemInt(	hdlg, FARB_KONT_TOL, pBild->uKonturToleranz, FALSE );
+		SetScrollPos( hfStart, SB_CTL, (WORD)( pBild->fStart*10.0+0.5 ), TRUE );
+		SetScrollPos( hfEnd, SB_CTL, (WORD)( pBild->fEnde*10.0+0.5 ), TRUE );
+		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+		SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
+		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+		SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
+		if( hBrush[0] != NULL )	{
+			DeleteObject( hBrush[0] );
+			DeleteObject( hBrush[1] );
+			DeleteObject( hBrush[2] );
+		}
+		hBrush[0] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[0] );
+		hBrush[1] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[1] );
+		hBrush[2] = CreateSolidBrush( ( (COLORREF HUGE*)pBild->Farben )[2] );
+		InvalidateRect( hdlg, NULL, FALSE );
+		break;
 
 #ifdef	BIT32
 		case WM_CTLCOLORSTATIC:

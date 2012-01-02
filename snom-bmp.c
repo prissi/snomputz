@@ -488,6 +488,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							StatusLineRsc( I_SAVE_WND );
 							GlobalUnlock( hClip );
 							GlobalFree( hClip );
+							RecalcCache( pBmp, TRUE, TRUE );
 						}
 						else {
 							RECT xywh;
@@ -2000,7 +2001,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
 							int i;
 
-							int len = sprintf( str, "List of dot heights\xD\xA" );
+							int len = sprintf( str, "List of dot heights\xD\xAx\ty\th\tr_x\tr_y\xD\xA" );
 							_lwrite( hFile, str, len );
 
 							len = sprintf( str, "zero=%f +/- %f\xD\xA", pBmp->dot_mean_level*pBild->fSkal, pBmp->dot_quantisation*pBild->fSkal );
