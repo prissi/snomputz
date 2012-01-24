@@ -296,7 +296,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	if( RegCreateKey( HKEY_CURRENT_USER, "Software\\Snomputz", &hRegKey ) == ERROR_SUCCESS ) {
 		// Zuletzt benutzt Dateien eintragen ...
 		HKEY hSubkey;
-		BYTE name[256];
 		LONG len;
 		int i, j;
 
