@@ -1020,9 +1020,9 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 		SetDlgItemInt(	hdlg, FARB_KONT_TOL, pBild->uKonturToleranz, FALSE );
 		SetScrollPos( hfStart, SB_CTL, (WORD)( pBild->fStart*10.0+0.5 ), TRUE );
 		SetScrollPos( hfEnd, SB_CTL, (WORD)( pBild->fEnde*10.0+0.5 ), TRUE );
-		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm") );
 		SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
-		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+		sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm") );
 		SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
 		if( hBrush[0] != NULL )	{
 			DeleteObject( hBrush[0] );
@@ -1147,10 +1147,10 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				// not end of scrolling, further action needed
 				SetScrollPos( GET_SCROLL_HANDLE( lParam ), SB_CTL, (WORD)iOffset, TRUE );
 				pBild->fStart = GetScrollPos( hfStart, SB_CTL )/10.0;
-				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm") );
 				SetDlgItemText(	hdlg, FARB_START_ZAHL, buffer );
 				pBild->fEnde = GetScrollPos( hfEnd, SB_CTL )/10.0;
-				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->bSpecialZUnit : "nm") );
+				sprintf( buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fEnde*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm") );
 				SetDlgItemText(	hdlg, FARB_WEITE_ZAHL, buffer );
 				// Bitmap updaten!
 				RecalcCache( pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE );
@@ -3255,6 +3255,9 @@ RecalcDot:
 			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 			SetDlgItemText( hdlg, QD_RESULT, result_str );
 			pBmp->bCountDots = ( pBmp->dot_number > 0 );
+#ifdef BIT32
+			SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, pBmp->bCountDots );
+#endif
 			sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
 			StatusLine( str );
 			InvalidateRect( hwnd, NULL, FALSE );

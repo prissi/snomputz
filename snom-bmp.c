@@ -1926,6 +1926,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				case IDM_DOT_MODE:
 					if(  pBmp->bCountDots  ) {
 						pBmp->bCountDots = FALSE;
+						InvalidateRect( hwnd, NULL, TRUE );
 #ifdef BIT32
 						SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, FALSE );
 #endif
@@ -1947,11 +1948,14 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						}
 						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 						StatusLine( str );
-						pBmp->bCountDots = TRUE;
-					}
+						if(  !pBmp->bCountDots  ) {
+							InvalidateRect( hwnd, NULL, TRUE );
 #ifdef BIT32
-					SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+							SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
 #endif
+						}
+						pBmp->bCountDots = 1 + (LOWORD(wParam)==IDM_DOTS_REMOVE);
+					}
 					break;
 
 				// dots automatisch zühlen
@@ -2764,6 +2768,9 @@ FertigMaske:
 		case WM_RBUTTONDOWN:
 			if( pBmp->bCountDots ) {
 				pBmp->bCountDots = FALSE;
+#ifdef BIT32
+				SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+#endif
 				break;
 			}
 			// now mark regions
@@ -2840,7 +2847,10 @@ FertigMaske:
 									MemFree( pBmp->dot_histogramm );
 									pBmp->dot_histogramm = 0;
 									pBmp->dot_histogramm_count = 0;
-									pBmp->bCountDots = 0;
+									pBmp->bCountDots = FALSE;
+#ifdef BIT32
+									SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+#endif
 								}
 								else {
 									if( i+1 < pBmp->dot_number ) {
@@ -2985,7 +2995,7 @@ FertigMaske:
 					pCoord.right = pBmp->pDib->bmiHeader.biWidth * fZoom;
 					pCoord.bottom = pBmp->pDib->bmiHeader.biHeight * fZoom;
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, &pCoord, 0, pBmp->pCacheBits );
-					DrawScanLine( hdc, pBmp, 1.0/fZoom );
+					DrawScanLine( hdc, pBmp, wZoomFaktor );
 					DrawScanLinePlot( hdc, pBmp, 1.0/fZoom, TRUE );
 					DrawDotsPlot( hdc, pBmp, 1.0/fZoom );
 				}
@@ -2993,9 +3003,7 @@ FertigMaske:
 					// Fenster neu zeichnen
 					SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, NULL, wZoomFaktor, pBmp->pCacheBits );
-					if(  !pBmp->bCountDots  ) {
-						DrawScanLine( hdc, pBmp, wZoomFaktor );
-					}
+					DrawScanLine( hdc, pBmp, wZoomFaktor );
 					DrawScanLinePlot( hdc, pBmp, wZoomFaktor, TRUE );
 					DrawDotsPlot( hdc, pBmp, wZoomFaktor );
 					pBmp->fZoom = 1.0/(double)wZoomFaktor;
