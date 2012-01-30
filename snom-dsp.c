@@ -2213,8 +2213,8 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 	SIZE size;
 	HPEN hOld;
 	LPUWORD	puDaten;
-	int i, x, y, w, h, iPunkte[4], iMaxPunkte, iScan, iLineWidth;
-	float fWeite[MAX_SCANLINE], fMaxWeite, fMaxHoehe, fMaxMax = -1e20, fMaxMin = 1e20;
+	int i, x, y, w, h, iPunkte[4], iMaxPunkte, iScan, iMaxScan=0, iLineWidth;
+	float fWeite[MAX_SCANLINE], fMaxWeite, fOffset=0.0, fMaxHoehe, fMaxMax = -1e20, fMaxMin = 1e20;
 
 	fMaxWeite = fMaxHoehe = 0.0;
 	iMaxPunkte = 0;
@@ -2225,69 +2225,100 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 	}
 
 	puDaten = GetDataPointer( pBmp, pBild->Typ );
-	for( iScan = 0;  iScan < pBmp->lMaxScan;  iScan++ ) {
-		iPunkte[iScan] = BildGetLine( puTemp, puDaten, &( pBmp->rectScan[iScan] ), pSnom->w, pSnom->h, FALSE, FALSE );
-		if( iPunkte[iScan] == 0 ) {
-			continue;
-		}
-		pBmp->bIsScanLine = TRUE;
-		for( i = 0;  i < iPunkte[iScan];  i++ ) {
-			pfTemp[iScan][i] = puTemp[i]*pBild->fSkal;
-		}
+	if(  !pBmp->bCountDots  ) {
+		// scanline mode
+		for( iScan = 0;  iScan < pBmp->lMaxScan;  iScan++ ) {
+			iPunkte[iScan] = BildGetLine( puTemp, puDaten, &( pBmp->rectScan[iScan] ), pSnom->w, pSnom->h, FALSE, FALSE );
+			if( iPunkte[iScan] == 0 ) {
+				continue;
+			}
+			iMaxScan ++;
+			pBmp->bIsScanLine = TRUE;
+			for( i = 0;  i < iPunkte[iScan];  i++ ) {
+				pfTemp[iScan][i] = puTemp[i]*pBild->fSkal;
+			}
 
-		// Evt. nicht nur die Daten darstellen
-		wScanlineModus &= ~( P_DIST|P_X|P_Y );
-		switch( wScanlineModus ) {
-			case P_AUTOKORRELATION:
-				Autokorrelation( pfTemp[iScan], pfTemp[iScan], iPunkte[iScan], FALSE );
-				break;
+			// Evt. nicht nur die Daten darstellen
+			wScanlineModus &= ~( P_DIST|P_X|P_Y );
+			switch( wScanlineModus ) {
+				case P_AUTOKORRELATION:
+					Autokorrelation( pfTemp[iScan], pfTemp[iScan], iPunkte[iScan], FALSE );
+					break;
 
-			case P_PSD:
-			{
-				double fMittel = 0.0;
+				case P_PSD:
+				{
+					double fMittel = 0.0;
 
-				for( i = 0;  i < iPunkte[iScan];  i++ ) {
-					fMittel += pfTemp[iScan][i];
+					for( i = 0;  i < iPunkte[iScan];  i++ ) {
+						fMittel += pfTemp[iScan][i];
+					}
+					fMittel /= (float)iPunkte[iScan];
+					for( i = 0;  i < iPunkte[iScan];  i++ ) {
+						pfTemp[iScan][i] -= fMittel;
+					}
+					for(  ;  i < iSize;  i++ ) {
+						pfTemp[iScan][i] = 0.0;
+					}
+					realft( pfTemp[iScan]-1, iSize/2, 1 );
+					for( i = 0;  i < iPunkte[iScan];  i++ ) {
+						pfTemp[iScan][i] = log( pfTemp[iScan][i] * pfTemp[iScan][i] );
+					}
+					pfTemp[iScan][0] = pfTemp[iScan][1];
+					break;
 				}
-				fMittel /= (float)iPunkte[iScan];
-				for( i = 0;  i < iPunkte[iScan];  i++ ) {
-					pfTemp[iScan][i] -= fMittel;
+			}
+
+			if( iPunkte[iScan] > iMaxPunkte ) {
+				iMaxPunkte = iPunkte[iScan];
+			}
+
+			// Weite in x-Einheiten berechnen
+			fWeite[iScan] = sqrt( pow( pSnom->fX*( pBmp->rectScan[iScan].left-pBmp->rectScan[iScan].right ), 2 ) + pow( pSnom->fY*( pBmp->rectScan[iScan].top-pBmp->rectScan[iScan].bottom ), 2 ) );
+			if( fWeite[iScan] > fMaxWeite ) {
+				fMaxWeite = fWeite[iScan];
+			}
+
+			// Maximum und Minimum finden
+			for( i = 0;  i < iPunkte[iScan];  i++ )	{
+				if( pfTemp[iScan][i] < fMaxMin ) {
+					fMaxMin = pfTemp[iScan][i];
 				}
-				for(  ;  i < iSize;  i++ ) {
-					pfTemp[iScan][i] = 0.0;
+				if( pfTemp[iScan][i] > fMaxMax ) {
+					fMaxMax = pfTemp[iScan][i];
 				}
-				realft( pfTemp[iScan]-1, iSize/2, 1 );
-//				iPunkte[iScan] = iSize;
-				for( i = 0;  i < iPunkte[iScan];  i++ ) {
-					pfTemp[iScan][i] = log( pfTemp[iScan][i] * pfTemp[iScan][i] );
-				}
-				pfTemp[iScan][0] = pfTemp[iScan][1];
-				break;
+			}
+			if( ( fMaxMax-fMaxMin ) > fMaxHoehe ) {
+				fMaxHoehe = fMaxMax-fMaxMin;
 			}
 		}
+	}
+	// dot mode
+	else {
+		// histogram => first get x_scale
+		UWORD min_h = 65535;
+		UWORD max_h = 0, threshold;
+		double fThreshold;
 
-		if( iPunkte[iScan] > iMaxPunkte ) {
-			iMaxPunkte = iPunkte[iScan];
+		for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
+			min_h = min( min_h, pBmp->dot_histogramm[i].hgt );
+			max_h = max( max_h, pBmp->dot_histogramm[i].hgt );
+		}
+		max_h -= min_h;
+		fOffset = min_h * pBild->fSkal;
+		fWeite[0] = fMaxWeite = max_h * pBild->fSkal;
+		// how many bins
+		iMaxPunkte = iPunkte[0] = max( 10, pBmp->dot_number/10 );
+		for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
+			pfTemp[0][ ( (pBmp->dot_histogramm[i].hgt-min_h)*iPunkte[0]) / max_h ] += 1.0;
 		}
 
-		// Weite in x-Einheiten berechnen
-		fWeite[iScan] = sqrt( pow( pSnom->fX*( pBmp->rectScan[iScan].left-pBmp->rectScan[iScan].right ), 2 ) + pow( pSnom->fY*( pBmp->rectScan[iScan].top-pBmp->rectScan[iScan].bottom ), 2 ) );
-		if( fWeite[iScan] > fMaxWeite ) {
-			fMaxWeite = fWeite[iScan];
+		fMaxMin = 0.0;
+		fMaxHoehe = 0.0;
+		for(  i=0;  i<iPunkte[0];  i++  ) {
+			puTemp[i] = i;
+			fMaxHoehe = max( fMaxHoehe, pfTemp[0][i] );
 		}
-
-		// Maximum und Minimum finden
-		for( i = 0;  i < iPunkte[iScan];  i++ )	{
-			if( pfTemp[iScan][i] < fMaxMin ) {
-				fMaxMin = pfTemp[iScan][i];
-			}
-			if( pfTemp[iScan][i] > fMaxMax ) {
-				fMaxMax = pfTemp[iScan][i];
-			}
-		}
-		if( ( fMaxMax-fMaxMin ) > fMaxHoehe ) {
-			fMaxHoehe = fMaxMax-fMaxMin;
-		}
+		iMaxScan = 1;
 	}
 
 	// Zeichenmodus setzen
@@ -2312,7 +2343,7 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 		LineTo( hdc, x, y );
 
 		// Achsen samt Skalierung zeichen
-		DrawHorizontalAxis( hdc, x, y+h, w, 3, 5, fMaxWeite, 0.0, STR_X_UNIT, STR_X_SUNIT );
+		DrawHorizontalAxis( hdc, x, y+h, w, 3, 5, fMaxWeite, fOffset, STR_X_UNIT, STR_X_SUNIT );
 		if( pBild->bSpecialZUnit ) {
 			DrawVerticalAxis( hdc, x+w, y+h, -h, 2, 10, fMaxHoehe, fMaxMin, pBild->strZUnit, NULL );
 		}
@@ -2336,7 +2367,7 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 	else {
 		hOld = SelectObject( hdc, CreatePen( PS_SOLID, iLineWidth, cMarkierungRechts ) );
 	}
-	for( iScan = 0;  iScan < pBmp->lMaxScan;  iScan++ ) {
+	for( iScan = 0;  iScan < iMaxScan;  iScan++ ) {
 		// noch die Legende
 		if( iScan == 0 ) {
 			if( bNeuZeichen ) {
@@ -2428,12 +2459,34 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		return;
 	}
 
-	for( j = i = 0;  i < pBmp->lMaxScan;  i++ ) {
-		j += !( pBmp->rectScan[i].left == pBmp->rectScan[i].right  &&  pBmp->rectScan[i].top == pBmp->rectScan[i].bottom );
+	if(  pBmp->bCountDots  ) {
+		if(  pBmp->dot_number==0  ) {
+			return;	// no histogram etc.
+		}
+		puTemp = pMalloc( pBmp->dot_number*sizeof( UWORD ) );
+		pfTemp[0] = pMalloc( pBmp->dot_number*sizeof( float ) );
+		iSize = i = pBmp->dot_number;
 	}
-	if( j == 0 ) {
-		return; // Nichts zu zeichnen
+	else {
+		for( j = i = 0;  i < pBmp->lMaxScan;  i++ ) {
+			j += !( pBmp->rectScan[i].left == pBmp->rectScan[i].right  &&  pBmp->rectScan[i].top == pBmp->rectScan[i].bottom );
+		}
+		if( j == 0 ) {
+			return; // Nichts zu zeichnen
+		}
+		// Array mit ausreichender Größe (die auch noch Potenz von 2 sein soll) belegen
+		i = (int)sqrt( pSnom->w*pSnom->w+pSnom->h*pSnom->h )+20;
+		while( i > iSize )
+			iSize <<= 1;
+		puTemp = pMalloc( iSize*sizeof( UWORD ) );
+		for( i = 0;  i < pBmp->lMaxScan;  i++ ) {
+			pfTemp[i] = pMalloc( iSize*sizeof( float ) );
+		}
+		if( puTemp == NULL  ||  pfTemp[i-1] == NULL ) {
+			return;
+		}
 	}
+
 	// Platz fï¿½r Scanline dazurechnen
 	pBmp->rectFenster.right = 64+pBmp->rectPlot.right;      // Rechts Platz lassen
 	if( pBmp->bPlotUnten ) {
@@ -2443,18 +2496,6 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		else {
 			pBmp->rectFenster.bottom = pBmp->rectPlot.bottom+pBmp->rectRechts.top;
 		}
-	}
-
-	// Array mit ausreichender Grï¿½ï¿½e (die auch noch Potenz von 2 sein soll) belegen
-	i = (int)sqrt( pSnom->w*pSnom->w+pSnom->h*pSnom->h )+20;
-	while( i > iSize )
-		iSize <<= 1;
-	puTemp = pMalloc( iSize*sizeof( UWORD ) );
-	for( i = 0;  i < pBmp->lMaxScan;  i++ ) {
-		pfTemp[i] = pMalloc( iSize*sizeof( float ) );
-	}
-	if( puTemp == NULL  ||  pfTemp[i-1] == NULL ) {
-		return;
 	}
 
 	// Zeichensatz anpassen
@@ -2474,12 +2515,14 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		ScanLinePlot( hdc, pBmp, &( pSnom->Topo ), fScale, wProfilShowFlags, puTemp, pfTemp, iSize, bRahmenZeichnen );
 		bRahmenZeichnen = FALSE;
 	}
-	if( wModus&LUMI ) {
-		ScanLinePlot( hdc, pBmp, &( pSnom->Lumi ), fScale, NONE, puTemp, pfTemp, iSize, bRahmenZeichnen );
-		bRahmenZeichnen = FALSE;
-	}
-	if( wModus&ERRO ) {
-		ScanLinePlot( hdc, pBmp, &( pSnom->Error ), fScale, NONE, puTemp, pfTemp, iSize, bRahmenZeichnen );
+	if(  !pBmp->bCountDots  ) {
+		if( wModus&LUMI ) {
+			ScanLinePlot( hdc, pBmp, &( pSnom->Lumi ), fScale, NONE, puTemp, pfTemp, iSize, bRahmenZeichnen );
+			bRahmenZeichnen = FALSE;
+		}
+		if( wModus&ERRO ) {
+			ScanLinePlot( hdc, pBmp, &( pSnom->Error ), fScale, NONE, puTemp, pfTemp, iSize, bRahmenZeichnen );
+		}
 	}
 	MemFree( puTemp );
 	for( i = 0;  i < pBmp->lMaxScan;  i++ ) {

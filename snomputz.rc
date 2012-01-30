@@ -156,6 +156,8 @@ BEGIN
         MENUITEM "Work with &Error",            IDM_NUR_ERROR
         MENUITEM "Work with &Luminescence",     IDM_NUR_LUMI, CHECKED
         MENUITEM SEPARATOR
+        MENUITEM "&dot counting mode",			IDM_DOT_MODE
+        MENUITEM SEPARATOR
 		MENUITEM "Apply to all",				IDM_TRACK_ALL
     END
     POPUP "&Flatten"

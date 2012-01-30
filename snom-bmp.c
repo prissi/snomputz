@@ -29,6 +29,7 @@
 #include "snom-dat.h"
 #include "snom-wrk.h"
 #include "snom-mat.h"
+#include "snom-fmax.h"
 
 #include "filebox.h"
 
@@ -1921,7 +1922,16 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-				// dots manuell zühlen
+				// dots manuell zählen
+				case IDM_DOT_MODE:
+					if(  pBmp->bCountDots  ) {
+						pBmp->bCountDots = FALSE;
+#ifdef BIT32
+						SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, FALSE );
+#endif
+						break;
+					}
+					// esle go to count dots
 				case IDM_DOTS_ADD:
 				case IDM_DOTS_REMOVE:
 					if( pBmp->pSnom[0].Topo.puDaten ) {
@@ -1937,8 +1947,11 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						}
 						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 						StatusLine( str );
-						pBmp->bCountDots = LOWORD( wParam )-IDM_DOTS_ADD+1;
+						pBmp->bCountDots = TRUE;
 					}
+#ifdef BIT32
+					SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+#endif
 					break;
 
 				// dots automatisch zühlen
@@ -2542,7 +2555,7 @@ FertigMaske:
 				hdc = GetDC( hwnd );
 				SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
 				if( pBmp->rectMaske.top != pBmp->rectMaske.bottom  &&  pBmp->rectMaske.left != pBmp->rectMaske.right ) {
-					// Falls nütig neuen Speicher beschaffen
+					// Falls nötig neuen Speicher beschaffen
 					if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
 						MemFree( pBmp->pMaske );
 						pBmp->pMaske = NULL;
@@ -2814,7 +2827,7 @@ FertigMaske:
 						pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+pt.y*pSnom->w];
 						pBmp->dot_histogramm[pBmp->dot_number].radius_x = 0;
 						pBmp->dot_histogramm[pBmp->dot_number].radius_y = 0;
-						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0 );
+						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0 );
 						pBmp->dot_number++;
 					}
 					else {
@@ -2980,7 +2993,9 @@ FertigMaske:
 					// Fenster neu zeichnen
 					SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, NULL, wZoomFaktor, pBmp->pCacheBits );
-					DrawScanLine( hdc, pBmp, wZoomFaktor );
+					if(  !pBmp->bCountDots  ) {
+						DrawScanLine( hdc, pBmp, wZoomFaktor );
+					}
 					DrawScanLinePlot( hdc, pBmp, wZoomFaktor, TRUE );
 					DrawDotsPlot( hdc, pBmp, wZoomFaktor );
 					pBmp->fZoom = 1.0/(double)wZoomFaktor;

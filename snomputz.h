@@ -180,6 +180,7 @@
 #define IDM_INTEGRAL                    553
 #define IDM_INVERT_MASKE                560
 #define IDM_KONTOUR                     574
+#define IDM_DOT_MODE					673
 #define IDM_DOTS_ADD					674
 #define IDM_DOTS_REMOVE					675
 #define IDM_DOTS_AUTO					676

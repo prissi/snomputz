@@ -36,7 +36,7 @@ static int next_neighbour_y[8] = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
 
 extern "C" UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
-extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter );
+extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter );
 
 
 UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord )
@@ -229,10 +229,9 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LON
 
 
 // calc radius and possibly recenter on dot
-void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter )
+void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter )
 {
 	WORD x, y, i;
-	const int MeanPts = 3;	// averaging over how many points
 
 	// for each line with QD do flattening
 	LPLONG plMittel = (LPLONG)pMalloc( sizeof(LONG)*max(h,w) );
@@ -249,7 +248,7 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 		// average each dot containing line
 		for( x = 0;  x < w;  x++ ) {
 			plMittel[x] = 0;
-			for( j = x-MeanPts; j <= x+MeanPts; j++ ) {
+			for( j = x-iAveBefore; j <= x+iAveBefore; j++ ) {
 				if( j < 0 ) {
 					plMittel[x] += puZeile[0];
 				}
@@ -260,11 +259,11 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 					plMittel[x] += puZeile[j];
 				}
 			}
-			plMittel[x] /= 2*MeanPts+1;
+			plMittel[x] /= 2*iAveBefore+1;
 		}
 		// now try to get a volume out of the dot
 		x = pDots[i].x;
-		start_h = plMittel[x]-zero_level/4;
+		start_h = plMittel[x]-zero_level/6;
 		// mark everything up to half level
 		diff = 0;
 		for(  j=x+1;  j<w;  j++  ) {
@@ -272,7 +271,7 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 				break;
 			}
 			if(  plMittel[j]<start_h  ) {
-				if(  diff/2 > plMittel[j-1]-plMittel[j]  ) {
+				if(  (diff*7)/8 > plMittel[j-1]-plMittel[j]  ) {
 					break;
 				}
 				if(  diff < plMittel[j-1]-plMittel[j]  ) {
@@ -287,7 +286,7 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 				break;
 			}
 			if(  plMittel[j]<start_h  ) {
-				if(  diff/2 > plMittel[j+1]-plMittel[j]  ) {
+				if(  (diff*7)/8 > plMittel[j+1]-plMittel[j]  ) {
 					break;
 				}
 				if(  diff < plMittel[j+1]-plMittel[j]  ) {
@@ -306,7 +305,7 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 		puZeile = puData+x;
 		for( y = 0;  y < h;  y++ ) {
 			plMittel[y] = 0;
-			for( j = y-MeanPts; j <= y+MeanPts; j++ ) {
+			for( j = y-iAveBefore; j <= y+iAveBefore; j++ ) {
 				if( j < 0 ) {
 					plMittel[y] += puZeile[0];
 				}
@@ -317,7 +316,7 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 					plMittel[y] += puZeile[j*w];
 				}
 			}
-			plMittel[y] /= 2*MeanPts+1;
+			plMittel[y] /= 2*iAveBefore+1;
 		}
 		// now try to get a volume out of the dot
 		y = pDots[i].y;

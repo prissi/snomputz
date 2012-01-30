@@ -3249,7 +3249,7 @@ RecalcDot:
 			pBmp->dot_histogramm = NULL;
 			pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &( pBmp->dot_histogramm ) );
 			pBmp->dot_histogramm_count = pBmp->dot_number;
-			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter );
+			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter );
 			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
 			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
