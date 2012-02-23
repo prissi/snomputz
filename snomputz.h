@@ -250,6 +250,7 @@
 #define I_COPY                          23
 #define I_DESPIKE                       6
 #define I_DI                            27
+#define I_GWY							227
 #define I_DIFFERENTIAL                  41
 #define I_EXPORT                        12
 #define I_FFT	79

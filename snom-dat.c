@@ -1351,8 +1351,6 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 
 	return ( TRUE );
 }
-
-
 // 5.4.2000
 
 
@@ -1391,18 +1389,18 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	 * Dann folgend die einzelnen Sektionen. Eine Sektion wird mit "\*" eingeleitet.
 	 * Zuerst kommt
 	 *		\*File list
-	 *		\Version: 0x04230203 (sollte wohl grüüer 4 sein, wird ignoriert)
+	 *		\Version: 0x04230203 (sollte wohl größer 4 sein, wird ignoriert)
 	 *		\Date: 03:14:05 PM Thu Apr 16 1998 (Datum der Messung)
 	 *		\Start context: OL2	 (???)
-	 *		\Data length: 8192	 Lünge des Headers, Aendert sich von Version zu Version!
+	 *		\Data length: 8192	 Länge des Headers, Aendert sich von Version zu Version!
 	 *
 	 * Dann mit "\*NC Afm list:" die allgemeinen Einstellungen. Hier sind erst einmal nur
 	 * drei Dinge interessant: (f:float, x:integer, s:string)
 	 * Ab Version 0x044... ist es "\Ciao scan list"
 	 *
 	 *		(folgende finden sich auch wieder unten ...)
-	 *   \Scan size: f s      Scangrüüe (real) + Einheit (nm oder ~m=üm)
-	 *   \Aspect ratio: f:f   Grüüenverhültnis (x zu y oder y zu x?)
+	 *   \Scan size: f s      Scangröße (real) + Einheit (nm oder um=µm)
+	 *   \Aspect ratio: f:f   Größenverhältnis (x zu y oder y zu x?)
 	 *   \X offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *   \Y offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *
@@ -1422,23 +1420,23 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	 *   \Y offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *   \Samps/line: x       Anzahl Punkte pro Zeile (alt: Punkte pro Zeile + Zeilen!)
 	 *   \Number of lines: x  Anzahl Zeilen (nur neu)
-	 *   \Aspect ratio: f:f   Grüüenverhültnis (x zu y oder y zu x?)
-	 *   \Scan size: f s      Scangrüüe (real) + Einheit (nm oder ~m=üm)
+	 *   \Aspect ratio: f:f   Größenverhältnis (x zu y oder y zu x?)
+	 *   \Scan size: f s      Scangröße (real) + Einheit (nm oder um/~m=üm)
 	 *												 (V>4.2 \Scan size: f f s)
-	 *   \Z magnifiy image: f nur interne Grüüe (alt: Skalierung?)
+	 *   \Z magnifiy image: f nur interne Größe (alt: Skalierung?)
 	 *   \Z sensitivity: f    ???
-	 *   \Z scale: f s (x)    Lünge mit Einheit (nur neu)
+	 *   \Z scale: f s (x)    Länge mit Einheit (nur neu)
 	 *								 Dabei gilt: fSkal = f/65536.0
 	 *								 (x) gibt die Quantelung der Daten an: Abstand ist Vielfaches von 65536/x
 	 *   \Z scale height:     Weite Z-Skala (nur alt)
 	 *   \Line direction: s   Scanrichtung (Trace oder Retrace)
 	 *   \Frame direction: s  von unten nach oben oder von oben nach unten
-	 *   \Image data: s       müglich sind hier speziell "Height", "Deflection", ... ?
-	 *   \Data Offset: x      Start der Binürdaten
+	 *   \Image data: s       möglich sind hier speziell "Height", "Deflection", ... ?
+	 *   \Data Offset: x      Start der Binärdaten
 	 *   \Data length: x      und deren Lünge
 	 *
 	 *	Neue Formate: (V4.4 und hoeher)
-	 *   \Scan size: f f s    Scangrüüe (real) x z Einheit (nm oder ~m=üm)
+	 *   \Scan size: f f s    Scangröße (real) x z Einheit (nm oder ~m=üm)
 	 *		\@2:Image Data: S [Height] "Height" Art der Daten und Name
 	 *		\@Z magnify: C [x:Z scale] f x is always 2?
 	 *   \@Z scale: V [Sens. Zscan] (f V/LSB) x V x=65536, f=x/65536.0
@@ -1773,9 +1771,202 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	_lclose( hFile );
 	return ( TRUE );
 }
-
-
 // 6.8.97
+
+
+
+//  Liest eine Datei im Gwyddionformat ein
+long get_gwygstr( HFILE hFile, char *dest, long len )
+{
+	long i = 0;
+	while(  len>0  &&  _lread( hFile, dest, 1 )==1  ) {
+		if(  *dest == 0  ) {
+			return i;
+		}
+		dest ++;
+		i ++;
+		len --;
+	}
+	*dest = 0;
+	return i;
+}
+
+
+BOOL ReadGwyddion( HFILE hFile, LPBMPDATA pBmp )
+{
+	LPSNOMDATA pSnom = &( pBmp->pSnom[0] );
+
+	LPDOUBLE pPtr = NULL;
+	double xscale, yscale, zscale, zmag;
+	long height, width;
+	int version = 0, current_section = 3;
+	long lHeaderLen;
+	char str[1024];
+
+	pSnom->fX = 0.0;
+
+	_llseek( hFile, 0l, 0 );
+	get_gwygstr( hFile, str, 1024 );
+	_lread( hFile, &lHeaderLen, 4 );
+
+	// ok now find out about version
+	if (strncmp(str, "GWYO", 4) == 0) {
+        version = 1;
+	}
+	else if (strncmp(str, "GWYP", 4) == 0) {
+        version = 2;
+	}
+	else if (strncmp(str, "GWYQ", 4) == 0) {
+        version = 3;
+	}
+	else {
+		FehlerRsc( E_FILE_CORRUPT );
+		_lclose( hFile );
+		return ( FALSE );
+	}
+
+	// ok, now we can start with the parameters ...
+	while(1) {
+		char typ, str2[1024];
+		long value=0, size=0, dummy=0;
+		double fvalue;
+		str[2] = 0;
+
+		// name/path
+		get_gwygstr( hFile, str, 1024 );
+		if(  _lread( hFile, &typ, 1 )!=1  ) {
+			break;
+		}
+
+		switch( typ ) {
+			case 'b':	_lread( hFile, &str2, 1 );
+						value = str2[0];
+						break;
+			case 'i':	_lread( hFile, &value, 4 );
+						break;
+			case 'd':	_lread( hFile, &fvalue, 8 );
+						break;
+			case 's':	get_gwygstr( hFile, str2, 1024 );
+						break;
+			case 'o':	get_gwygstr( hFile, str2, 1024 );
+						_lread( hFile, &size, 4 );
+						if(  version==3  ) {
+							_lread( hFile, &dummy, 4 );
+						}
+						break;
+			case 'D':	// now an array with double datas ... (the image)
+						_lread( hFile, &value, 4 );	// the actual size
+						if(  value==0  ) {
+							break;
+						}
+						if(  current_section>2  ) {
+							// ignore additional sections ...
+							_llseek( hFile, value*8, 1 );
+							continue;
+						}
+						if(  value==width*height  ) {
+							LPUWORD pData = (LPUWORD)pMalloc( value*sizeof(UWORD) );
+							if(  pData == NULL  ) {
+								_lclose( hFile );
+								FehlerRsc( E_MEMORY );
+								return ( FALSE );
+							}
+							pPtr = (LPDOUBLE)pMalloc( value*8 );
+							if(  pPtr == NULL  ) {
+								_lclose( hFile );
+								MemFree( pData );
+								FehlerRsc( E_MEMORY );
+								return ( FALSE );
+							}
+							//_lread( hFile, pPtr, width*height*sizeof(double) );
+							{
+								DWORD len=0;
+								ReadFile( hFile, pPtr, value*8, &len, NULL );
+								if(  value*sizeof(double)!=len  ) {
+									_lclose( hFile );
+									MemFree( pData );
+									MemFree( pPtr );
+									FehlerRsc( E_FILE_CORRUPT );
+									return ( FALSE );
+								}
+							}
+							// now build the current header
+							pSnom->w = width;
+							pSnom->h = height;
+							if(  pSnom->fX==0.0  ) {
+								pSnom->fX = 1e9*xscale/(double)width;
+								pSnom->fY = 1e9*yscale/(double)height;
+							}
+							// do we have the z-scale?
+							if(  zscale!=0.0  ) {
+								int i, mode = (1 << current_section);
+								double fmax = -1e200, fmin = 1e200;
+								for(  i=0;  i<value;  i++  ) {
+									if(  pPtr[i] > fmax  ) {
+										fmax = pPtr[i];
+									}
+									if(  pPtr[i] < fmin  ) {
+										fmin = pPtr[i];
+									}
+								}
+								for(  i=0;  i<value;  i++  ) {
+									pData[i] = (32760.0*pPtr[i]/(fmax-fmin)+0.5);
+								}
+								
+								LadeBlock( pBmp, pData, width, width, height, 16, mode, 0, TRUE );
+								if(  current_section==0  ) {
+									pSnom->Topo.fSkal = (fmax-fmin)/32760.0e-9;
+								}
+								else if(  current_section==1  ) {
+									pSnom->Error.fSkal = (fmax-fmin)/32760.0e-9;
+								}
+								else if(  current_section==2  ) {
+									pSnom->Lumi.fSkal = (fmax-fmin)/32760.0e-9;
+								}
+							}
+							MemFree( pPtr );
+							MemFree( pData );
+						}
+						else {
+							FehlerRsc( E_FILE_CORRUPT );
+							_lclose( hFile );
+							return ( FALSE );
+						}
+						zscale = 0.0;
+						width = height = 0;
+						break;
+		}
+
+		// determine current section ...
+		if(  typ=='o'  &&  str[0]=='/'  ) {
+			current_section = atoi( str+1 );
+		}
+
+		// here one will be in the right image at least ...
+		if(  strcmp(str,"Z scale")==0  ) {
+			zscale = atof( str2 );
+		}
+		else if(  strcmp(str,"Z magnify image")==0  ) {
+			zmag = atof( str2 );
+		}
+		else if(  strcmp(str,"xres")==0  ) {
+			width = value;
+		}
+		else if(  strcmp(str,"yres")==0  ) {
+			height = value;
+		}
+		else if(  strcmp(str,"xreal")==0  ) {
+			xscale = fvalue;
+		}
+		else if(  strcmp(str,"yreal")==0  ) {
+			yscale = fvalue;
+		}
+	}
+	_lclose( hFile );
+	return ( TRUE );
+}
+// 20.22012
+
 
 
 //***************************************** TE-Rechnungen aus Jena *****************************************
@@ -1812,8 +2003,6 @@ LONG CopyString( LPBYTE pSrc, LPBYTE pDest, LONG iLen, LPLONG iCountDown )
 	*pDest = 0;
 	return ( i );
 }
-
-
 // 5.10.99
 
 
@@ -2299,6 +2488,14 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 		// War wohl eine Digital-Datei
 		StatusLineRsc( I_DI );
 		bResult = ReadDigital( hFile, pBmp );
+		NormalMaus();
+		return ( bResult );
+	}
+
+	if(  str[0] == 'G'   &&  str[1]=='W'  &&  str[2]=='Y'  ) {
+		// Gwyddion
+		StatusLineRsc( I_GWY );
+		bResult = ReadGwyddion( hFile, pBmp );
 		NormalMaus();
 		return ( bResult );
 	}

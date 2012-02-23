@@ -2225,8 +2225,9 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 	}
 
 	puDaten = GetDataPointer( pBmp, pBild->Typ );
-	if(  !pBmp->bCountDots  ) {
+	if(  !pBmp->bCountDots  ||  pBmp->dot_number<=1  ) {
 		// scanline mode
+		iMaxScan = 0;
 		for( iScan = 0;  iScan < pBmp->lMaxScan;  iScan++ ) {
 			iPunkte[iScan] = BildGetLine( puTemp, puDaten, &( pBmp->rectScan[iScan] ), pSnom->w, pSnom->h, FALSE, FALSE );
 			if( iPunkte[iScan] == 0 ) {
@@ -2291,6 +2292,9 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 				fMaxHoehe = fMaxMax-fMaxMin;
 			}
 		}
+		if(  iMaxPunkte==1  ) {
+			return;
+		}
 	}
 	// dot mode
 	else {
@@ -2299,16 +2303,19 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 		UWORD max_h = 0, threshold;
 		double fThreshold;
 
-		for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
+		for(  i=0;  i<pBmp->dot_number;  i++  ) {
 			min_h = min( min_h, pBmp->dot_histogramm[i].hgt );
 			max_h = max( max_h, pBmp->dot_histogramm[i].hgt );
 		}
 		max_h -= min_h;
+		if(  max_h==min_h  ) {
+			return;
+		}
 		fOffset = min_h * pBild->fSkal;
 		fWeite[0] = fMaxWeite = max_h * pBild->fSkal;
 		// how many bins
-		iMaxPunkte = iPunkte[0] = max( 10, pBmp->dot_number/10 );
-		for(  i=0;  i<pBmp->dot_number-1;  i++  ) {
+		iMaxPunkte = iPunkte[0] = min( pBmp->dot_number-1, max( 10, pBmp->dot_number/10 ) );
+		for(  i=0;  i<pBmp->dot_number;  i++  ) {
 			pfTemp[0][ ( (pBmp->dot_histogramm[i].hgt-min_h)*iPunkte[0]) / max_h ] += 1.0;
 		}
 
@@ -2460,7 +2467,7 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 	}
 
 	if(  pBmp->bCountDots  ) {
-		if(  pBmp->dot_number==0  ) {
+		if(  pBmp->dot_number<=1  ) {
 			return;	// no histogram etc.
 		}
 		puTemp = pMalloc( pBmp->dot_number*sizeof( UWORD ) );
@@ -2525,8 +2532,13 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		}
 	}
 	MemFree( puTemp );
-	for( i = 0;  i < pBmp->lMaxScan;  i++ ) {
-		MemFree( pfTemp[i] );
+	if(  !pBmp->bCountDots  ) {
+		for( i = 0;  i < pBmp->lMaxScan;  i++ ) {
+			MemFree( pfTemp[i] );
+		}
+	}
+	else {
+		MemFree( pfTemp[0] );
 	}
 	DeleteObject( SelectObject( hdc, hOld ) );
 	return;

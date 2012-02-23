@@ -1907,7 +1907,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				}
 
 
-				// dots overlay lüschen
+				// dots overlay delete
 				case IDM_DOTS_CLEAR:
 					if( pBmp->dot_number > 0 ) {
 						MemFree( pBmp->dot_histogramm );

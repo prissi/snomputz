@@ -1306,6 +1306,7 @@ BEGIN
     E_FILE                  "ATTENTION: Can not open File!"
     I_ASCII                 "Importing File ..."
     I_DI                    "Reading Digital Instruments© File ..."
+    I_GWY                   "Reading Gwyddion File ..."
     I_HDF                   "Reading HDF-File ..."
     I_BMP                   "Importing BMP-File ..."
     E_UNKNOWN_FILE          "ERROR: Unknown File!"
