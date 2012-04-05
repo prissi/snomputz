@@ -2995,7 +2995,7 @@ FertigMaske:
 					pCoord.right = pBmp->pDib->bmiHeader.biWidth * fZoom;
 					pCoord.bottom = pBmp->pDib->bmiHeader.biHeight * fZoom;
 					DisplayDib( hdc, pBmp->pDib, TopHwnd, &pCoord, 0, pBmp->pCacheBits );
-					DrawScanLine( hdc, pBmp, wZoomFaktor );
+					DrawScanLine( hdc, pBmp, 1.0/fZoom );
 					DrawScanLinePlot( hdc, pBmp, 1.0/fZoom, TRUE );
 					DrawDotsPlot( hdc, pBmp, 1.0/fZoom );
 				}
