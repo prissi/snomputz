@@ -78,7 +78,7 @@ BOOL OpenCreateImage( LPCSTR datei );
 #define ID_TOOLBAR	17
 #define ID_STATUSBAR 18
 
-#define iMaxTool 21
+#define iMaxTool 23
 
 TBBUTTON pToolbarButtons[] = {
 	{ 6, IDM_MESS, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0 },

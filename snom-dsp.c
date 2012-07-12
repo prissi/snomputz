@@ -2308,7 +2308,7 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 			max_h = max( max_h, pBmp->dot_histogramm[i].hgt );
 		}
 		max_h -= min_h;
-		if(  max_h==min_h  ) {
+		if(  max_h==min_h  ||  max_h==0) {
 			return;
 		}
 		fOffset = min_h * pBild->fSkal;
