@@ -1509,18 +1509,14 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 					}
 				}
 				// Ausmaüe (hoffentlich!)
-				else if( strstr( str, "\\Scan size: " ) == str ) {
-					if( lVersion >= 0x04400000l ) {
-						sscanf( str+12, "%Flf %Flf %Fs", (LPDOUBLE)&lfX, (LPDOUBLE)&lfY, (LPSTR)str2 );
-					}
-					else {
+				else if( strstr( str, "\\Scan size: " ) == str  ||  strstr( str, "\\Scan Size: " ) == str ) {
+					if( lVersion < 0x04400000l  ||  3!=sscanf( str+12, "%Flf %Flf %Fs", (LPDOUBLE)&lfX, (LPDOUBLE)&lfY, (LPSTR)str2 )   ) {
 						sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&lfX, (LPSTR)str2 );
 					}
 					if( ReadWord( str2 ) == ReadWord( "um" )  ||  ReadWord( str2 ) == ReadWord( "~m" ) ) {
 						lfX *= 1000.0;
 						lfY *= 1000.0;
 					}
-					// Weitere Einheiten ????
 				}
 				break;
 
@@ -1597,6 +1593,24 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						lstrcpy( pSnom->Lumi.strTitel, str+13 );
 					}
 				}
+				else if( strstr( str, "\\Image Data: " ) == str ) {
+					BYTE *c = str+13;
+					while(  *c!='\"'  &&  *c  ) c++;
+					c++;
+					c[strlen(c)-1] = 0;
+					if( strstr( str+13, "Height" ) ) {
+						Header = TOPO;
+						lstrcpy( pSnom->Topo.strTitel, c );
+					}
+					else if( strstr( str+13, "Deflection" )  ||  strstr( str+13, "Amplitude" ) ) {
+						Header = ERRO;
+						lstrcpy( pSnom->Error.strTitel, c );
+					}
+					else if( strstr( str+13, "Luminescence" ) ) {
+						Header = LUMI;
+						lstrcpy( pSnom->Lumi.strTitel, c );
+					}
+				}
 				break;
 
 			case 'N':
@@ -1608,7 +1622,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 
 			case 'A':
 				// Ausmaüe2
-				if( strstr( str, "\\Aspect ratio: " ) == str ) {
+				if( strstr( str, "\\Aspect ratio: " ) == str  ||  strstr( str, "\\Aspect Ratio: " ) == str ) {
 					sscanf( str+15, "%Flf%*c%Flf", (LPDOUBLE)&lfAspect, (LPDOUBLE)&lfY );
 					lfAspect /= lfY;
 				}
@@ -1619,23 +1633,23 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 					                                      // Verstaerkung, nm pro pixel!
 					BYTE *c = strstr( str, "]" );
 					if( Header == TOPO ) {
-						pSnom->Topo.fSkal = atof( c+1 );
+						pSnom->Topo.fSkal = atof( c+1 )/1000;
 					}
 					if( Header == ERRO ) {
-						pSnom->Error.fSkal = atof( c+1 );
+						pSnom->Error.fSkal = atof( c+1 )/1000;
 					}
 					if( Header == LUMI ) {
-						pSnom->Lumi.fSkal = atof( c+1 );
+						pSnom->Lumi.fSkal = atof( c+1 )/1000;
 					}
 				}
 				else if( strstr( str, "\\@2:Image Data: " ) == str ) { // Art der Daten
 					// Beispiel "\@2:Image Data: S [Height] "Height""
 					BYTE *t = NULL, *s = strstr( str, " \"" );
-					if( strstr( str, " [Height]" ) != NULL ) {
+					if( strstr( str, " [Height]" ) ) {
 						Header = TOPO;
 						t = pSnom->Topo.strTitel;
 					}
-					else if( strstr( str, " [Deflection]" ) != NULL ) {
+					else if( strstr( str, " [Deflection]" )  ||  strstr( str, " [AmplitudeError]" )  ) {
 						Header = ERRO;
 						t = pSnom->Error.strTitel;
 					}
@@ -1729,7 +1743,8 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				break;
 		} // switch
 
-		if( strstr( str, "\\*NCAFM image list" ) == str  ||  strstr( str, "\\*Ciao image list" ) == str  ||  strstr( str, "\\**File list end" ) == str  ||  *str == 0x1A ) {
+		// newer files always terminate by "File list end"
+		if(  strstr( str, "\\*NCAFM image list" ) == str  ||  strstr( str, "\\*Ciao image list" ) == str  ||  strstr( str, "\\**File list end" ) == str  ||  *str == 0x1A ) {
 			if( Header ) {
 				LONG lOldpos = _llseek( hFile, 0l, 1 );
 				LPBYTE pPtr;
