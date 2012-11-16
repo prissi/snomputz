@@ -395,9 +395,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						hOld = SelectObject( hDC2, hBitmap );
 
 						BitBlt( hDC2, 0, 0, w, h, NULL, 0, 0, WHITENESS );
+						DrawDotsPlot( hDC2, pBmp, 1.0 );
 						DrawScanLine( hDC2, pBmp, 1 );
 						DrawScanLinePlot( hDC2, pBmp, 1, FALSE );
-						DrawDotsPlot( hDC2, pBmp, 1.0 );
 
 						// Testfarben ermitteln!
 						SelectObject( hDC2, CreatePen( PS_INSIDEFRAME, 1, cMarkierungRechts ) );

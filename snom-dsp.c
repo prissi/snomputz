@@ -2552,6 +2552,9 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 	BOOLEAN	bRahmenZeichnen = TRUE;
 	LPSNOMDATA pSnom = &pBmp->pSnom[pBmp->iAktuell];
 	int i, j, iSize = 2;
+	// zoom factor for crosses and radius
+	const double fZoom = fScale!=1.0 ? fScale : (double)pBmp->pSnom[pBmp->iAktuell].h / (double)( pBmp->rectLinks.bottom-pBmp->rectLinks.top );
+	const int endwidth = max( 2, 2/fZoom );
 
 	if( pBmp->dot_histogramm_count == 0  ||  pSnom->Topo.bPseudo3D ) {
 		return;
@@ -2562,10 +2565,10 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 
 		POINT pt, d;
 
-		pt.x = ( pBmp->rectLinks.left + pBmp->dot_histogramm[i].x )/fScale;
-		pt.y = ( pBmp->rectLinks.top + pBmp->dot_histogramm[i].y )/fScale;
-		d.x = max(2,pBmp->dot_histogramm[i].radius_x/fScale);
-		d.y = max(2,pBmp->dot_histogramm[i].radius_y/fScale);
+		pt.x = (int)( ( pBmp->rectLinks.left+pBmp->dot_histogramm[i].x*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pBmp->pSnom[pBmp->iAktuell].w )/fScale );
+		pt.y = (int)( ( pBmp->rectLinks.top+pBmp->dot_histogramm[i].y*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pBmp->pSnom[pBmp->iAktuell].h )/fScale );
+		d.x = max(2,pBmp->dot_histogramm[i].radius_x)/fZoom;
+		d.y = max(2,pBmp->dot_histogramm[i].radius_y)/fZoom;
 
 		// make a cross
 		MoveToEx( hdc, pt.x-d.x, pt.y, NULL );
@@ -2573,14 +2576,14 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 		MoveToEx( hdc, pt.x, pt.y-d.y, NULL );
 		LineTo( hdc, pt.x, pt.y+d.y );
 		// and mark the ends
-		MoveToEx( hdc, pt.x-2, pt.y-d.y, NULL );
-		LineTo( hdc, pt.x+2, pt.y-d.y );
-		MoveToEx( hdc, pt.x-2, pt.y+d.y, NULL );
-		LineTo( hdc, pt.x+2, pt.y+d.y );
-		MoveToEx( hdc, pt.x-d.x, pt.y-2, NULL );
-		LineTo( hdc, pt.x-d.x, pt.y+2 );
-		MoveToEx( hdc, pt.x+d.x, pt.y-2, NULL );
-		LineTo( hdc, pt.x+d.x, pt.y+2 );
+		MoveToEx( hdc, pt.x-endwidth, pt.y-d.y, NULL );
+		LineTo( hdc, pt.x+endwidth, pt.y-d.y );
+		MoveToEx( hdc, pt.x-endwidth, pt.y+d.y, NULL );
+		LineTo( hdc, pt.x+endwidth, pt.y+d.y );
+		MoveToEx( hdc, pt.x-d.x, pt.y-endwidth, NULL );
+		LineTo( hdc, pt.x-d.x, pt.y+endwidth );
+		MoveToEx( hdc, pt.x+d.x, pt.y-endwidth, NULL );
+		LineTo( hdc, pt.x+d.x, pt.y+endwidth );
 	}
 	DeleteObject( SelectObject( hdc, hOld ) );
 }
