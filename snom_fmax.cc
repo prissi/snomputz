@@ -36,7 +36,7 @@ static int next_neighbour_y[8] = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
 
 extern "C" UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord );
-extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter );
+extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter, const int maxradius );
 
 
 UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord )
@@ -229,7 +229,7 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LON
 
 
 // calc radius and possibly recenter on dot
-void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter )
+void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero_level, const int iAveBefore, const UWORD iDotNr, XYZ_COORD *pDots, const WORD quantisation, const BOOL recenter, const int maxradius )
 {
 	WORD x, y, i;
 
@@ -300,7 +300,9 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 		}
 		pDots[i].radius_x -= j;
 		pDots[i].radius_x /= 2;
-
+		if(  pDots[i].radius_x>maxradius  ) {
+			pDots[i].radius_x = maxradius;
+		}
 		// average each dot row
 		puZeile = puData+x;
 		for( y = 0;  y < h;  y++ ) {
@@ -356,6 +358,9 @@ void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const UWORD zero
 		}
 		pDots[i].radius_y -= j;
 		pDots[i].radius_y /= 2;
+		if(  pDots[i].radius_y>maxradius  ) {
+			pDots[i].radius_y = maxradius;
+		}
 	}
 }
 

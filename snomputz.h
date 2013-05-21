@@ -484,7 +484,9 @@
 #define QD_EDIT_TOO_HIGH 506
 #define QD_REMOVE_OVERLAP 507
 #define QD_EDIT_OVERLAP 508
-#define QD_RESULT 509
+#define QD_RADIUS 509
+#define QD_EDIT_RADIUS 510
+#define QD_RESULT 511
 
 //
 #if !defined(SS_BITMAP)

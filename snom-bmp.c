@@ -2834,7 +2834,7 @@ FertigMaske:
 						pBmp->dot_histogramm[pBmp->dot_number].hgt = pData[pt.x+pt.y*pSnom->w];
 						pBmp->dot_histogramm[pBmp->dot_number].radius_x = 0;
 						pBmp->dot_histogramm[pBmp->dot_number].radius_y = 0;
-						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0 );
+						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0, 5 );
 						pBmp->dot_number++;
 					}
 					else {

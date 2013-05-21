@@ -3231,6 +3231,12 @@ RecalcDot:
 	{
 		int iOffset = GetScrollPos( hfStart, SB_CTL );
 		BOOL new_center = IsDlgButtonChecked( hdlg, QD_CENTER_ON_DOT );
+		int maxradius = 65535;
+		if(  IsDlgButtonChecked( hdlg, QD_RADIUS )  ) {
+			char numstr[16];
+			GetDlgItemText( hdlg, QD_EDIT_RADIUS, numstr, 16 );
+			maxradius = max( 3, atoi(numstr) );
+		}
 		if( iOffset != pBmp->dot_radius  ||  new_center != bCenter  ) {
 			double Median, MedianRMS;
 			LPUWORD pData = GetDataPointer( pBmp, TOPO );
@@ -3249,7 +3255,7 @@ RecalcDot:
 			pBmp->dot_histogramm = NULL;
 			pBmp->dot_number = ListOfMaxima( pData, pSnom->w, pSnom->h, pSnom->Topo.uMaxDaten, pBmp->dot_radius, &( pBmp->dot_histogramm ) );
 			pBmp->dot_histogramm_count = pBmp->dot_number;
-			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter );
+			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter, maxradius );
 			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
 			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
