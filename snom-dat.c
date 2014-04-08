@@ -1512,6 +1512,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				else if( strstr( str, "\\Scan size: " ) == str  ||  strstr( str, "\\Scan Size: " ) == str ) {
 					if( lVersion < 0x04400000l  ||  3!=sscanf( str+12, "%Flf %Flf %Fs", (LPDOUBLE)&lfX, (LPDOUBLE)&lfY, (LPSTR)str2 )   ) {
 						sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&lfX, (LPSTR)str2 );
+						lfY = lfX;
 					}
 					if( ReadWord( str2 ) == ReadWord( "um" )  ||  ReadWord( str2 ) == ReadWord( "~m" ) ) {
 						lfX *= 1000.0;
