@@ -821,7 +821,7 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 	 *		13A ???
 	 *		19C	Probenkommentar
 	 *		29A	"Topography"
-	 *		2C3 Strüme etc.
+	 *		2C3 Stroeme etc.
 	 *		2EC	Scanbereich "Scan Size: x"(float)
 	 *		315 Startposition als String: "Tip position: x,y" (beides float)
 	 *
@@ -961,8 +961,8 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	 *
 	 *	Date												 : Datum Uhrzeit
 	 *
-	 *	Field X Size in nm           : Grüüe gesamt
-	 *	Field Y Size in nm           : Grüüe gsamt
+	 *	Field X Size in nm           : Groesse gesamt
+	 *	Field Y Size in nm           : Groesse gesamt
 	 *	Image Size in X              : Punkte X
 	 *	Image Size in Y              : Punkte Y
 	 *	Increment X                  : Grüüe/Punkte in X
@@ -1368,6 +1368,9 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	LONG lModuloSkal = 0l;
 	double lfX, lfY, lfAspect = 1.0;        // X zu Y
 
+	double z_sense_per_volt = 1.0;	// needed for new format
+	double z_defl_per_volt = 1.0;	// needed for new format
+
 	// Einige Defaultwerte eintagen
 	pBmp->pPsi.fRot = 0.0;
 	// Header ist hoffentlich Def.-müüig kleiner als 65536 (zumindest was den INHALT angeht ... )
@@ -1443,6 +1446,13 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	 *	Im Instrumentheader(!) stand
 	 *   \@Sens. Zscan: V f nm/V	(Maybe final data is SensZscan*ZmagnifyX*ZmagnifyZscale*ZscaleFlsb)
 	 *   \@Sens. Deflection: V 183.9473 nm/V dito.
+	 *
+	 * Newest version
+	 *   in general header
+	 * 	 \@Sens. Zsens: V f nm/V
+	 *   in Ciao image ...
+	 *   \@2:Z scale: V [Sens. Zsens] (f V/LSB) f V
+	 *   to get a z scale take the frist float to get the z-sense and multiply it by the full scale (last from ciao element) and divide by 65535
 	 *
 	 * Neue Erkenntnisse sind willkommen ...
 	 *
@@ -1622,7 +1632,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				break;
 
 			case 'A':
-				// Ausmaüe2
+				// Ausmasse
 				if( strstr( str, "\\Aspect ratio: " ) == str  ||  strstr( str, "\\Aspect Ratio: " ) == str ) {
 					sscanf( str+15, "%Flf%*c%Flf", (LPDOUBLE)&lfAspect, (LPDOUBLE)&lfY );
 					lfAspect /= lfY;
@@ -1630,11 +1640,20 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				break;
 
 			case '@':       // New Header (wozu gab es eigentlich die alten Felder???)
-				if( strstr( str, "\\@Z magnify: " ) == str ) { // Beispiel: "\@Z magnify: C [2:Z scale] 0.3451050 "
+				if( strstr( str, "\\@Sens. Zsens: V " ) == str  ) {
+					z_sense_per_volt = atof( str+17 );
+				}
+				else if( strstr( str, "\\@2:Z scale: V [Sens. Zsens]" ) == str  ) {
+					char *c = strrchr( str, ')' );
+					if(  c  ) {
+						pSnom->Topo.fSkal = z_sense_per_volt*atof( c+1 )/65535.0;
+					}
+				}
+				else if( strstr( str, "\\@Z magnify: " ) == str ) { // Beispiel: "\@Z magnify: C [2:Z scale] 0.3451050 "
 					                                      // Verstaerkung, nm pro pixel!
 					BYTE *c = strstr( str, "]" );
 					if( Header == TOPO ) {
-						pSnom->Topo.fSkal = atof( c+1 )/1000;
+						pSnom->Topo.fSkal = atof( c+1 )/20;
 					}
 					if( Header == ERRO ) {
 						pSnom->Error.fSkal = atof( c+1 )/1000;
@@ -1665,7 +1684,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				break;
 
 			case 'Z':
-				// Z-Verstürkung (hoffentlich in nm)
+				// Z-Verstaerkung (hoffentlich in nm)
 				if( lVersion  &&  strstr( str, "\\Z scale: " ) == str )	{
 					if( Header == TOPO ) {
 						LPSTR c1 = str+10, c2 = pBmp->pPsi.cZGainUnit;
@@ -3860,8 +3879,6 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	_lclose( hFile );
 	return ( TRUE );
 }
-
-
 // 27.7.97
 
 
