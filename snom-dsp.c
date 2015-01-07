@@ -863,7 +863,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	RECT xywh;
 	double maxlinkscol = 1.0, maxrechtscol = 1.0;
 	long lScaleFactor;      // =1024/maxlinkscol bzw. 1024/maxrechtscol
-	LONG usedcol, w, ww, h, skala_w, skala_h;
+	LONG usedcol, w, ww, h, skala_w, skala_h, h_corrected;
 	WORD startcol, endcol;
 	WORD maxlinks = 0, maxrechts = 0;
 	int iAkt = pBmp->iAktuell;
@@ -1000,6 +1000,10 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 
 	//****  Ab hier werden die Ausma�e berechet
 	w = h = 0;
+	h_corrected = pSnom->h;
+	if(  pSnom->fY != pSnom->fX   &&  pSnom->fY / pSnom->fX > 0.1   ) {
+		h_corrected *= pSnom->fY/pSnom->fX;
+	}
 	SelectObject( hDC, CreateFontIndirect( &lf ) );  // F�r alle Rechnungen
 	// LinksX==0  (analog f�r RechtsX) hei�t: Nicht existent!
 
@@ -1014,7 +1018,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		skala_h = size.cy*3+8;
 		GetTextExtentPoint( hDC, "Ty", 2, &size );
 		size.cy *= 2;   // Doppelte H�he der �berschriften
-		CalcDibSize( hDC, pSnom->w, pSnom->h, &xywh, pLinks->bPseudo3D, FALSE );
+		CalcDibSize( hDC, pSnom->w, h_corrected, &xywh, pLinks->bPseudo3D, FALSE );
 		pBmp->rectLinks.left = (int)( 26+skala_w );
 		pBmp->rectLinks.top = 10+size.cy;
 		h = 20+xywh.bottom+size.cy+skala_h;
@@ -1029,7 +1033,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		skala_h = size.cy*3+8;
 		GetTextExtentPoint( hDC, "Ty", 2, &size );
 		size.cy *= 2;   // Doppelte H�he der �berschriften
-		CalcDibSize( hDC, pSnom->w, pSnom->h, &xywh, pRechts->bPseudo3D, FALSE );
+		CalcDibSize( hDC, pSnom->w, h_corrected, &xywh, pRechts->bPseudo3D, FALSE );
 		if( h < 2l+xywh.bottom+size.cy+skala_h ) {
 			h = 20+xywh.bottom+size.cy+skala_h;
 		}
@@ -1061,7 +1065,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			else {
 				pBmp->rectPlot.top = pBmp->rectRechts.top;
 			}
-			pBmp->rectPlot.bottom = pBmp->rectPlot.top+pSnom->h;
+			pBmp->rectPlot.bottom = pBmp->rectPlot.top+h_corrected;
 		}
 		else {
 			// Bild ist darunter
@@ -1078,7 +1082,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 				pBmp->rectPlot.right = pBmp->rectLinks.right;
 			}
 			pBmp->rectPlot.top = h+10;
-			pBmp->rectPlot.bottom = h+10+pSnom->h;
+			pBmp->rectPlot.bottom = h+10+h_corrected;
 		}
 	}
 
@@ -1152,14 +1156,14 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			else {
 				//****	2D-Skalierung (ist zum Gl�ck einfacher ...)
 				// Skalierung x-Achse
-				DrawHorizontalAxis( hDC2, pBmp->rectLinks.left, pBmp->rectLinks.top+pSnom->h, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
+				DrawHorizontalAxis( hDC2, pBmp->rectLinks.left, pBmp->rectLinks.top+h_corrected, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
 				// Skalierung z-Achse
 				if( !pLinks->bShowNoZ )	{
 					if( pLinks->bSpecialZUnit ) {
-						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, pLinks->strZUnit, NULL );
+						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, h_corrected, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, pLinks->strZUnit, NULL );
 					}
 					else {
-						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, pSnom->h, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
+						DrawVerticalAxis( hDC2, 10, pBmp->rectLinks.top, h_corrected, 2, 10, maxlinks*pLinks->fSkal*pLinks->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
 					}
 				}
 			}
@@ -1182,14 +1186,14 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			else {
 				//****	2D-Skalierung (ist zum Gl�ck einfacher ...)
 				// Skalierung x-Achse
-				DrawHorizontalAxis( hDC2, pBmp->rectRechts.left, pBmp->rectRechts.top+pSnom->h, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
+				DrawHorizontalAxis( hDC2, pBmp->rectRechts.left, pBmp->rectRechts.top+h_corrected, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
 				// Skalierung z-Achse
 				if( !pRechts->bShowNoZ ) {
 					if( pRechts->bSpecialZUnit ) {
-						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, pRechts->strZUnit, NULL );
+						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, h_corrected, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, pRechts->strZUnit, NULL );
 					}
 					else {
-						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, pSnom->h, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
+						DrawVerticalAxis( hDC2, pBmp->rectRechts.left-skala_w-16, pBmp->rectRechts.top, h_corrected, 2, 10, maxrechts*pRechts->fSkal*pRechts->fEnde/100.0, 0.0, STR_TOPO_UNIT, STR_TOPO_SUNIT );
 					}
 				}
 			}
@@ -1240,24 +1244,23 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 
 		endcol = startcol + ( (double)maxlinks*maxlinkscol+0.5 );
 		if( !pLinks->bPseudo3D  ||  maxlinks <= 2 ) {
-			pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-pSnom->h )*ww;
+			pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-h_corrected )*ww;
 			if( !pLinks->bShowNoZ )	{
 				// f�r die Legende den Graustreifen ...
-				for( y = 0;  y < pSnom->h;  y++ ) {
+				for( y = 0;  y < h_corrected;  y++ ) {
 					// -1 bei y, da die Bitmap nur bis pSnom->h-1 l�uft (for y<h!)
 					for( x = 0;	 x < 8;	   x++ ) {
 						if( !DontEmulContrast ) {
-							pDest[x-pBmp->rectLinks.left+2+( pSnom->h-y-1 )*ww] = (BYTE)( startcol+pLinks->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pLinks->fEnde-pLinks->fStart )/100.0/pSnom->h );
+							pDest[x-pBmp->rectLinks.left+2+( h_corrected-y-1 )*ww] = (BYTE)( startcol+pLinks->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pLinks->fEnde-pLinks->fStart )/100.0/h_corrected );
 						}
 						else {
-							pDest[x-pBmp->rectLinks.left+2+( pSnom->h-y-1 )*ww] = (BYTE)( startcol +( y*( endcol-startcol ) )/pSnom->h );
+							pDest[x-pBmp->rectLinks.left+2+( h_corrected-y-1 )*ww] = (BYTE)( startcol +( y*( endcol-startcol ) )/h_corrected );
 						}
 					}
 				}
 			}
 
-			pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-pSnom->h )*ww;
-			pSrc = Daten+pSnom->w*( pSnom->h-1 );
+			pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-h_corrected )*ww;
 			lScaleFactor = 1024l/maxlinkscol;
 			lowlim = 0;
 			if( DontEmulContrast ) {
@@ -1289,15 +1292,16 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 					}
 				}
 
-				for( y = 0;  y < pSnom->h;  y++ ) {
+				for( y = 0;  y < h_corrected;  y++ ) {
+					pSrc = Daten + pSnom->w*(pSnom->h-(int)((double)y*(pSnom->fX/pSnom->fY)+1.0) );
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						pDest[x] = pColorConvert[ pSrc[x] ];
 					}
 					pDest += ww;
-					pSrc -= pSnom->w;
 				}
 			}
 			else {
+				pSrc = Daten + (pSnom->w*pSnom->h-1);
 				for( y = 0;  y < pSnom->h;  y++ ) {
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						if( pBmp->pMaske  &&  ( ( x+y )%2 ) == 0  &&  IsMaske( pBmp, x, y ) ) {
@@ -1330,25 +1334,25 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			if( pLinks->uKontur ) {
 				UWORD last_contour, diff = pLinks->uKontur;
 				pSrc = Daten;
-				pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-pSnom->h )*ww;
+				pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-h_corrected )*ww;
 
 				// Zuerst Zeilenweise
-				for( y = 0; y < pSnom->h; y++ )	{
+				for( y = 0; y < h_corrected; y++ )	{
 					last_contour = ( pSrc[y*pSnom->w] )/diff;
 					for( x = 1;  x < pSnom->w-1;  x++ ) {
 						if( pSrc[y*pSnom->w+x]/diff != last_contour ) {
 							last_contour = ( pSrc[y*pSnom->w+x]/diff );
-							pDest[( pSnom->h-1-y )*ww+x] = 4; // set contour colour
+							pDest[( h_corrected-1-y )*ww+x] = 4; // set contour colour
 						}
 					}
 				}
 				// Dann Spaltenweise
 				for( x = 0;  x < pSnom->w;  x++ ) {
 					last_contour = ( pSrc[x] )/diff;
-					for( y = 1;  y < pSnom->h;  y++ ) {
+					for( y = 1;  y < h_corrected;  y++ ) {
 						if( pSrc[y*pSnom->w+x]/diff != last_contour ) {
 							last_contour = ( pSrc[y*pSnom->w+x]/diff );
-							pDest[( pSnom->h-1-y )*ww+x] = 4; // set contour colour
+							pDest[( h_corrected-1-y )*ww+x] = 4; // set contour colour
 						}
 					}
 				}
@@ -1358,7 +1362,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		else {
 			// 3D-Bitmap erstellen
 			Draw3D( pBits, pBmp->rectLinks.left, pBmp->rectLinks.top, ww, pCacheDib->bmiHeader.biHeight,
-			        Daten, pSnom->w, pSnom->h, 0, maxlinks,
+			        Daten, pSnom->w, h_corrected, 0, maxlinks,
 			        maxlinkscol, startcol, pLinks );
 		}
 	}
@@ -1388,24 +1392,24 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		startcol = endcol+1;
 		endcol = startcol + maxrechts*maxrechtscol;
 		if( !pRechts->bPseudo3D  ||  maxrechts <= 2 ) {
-			pDest = pBits+pBmp->rectRechts.left+( h-pBmp->rectRechts.top-pSnom->h )*ww;
+			pDest = pBits+pBmp->rectRechts.left+( h-pBmp->rectRechts.top-h_corrected )*ww;
 
 			if( !pRechts->bShowNoZ ) {
 				// f�r die Legende den Graustreifen ...
-				for( y = 0;  y < pSnom->h;  y++ ) {
-					// -1 bei y, da die Bitmap nur bis pSnom->h-1 l�uft (for y<h!)
+				for( y = 0;  y < h_corrected;  y++ ) {
+					// -1 bei y, da die Bitmap nur bis h_corrected-1 l�uft (for y<h!)
 					for( x = 0;	 x < 8;	   x++ ) {
 						if( ( !DontEmulContrast )|pRechts->bPseudo3D ) {
-							pDest[x-skala_w-24+( pSnom->h-y-1 )*ww] = (BYTE)( startcol+pRechts->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pRechts->fEnde-pRechts->fStart )/100.0/pSnom->h );
+							pDest[x-skala_w-24+( h_corrected-y-1 )*ww] = (BYTE)( startcol+pRechts->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pRechts->fEnde-pRechts->fStart )/100.0/h_corrected );
 						}
 						else {
-							pDest[x-skala_w-24+( pSnom->h-y-1 )*ww] = (BYTE)( startcol + ( y*( endcol-startcol ) )/pSnom->h );
+							pDest[x-skala_w-24+( h_corrected-y-1 )*ww] = (BYTE)( startcol + ( y*( endcol-startcol ) )/h_corrected );
 						}
 					}
 				}
 			}
 
-			pSrc = Daten+pSnom->w*( pSnom->h-1 );
+			pSrc = Daten+pSnom->w*( h_corrected-1 );
 			lScaleFactor = 1024l/maxrechtscol;
 			lLowlim = 0;
 			if( DontEmulContrast ) {
@@ -1435,7 +1439,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 						pColorConvert[x] = (BYTE)( startcol + ( ( (long)( x-lLowlim ) )<<10l )/lScaleFactor );
 					}
 				}
-				for( y = 0;  y < pSnom->h;  y++ ) {
+				for( y = 0;  y < h_corrected;  y++ ) {
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						pDest[x] = pColorConvert[ pSrc[x] ];
 					}
@@ -1444,7 +1448,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 				}
 			}
 			else {
-				for( y = 0;  y < pSnom->h;  y++ ) {
+				for( y = 0;  y < h_corrected;  y++ ) {
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						if( pBmp->pMaske  &&  ( ( x+y )%2 ) == 0  &&  IsMaske( pBmp, x, y ) ) {
 							pDest[x] = 4;
@@ -1473,25 +1477,25 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			if( pRechts->uKontur ) {
 				UWORD last_contour, diff = pRechts->uKontur;
 				pSrc = Daten;
-				pDest = pBits+pBmp->rectRechts.left+( h-pBmp->rectRechts.top-pSnom->h )*ww;
+				pDest = pBits+pBmp->rectRechts.left+( h-pBmp->rectRechts.top-h_corrected )*ww;
 
 				// Zuerst Zeilenweise
-				for( y = 0; y < pSnom->h; y++ )	{
+				for( y = 0; y < h_corrected; y++ )	{
 					last_contour = ( pSrc[y*pSnom->w] )/diff;
 					for( x = 1;  x < pSnom->w-1;  x++ ) {
 						if( pSrc[y*pSnom->w+x]/diff != last_contour ) {
 							last_contour = ( pSrc[y*pSnom->w+x]/diff );
-							pDest[( pSnom->h-1-y )*ww+x] = 3; // set contour colour
+							pDest[( h_corrected-1-y )*ww+x] = 3; // set contour colour
 						}
 					}
 				}
 				// Dann Spaltenweise
 				for( x = 0;  x < pSnom->w;  x++ ) {
 					last_contour = ( pSrc[x] )/diff;
-					for( y = 1;  y < pSnom->h;  y++ ) {
+					for( y = 1;  y < h_corrected;  y++ ) {
 						if( pSrc[y*pSnom->w+x]/diff != last_contour ) {
 							last_contour = ( pSrc[y*pSnom->w+x]/diff );
-							pDest[( pSnom->h-1-y )*ww+x] = 3; // set contour colour
+							pDest[( h_corrected-1-y )*ww+x] = 3; // set contour colour
 						}
 					}
 				}
@@ -1501,7 +1505,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		else {
 			// 3D-Bitmap erstellen
 			Draw3D( pBits, pBmp->rectRechts.left, pBmp->rectRechts.top, ww, pCacheDib->bmiHeader.biHeight,
-			        Daten, pSnom->w, pSnom->h, 0, maxrechts,
+			        Daten, pSnom->w, h_corrected, 0, maxrechts,
 			        maxrechtscol, startcol, pRechts );
 		}
 	}
@@ -2016,6 +2020,7 @@ void CALLBACK DrawLine( int x, int y, DDA_DATA HUGE *pDData )
 // Malt die Markierungslinie neu (in Topografie UND Lumineszens, wenn vorhanden)
 void DrawScanLine( HDC hdc, LPBMPDATA pBmp, double fZoom )
 {
+	LPSNOMDATA pSnom = &pBmp->pSnom[pBmp->iAktuell];
 	RECT rScan;
 	HGDIOBJ	hOld;
 	DDA_DATA DData;
@@ -2032,17 +2037,17 @@ void DrawScanLine( HDC hdc, LPBMPDATA pBmp, double fZoom )
 	}
 
 	if( pBmp->rectLinks.left  &&
-	    ( ( pBmp->Links == TOPO  &&  !pBmp->pSnom[pBmp->iAktuell].Topo.bPseudo3D )  ||
-	      ( pBmp->Links == ERRO  &&  !pBmp->pSnom[pBmp->iAktuell].Error.bPseudo3D ) ||
-	      ( pBmp->Links == LUMI  &&  !pBmp->pSnom[pBmp->iAktuell].Lumi.bPseudo3D ) ) ) {
+	    ( ( pBmp->Links == TOPO  &&  !pSnom->Topo.bPseudo3D )  ||
+	      ( pBmp->Links == ERRO  &&  !pSnom->Error.bPseudo3D ) ||
+	      ( pBmp->Links == LUMI  &&  !pSnom->Lumi.bPseudo3D ) ) ) {
 		hOld = SelectObject( hdc, CreatePen( PS_SOLID, DData.iWidth, cMarkierungLinks ) );
 		for( i = 0;  i < pBmp->lMaxScan;  i++ )	{
 			MemMove( &rScan, pBmp->rectScan+i, sizeof( RECT ) );
 			DPtoLP( hdc, &rScan, 2 );       // to adjust for Mapmodes unequal to MM_TEXT
-			x1 = (int)( ( pBmp->rectLinks.left+rScan.left*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pBmp->pSnom[pBmp->iAktuell].w )/fZoom );
-			y1 = (int)( ( pBmp->rectLinks.top+rScan.top*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pBmp->pSnom[pBmp->iAktuell].h )/fZoom );
-			x2 = (int)( ( pBmp->rectLinks.left+rScan.right*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pBmp->pSnom[pBmp->iAktuell].w )/fZoom );
-			y2 = (int)( ( pBmp->rectLinks.top+rScan.bottom*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pBmp->pSnom[pBmp->iAktuell].h )/fZoom );
+			x1 = (int)( ( pBmp->rectLinks.left+rScan.left*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pSnom->w )/fZoom );
+			y1 = (int)( ( pBmp->rectLinks.top+rScan.top*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pSnom->h )/fZoom );
+			x2 = (int)( ( pBmp->rectLinks.left+rScan.right*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pSnom->w )/fZoom );
+			y2 = (int)( ( pBmp->rectLinks.top+rScan.bottom*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pSnom->h )/fZoom );
 			if( x1 == x2  &&  y1 == y2 ) {
 				continue;       // Nix zu zeichen!
 			}
@@ -2069,17 +2074,17 @@ void DrawScanLine( HDC hdc, LPBMPDATA pBmp, double fZoom )
 	}
 
 	if( pBmp->rectRechts.left  &&
-	    ( ( pBmp->Rechts == TOPO  &&  !pBmp->pSnom[pBmp->iAktuell].Topo.bPseudo3D )  ||
-	      ( pBmp->Rechts == ERRO  &&  !pBmp->pSnom[pBmp->iAktuell].Error.bPseudo3D ) ||
-	      ( pBmp->Rechts == LUMI  &&  !pBmp->pSnom[pBmp->iAktuell].Lumi.bPseudo3D ) ) ) {
+	    ( ( pBmp->Rechts == TOPO  &&  !pSnom->Topo.bPseudo3D )  ||
+	      ( pBmp->Rechts == ERRO  &&  !pSnom->Error.bPseudo3D ) ||
+	      ( pBmp->Rechts == LUMI  &&  !pSnom->Lumi.bPseudo3D ) ) ) {
 		hOld = SelectObject( hdc, CreatePen( PS_SOLID, DData.iWidth, cMarkierungRechts ) );
 		for( i = 0;  i < pBmp->lMaxScan;  i++ )	{
 			MemMove( &rScan, pBmp->rectScan+i, sizeof( RECT ) );
 			DPtoLP( hdc, &rScan, 2 );       // to adjust for Mapmodes unequal to MM_TEXT
-			x1 = (int)( ( pBmp->rectRechts.left+rScan.left*( pBmp->rectRechts.right-pBmp->rectRechts.left )/pBmp->pSnom[pBmp->iAktuell].w )/fZoom );
-			y1 = (int)( ( pBmp->rectRechts.top+rScan.top*( pBmp->rectRechts.bottom-pBmp->rectRechts.top )/pBmp->pSnom[pBmp->iAktuell].h )/fZoom );
-			x2 = (int)( ( pBmp->rectRechts.left+rScan.right*( pBmp->rectRechts.right-pBmp->rectRechts.left )/pBmp->pSnom[pBmp->iAktuell].w )/fZoom );
-			y2 = (int)( ( pBmp->rectRechts.top+rScan.bottom*( pBmp->rectRechts.bottom-pBmp->rectRechts.top )/pBmp->pSnom[pBmp->iAktuell].h )/fZoom );
+			x1 = (int)( ( pBmp->rectRechts.left+rScan.left*( pBmp->rectRechts.right-pBmp->rectRechts.left )/pSnom->w )/fZoom );
+			y1 = (int)( ( pBmp->rectRechts.top+rScan.top*( pBmp->rectRechts.bottom-pBmp->rectRechts.top )/pSnom->h )/fZoom );
+			x2 = (int)( ( pBmp->rectRechts.left+rScan.right*( pBmp->rectRechts.right-pBmp->rectRechts.left )/pSnom->w )/fZoom );
+			y2 = (int)( ( pBmp->rectRechts.top+rScan.bottom*( pBmp->rectRechts.bottom-pBmp->rectRechts.top )/pSnom->h )/fZoom );
 			if( x1 == x2  &&  y1 == y2 ) {
 				continue;       // Nix zu zeichen!
 			}

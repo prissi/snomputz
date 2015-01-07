@@ -473,8 +473,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									lstrcpy( desc+9, pBmp->szName+pBmp->wKurzname );
 									hDC = GetDC( hwnd );
 									// Our Image should be about 7cm = 7000 height, therefore ...
-									fZoom = 7000.0/(double)pBmp->rectFenster.bottom;
-									hDC2 = CreateEnhMetaFile( hDC, str, NULL, desc );
+									fZoom = 1;//10/(double)pBmp->rectFenster.bottom;
+									hDC2 = CreateEnhMetaFile( hDC, str, &(pBmp->rectFenster), desc );
 									ReleaseDC( hwnd, hDC );
 									lf.lfHeight *= (int)fZoom;
 									DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
@@ -506,7 +506,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							hDC = GetDC( hwnd );
 							// in Metafile 20000 is 20 cm
 							// Our Image should be about 7cm = 7000 height, therefore ...
-							fZoom = 7000.0/(double)pBmp->rectFenster.bottom;
+//							fZoom = 10.0/(double)pBmp->rectFenster.bottom;
+							fZoom = 1;
 #ifdef BIT32
 							// The Rectangle is needed for correct size in Win32 (2k and up)
 							{
@@ -531,12 +532,12 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							hDC2 = CreateEnhMetaFile( hDC, sMetaName, NULL, desc );
 							ReleaseDC( hwnd, hDC );
 							// Finally draw!
-							lf.lfHeight *= (int)fZoom;
+//							lf.lfHeight *= (int)fZoom;
 							DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 							DrawScanLine( hDC2, pBmp, 1.0 );
 							DrawDotsPlot( hDC2, pBmp, 1.0 );
 							DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
-							lf.lfHeight /= (int)fZoom;
+//							lf.lfHeight /= (int)fZoom;
 							hEn = CloseEnhMetaFile( hDC2 );
 							// Copy Handle to Clipboard
 							SetClipboardData( CF_ENHMETAFILE, CopyEnhMetaFile( hEn, NULL ) );
@@ -2591,7 +2592,7 @@ FertigMaske:
 					// und Rechteck zur Maske hinzufügen
 					for( y = pBmp->rectMaske.top;  y < pBmp->rectMaske.bottom;  y++ ) {
 						for( x = pBmp->rectMaske.left;  x < pBmp->rectMaske.right;  x++ ) {
-							pBmp->pMaske[y*pBmp->wMaskeW+( x/8 )] |= 0x80>>( x%8 );
+//							pBmp->pMaske[y*pBmp->wMaskeW+( x/8 )] |= 0x80>>( x%8 );
 						}
 					}
 					pBmp->IsDirty = TRUE;
@@ -2605,6 +2606,7 @@ FertigMaske:
 		case WM_MOUSEMOVE:
 		{
 			POINT pt;
+			const double fYzoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
 
 			// Fall Maus innerhalb der Bitmap bewegt, dann Kreuz als Mauszeiger
 			GetCursorPos( &pt );
@@ -2653,11 +2655,11 @@ FertigMaske:
 				// Fall Maus innerhalb der Bitmap bewegt, dann updaten
 				if( PointInRect( &pBmp->rectLinks, pt ) ) {
 					pBmp->rectScan[iScan].right = ( pt.x-pBmp->rectLinks.left );
-					pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectLinks.top );
+					pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectLinks.top )/fYzoom;
 				}
 				if( PointInRect( &pBmp->rectRechts, pt ) ) {
 					pBmp->rectScan[iScan].right = ( pt.x-pBmp->rectRechts.left );
-					pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectRechts.top );
+					pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectRechts.top )/fYzoom;
 				}
 
 				{
@@ -2709,19 +2711,19 @@ FertigMaske:
 				// Falls Maus innerhalb der Bitmap bewegt, dann updaten
 				if( pBmp->rectLinks.left  &&  PointInRect( &pBmp->rectLinks, pt ) ) {
 					pBmp->rectMaske.right = ( pt.x-pBmp->rectLinks.left );
-					pBmp->rectMaske.bottom = ( pt.y-pBmp->rectLinks.top );
+					pBmp->rectMaske.bottom = ( pt.y-pBmp->rectLinks.top )/fYzoom;
 				}
 				if( pBmp->rectRechts.left  &&  PointInRect( &pBmp->rectRechts, pt ) ) {
 					pBmp->rectMaske.right = ( pt.x-pBmp->rectRechts.left );
-					pBmp->rectMaske.bottom = ( pt.y-pBmp->rectRechts.top );
+					pBmp->rectMaske.bottom = ( pt.y-pBmp->rectRechts.top )/fYzoom;
 				}
 
 				if( pBmp->rectLinks.left ) {
-					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.top )*pBmp->fZoom, ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.bottom )*pBmp->fZoom );
+					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.top )*pBmp->fZoom/fYzoom, ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.bottom )*pBmp->fZoom/fYzoom );
 				}
 				if( pBmp->rectRechts.left ) {
 					DeleteObject( SelectObject( hdc, CreateHatchBrush( HS_FDIAGONAL, cMarkierungRechts ) ) );
-					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.top )*pBmp->fZoom, ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.bottom )*pBmp->fZoom );
+					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.top )*pBmp->fZoom/fYzoom, ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.bottom )*pBmp->fZoom/fYzoom );
 				}
 				{
 					BYTE pStr[256];
@@ -2741,7 +2743,7 @@ FertigMaske:
 					LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
 					LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
 					WORD x = pt.x-pBmp->rectLinks.left;
-					WORD y = pt.y-pBmp->rectLinks.top;
+					WORD y = (pt.y-pBmp->rectLinks.top)/fYzoom;
 					if( x < pSnom->w  &&  y < pSnom->h  &&  pData != 0l  &&  pBild != 0l ) {
 						sprintf( (LPSTR)str, "x(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", (int)x, (double)x*pSnom->fX, (int)y, (double)y*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pData[x+( y*pSnom->w )]*pBild->fSkal, pBild->strZUnit );
 					}
@@ -2776,6 +2778,7 @@ FertigMaske:
 			// now mark regions
 			{
 				POINT pt;
+				const double fYZoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
 
 				if( pBmp->rectLinks.left == 0  &&  pBmp->rectRechts.left == 0 ) {
 					break;
@@ -2787,13 +2790,13 @@ FertigMaske:
 				if( !pBmp->bAddMaske ) {
 					if( PointInRect( &pBmp->rectLinks, pt ) ) {
 						pBmp->rectMaske.left = pBmp->rectMaske.right = ( pt.x-pBmp->rectLinks.left );
-						pBmp->rectMaske.top = pBmp->rectMaske.bottom = ( pt.y-pBmp->rectLinks.top );
+						pBmp->rectMaske.top = pBmp->rectMaske.bottom = ( pt.y-pBmp->rectLinks.top )/fYZoom;
 						pBmp->bAddMaske = TRUE;
 						SetCapture( hwnd );
 					}
 					else if( PointInRect( &pBmp->rectRechts, pt ) )	{
 						pBmp->rectMaske.left = pBmp->rectMaske.right = ( pt.x-pBmp->rectRechts.left );
-						pBmp->rectMaske.top = pBmp->rectMaske.bottom = ( pt.y-pBmp->rectRechts.top );
+						pBmp->rectMaske.top = pBmp->rectMaske.bottom = ( pt.y-pBmp->rectRechts.top )/fYZoom;
 						pBmp->bAddMaske = TRUE;
 						SetCapture( hwnd );
 					}
@@ -2809,6 +2812,8 @@ FertigMaske:
 		case WM_LBUTTONDOWN:
 			if( pBmp->bCountDots ) {
 				POINT pt;
+				const double fYZoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
+
 				pt.x = ( LOWORD( lParam )+GetScrollPos( hwnd, SB_HORZ ) )/pBmp->fZoom;
 				pt.y = ( HIWORD( lParam )+GetScrollPos( hwnd, SB_VERT ) )/pBmp->fZoom;
 				if( PointInRect( &pBmp->rectLinks, pt ) ) {
@@ -2817,7 +2822,7 @@ FertigMaske:
 					LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
 					// offset and invert h
 					pt.x -= pBmp->rectLinks.left;
-					pt.y = ( pt.y-pBmp->rectLinks.top );
+					pt.y = ( pt.y-pBmp->rectLinks.top )/fYZoom;
 					if( pBmp->bCountDots == 1 ) {
 						// add to histogramm
 						if(  pBmp->dot_histogramm == NULL  ) {
@@ -2890,6 +2895,7 @@ FertigMaske:
 			// sacnlines?
 			else {
 				POINT pt;
+				const double fYZoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
 				int iScan = pBmp->lMaxScan-1;
 
 				if( pBmp->rectLinks.left == 0  &&  pBmp->rectRechts.left == 0 ) {
@@ -2916,7 +2922,7 @@ FertigMaske:
 							pBmp->lMaxScan = 1;
 						}
 						pBmp->rectScan[iScan].left = pBmp->rectScan[iScan].right = ( pt.x-pBmp->rectLinks.left );
-						pBmp->rectScan[iScan].top = pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectLinks.top );
+						pBmp->rectScan[iScan].top = pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectLinks.top )/fYZoom;
 						pBmp->bMarkScanLine = TRUE;
 						SetCapture( hwnd );
 					}
@@ -2936,7 +2942,7 @@ FertigMaske:
 							pBmp->lMaxScan = 1;
 						}
 						pBmp->rectScan[iScan].left = pBmp->rectScan[iScan].right = ( pt.x-pBmp->rectRechts.left );
-						pBmp->rectScan[iScan].top = pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectRechts.top );
+						pBmp->rectScan[iScan].top = pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectRechts.top )*pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
 						pBmp->bMarkScanLine = TRUE;
 						SetCapture( hwnd );
 					}

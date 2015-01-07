@@ -230,6 +230,10 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 			pSnom->Lumi.iNumColors = 0;
 		}
 	}
+	// sanity checks
+	if(  pSnom->fY/pSnom->fX < 0.1  ||  pSnom->fY/pSnom->fX > 10.0  ) {
+		pSnom->fY = pSnom->fX;
+	}
 	return ( TRUE );
 }
 // 26.7.97
