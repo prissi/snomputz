@@ -2558,7 +2558,7 @@ FertigMaske:
 				ReleaseCapture();
 				pBmp->bAddMaske = FALSE;
 				hdc = GetDC( hwnd );
-				SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
+//				SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
 				if( pBmp->rectMaske.top != pBmp->rectMaske.bottom  &&  pBmp->rectMaske.left != pBmp->rectMaske.right ) {
 					// Falls nötig neuen Speicher beschaffen
 					if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
@@ -2592,7 +2592,7 @@ FertigMaske:
 					// und Rechteck zur Maske hinzufügen
 					for( y = pBmp->rectMaske.top;  y < pBmp->rectMaske.bottom;  y++ ) {
 						for( x = pBmp->rectMaske.left;  x < pBmp->rectMaske.right;  x++ ) {
-//							pBmp->pMaske[y*pBmp->wMaskeW+( x/8 )] |= 0x80>>( x%8 );
+							pBmp->pMaske[y*pBmp->wMaskeW+( x/8 )] |= 0x80>>( x%8 );
 						}
 					}
 					pBmp->IsDirty = TRUE;
@@ -2700,11 +2700,11 @@ FertigMaske:
 				SetROP2( hdc, R2_XORPEN );
 				hOld = SelectObject( hdc, CreateHatchBrush( HS_FDIAGONAL, cMarkierungLinks ) );
 				if( pBmp->rectLinks.left ) {
-					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.top )*pBmp->fZoom, ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.bottom )*pBmp->fZoom );
+					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top*pBmp->fZoom + pBmp->rectMaske.top*pBmp->fZoom*fYzoom ), ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top*pBmp->fZoom + pBmp->rectMaske.bottom*pBmp->fZoom*fYzoom ) );
 				}
 				if( pBmp->rectRechts.left ) {
 					DeleteObject( SelectObject( hdc, CreateHatchBrush( HS_FDIAGONAL, cMarkierungRechts ) ) );
-					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.top )*pBmp->fZoom, ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.bottom )*pBmp->fZoom );
+					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top*pBmp->fZoom + pBmp->rectMaske.top*pBmp->fZoom*fYzoom ), ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top*pBmp->fZoom + pBmp->rectMaske.bottom*pBmp->fZoom*fYzoom ) );
 					DeleteObject( SelectObject( hdc, CreateHatchBrush( HS_FDIAGONAL, cMarkierungLinks ) ) );
 				}
 
@@ -2719,14 +2719,14 @@ FertigMaske:
 				}
 
 				if( pBmp->rectLinks.left ) {
-					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.top )*pBmp->fZoom/fYzoom, ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top+pBmp->rectMaske.bottom )*pBmp->fZoom/fYzoom );
+					Rectangle( hdc, ( pBmp->rectLinks.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectLinks.top*pBmp->fZoom + pBmp->rectMaske.top*pBmp->fZoom*fYzoom ), ( pBmp->rectLinks.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectLinks.top*pBmp->fZoom + pBmp->rectMaske.bottom*pBmp->fZoom*fYzoom ) );
 				}
 				if( pBmp->rectRechts.left ) {
 					DeleteObject( SelectObject( hdc, CreateHatchBrush( HS_FDIAGONAL, cMarkierungRechts ) ) );
-					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.top )*pBmp->fZoom/fYzoom, ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top+pBmp->rectMaske.bottom )*pBmp->fZoom/fYzoom );
+					Rectangle( hdc, ( pBmp->rectRechts.left+pBmp->rectMaske.left )*pBmp->fZoom, ( pBmp->rectRechts.top*pBmp->fZoom + pBmp->rectMaske.top*pBmp->fZoom*fYzoom ), ( pBmp->rectRechts.left+pBmp->rectMaske.right )*pBmp->fZoom, ( pBmp->rectRechts.top*pBmp->fZoom + pBmp->rectMaske.bottom*pBmp->fZoom*fYzoom ) );
 				}
 				{
-					BYTE pStr[256];
+					BYTE pStr[512];
 					sprintf( (LPSTR)pStr, GetStringRsc( STR_MASK ), pBmp->rectMaske.left, pBmp->rectMaske.top, pBmp->rectMaske.right, pBmp->rectMaske.bottom, abs( pBmp->rectMaske.left-pBmp->rectMaske.right ), abs( pBmp->rectMaske.top-pBmp->rectMaske.bottom ), (double)abs( pBmp->rectMaske.left-pBmp->rectMaske.right )*pBmp->pSnom[pBmp->iAktuell].fX, (double)abs( pBmp->rectMaske.top-pBmp->rectMaske.bottom )*pBmp->pSnom[pBmp->iAktuell].fY );
 					StatusLine( pStr );
 				}

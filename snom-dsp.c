@@ -1301,10 +1301,10 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 				}
 			}
 			else {
-				pSrc = Daten + (pSnom->w*pSnom->h-1);
-				for( y = 0;  y < pSnom->h;  y++ ) {
+				for( y = 0;  y < h_corrected;  y++ ) {
+					pSrc = Daten + pSnom->w*(pSnom->h-(int)((double)y*(pSnom->fX/pSnom->fY)+1.0) );
 					for( x = 0;  x < pSnom->w;  x++ ) {
-						if( pBmp->pMaske  &&  ( ( x+y )%2 ) == 0  &&  IsMaske( pBmp, x, y ) ) {
+						if( pBmp->pMaske  &&  ( ( x+y )%2 ) == 0  &&  IsMaske( pBmp, x, (int)( (double)y*(pSnom->fX/pSnom->fY) ) )  ) {
 							pDest[x] = 3;   // Diagonale Maske
 						}
 #ifdef SIMPLE_CONTOUR
@@ -1326,7 +1326,6 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 						}
 					}
 					pDest += ww;
-					pSrc -= pSnom->w;
 				}
 			}
 #ifndef SIMPLE_CONTOUR
