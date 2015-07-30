@@ -194,7 +194,7 @@ BOOL lfit( double x[], double y[], double sig[], int ndat, double a[], int ia[],
 
 /* (C) Copr. 1986-92 Numerical Recipes Software ]2+530ks16n+. */
 #else
-BOOL lfit( int HUGE *x, LPUWORD y, int ndat, LPDOUBLE a, int ma,
+BOOL lfit( LPLONG x, LPUWORD y, int ndat, LPDOUBLE a, int ma,
            double HUGE* HUGE *covar, LPDOUBLE chisq, void ( HUGE *funcs )( double, LPDOUBLE, int ) )
 {
 	int i, j, k, l, m;

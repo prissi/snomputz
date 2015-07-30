@@ -380,6 +380,8 @@
 #define MITTEL_2                        103
 #define MITTEL_FIT                      104
 #define MITTEL_N                        105
+#define MITTEL_ANGLE                    111
+#define MITTEL_ROTATE                   112
 
 #define OVERRUN_OVERFLOW                102
 #define OVERRUN_UNDERFLOW               103

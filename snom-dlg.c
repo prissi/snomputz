@@ -90,6 +90,7 @@ BOOL WINAPI Mittel3DDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPara
 			}
 			CheckRadioButton( hdlg, MITTEL_0, MITTEL_2, MITTEL_2 );
 			SetDlgItemInt( hdlg, MITTEL_N, 2, FALSE );
+			SetDlgItemInt( hdlg, MITTEL_ANGLE, 0, TRUE );
 			break;
 
 		case WM_COMMAND:
@@ -666,7 +667,7 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 								if( pSnom == NULL ) {
 									continue;
 								}
-								MittelFitBild( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, 2 );
+								MittelFitBildRotate( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, 2, 0 );
 							}
 							if( flatten==2 ) {
 								LPSNOMDATA pSnom = pAllocNewSnom( pBmp, TOPO );
@@ -2041,20 +2042,24 @@ BOOL WINAPI MittelDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 						RecalcCache( pBmp, TRUE, TRUE );
 					}
 					else {
-						// Hier Mittelung mit Polynom n-ter Ordnung (n<10)
+						// here only analytical fitting
+						BOOL bRotate = IsDlgButtonChecked( hdlg, MITTEL_ROTATE );
+						double angle = (int)GetDlgItemInt( hdlg, MITTEL_ANGLE, NULL, TRUE );
+						angle = M_PI*angle/180.0*bRotate;
+						// now the order
 						n = GetDlgItemInt( hdlg, MITTEL_N, NULL, FALSE );
 						if( n > 0  &&  n < 10  &&  IsDlgButtonChecked( hdlg, MITTEL_FIT ) ) {
 							// Topografie mitteln?
 							if( (LONG)pSnom->Topo.puDaten > 256 ) {
-								err = MittelFitBild( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, n );
+								err = MittelFitBildRotate( pBmp, &( pSnom->Topo ), pSnom->w, pSnom->h, n, angle );
 							}
 							// Fehler mitteln?
 							if( err  &&  (LONG)pSnom->Error.puDaten > 256 ) {
-								err = MittelFitBild( pBmp, &( pSnom->Error ), pSnom->w, pSnom->h, n );
+								err = MittelFitBildRotate( pBmp, &( pSnom->Error ), pSnom->w, pSnom->h, n, angle );
 							}
 							// Lumineszenz mitteln?
 							if( err  &&  (LONG)pSnom->Lumi.puDaten > 256 ) {
-								err = MittelFitBild( pBmp, &( pSnom->Lumi ), pSnom->w, pSnom->h, n );
+								err = MittelFitBildRotate( pBmp, &( pSnom->Lumi ), pSnom->w, pSnom->h, n, angle );
 							}
 
 							if( !err ) {

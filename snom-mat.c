@@ -1384,15 +1384,15 @@ BOOLEAN	InterpolateHorizontalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h,
 // 20.12.98
 
 
-/****	Mittelung eines Bildes analytisch zeilenweise ****/
+/****	Mittelung eines Bildes fitting zeilenweise ****/
 /**** n ist die Ordnung der Mittelung;
- **** benutzt als Hilfsfunktion MittelZeile ****/
-BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
+ **** benutzt als Hilfsfunktion lfit ****/
+static BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 {
 	LPUWORD pZeile;
 	LPBYTE pMaske;
 	LONG x, y, i, lWert, lMin, lMax;
-	int HUGE *pX;
+	LPLONG pX;
 	LPUWORD	pY;
 	LPDOUBLE( pCovar[10] );
 	double CoMem[100], chi, a[10];
@@ -1402,7 +1402,7 @@ BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 		return ( FALSE );
 	}
 
-	if( ( pX = (int HUGE*)pMalloc( sizeof( int )*w ) ) == NULL  ||
+	if( ( pX = (LPLONG)pMalloc( sizeof( int )*w ) ) == NULL  ||
 	    ( pY = (LPUWORD)pMalloc( sizeof( long )*w ) ) == NULL ) {
 		StatusLineRsc( E_MEMORY );
 		return ( FALSE );
@@ -1459,6 +1459,219 @@ BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 	MemFree( pY );
 	return ( BildMinMax( pBild, lMin, lMax, w, h ) );
 }
+
+typedef struct {
+	LONG w, h, MaskeW;
+	LPBYTE pMaske, pBmpMaske;
+	LPUWORD pSource;
+	LPUWORD pX;
+	LPUWORD pY;
+	LPLONG pDist;
+	LPUWORD pData;
+	LPULONG length;
+	LONG lMin, lMax;
+	double	ratio_square;
+	int n;
+	double *a;
+} ADD_DDA_DATA;
+
+void CALLBACK LineAddData( int x, int y, ADD_DDA_DATA HUGE *pDDA )
+{
+	if(
+		x < pDDA->w  &&  y < pDDA->h  &&
+		( pDDA->pBmpMaske ==  NULL  ||  ( pDDA->pBmpMaske[( pDDA->h-y-1 )*pDDA->MaskeW + (x/8)]&( 0x0080>>( x%8 ) ) ) == 0  )  &&
+		pDDA->pMaske[( y*pDDA->w ) + x] == 0
+	  ) {
+		// untreated data point
+		  long len = pDDA->length[0];
+		pDDA->pX[len] = x;
+		pDDA->pX[len] = y;
+		pDDA->pDist[len] = (long)(sqrt( (x+x)+(y*y*pDDA->ratio_square) )*1000.0 + 0.5);
+		pDDA->pData[len] = pDDA->pSource[x+y*pDDA->w];
+		pDDA->length[0] ++;
+	}
+}
+
+void CALLBACK LineApplyToData( int x, int y, ADD_DDA_DATA HUGE *pDDA )
+{
+	if(  x < pDDA->w  &&  y < pDDA->h  &&  pDDA->pMaske[( y*pDDA->w ) + x] == 0   ) {
+		// untreated data point
+		long xw = (long)(sqrt( (x+x)+(y*y*pDDA->ratio_square) )*1000.0 + 0.5);
+		long lWert = pDDA->pSource[x+y*pDDA->w] - (LONG)fPolyWert( xw, pDDA->a, pDDA->n );
+		pDDA->pSource[x+y*pDDA->w] = lWert;
+		if(  lWert < pDDA->lMin  ) {
+			pDDA->lMin = lWert;
+		}
+		if(  lWert > pDDA->lMax  ) {
+			pDDA->lMax = lWert;
+		}
+		pDDA->pMaske[ ( y*pDDA->w ) + x ] = 1;
+	}
+}
+
+/**** fitting an image with order n by fittig linewise under an angle ****/
+BOOLEAN	MittelFitBildRotate( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, double angle )
+{
+	LPUWORD pData;
+	LPBYTE pMaske;
+	LONG x, y, i, lData;
+	LPUWORD pX, pY;
+	LPLONG pDist;
+	LPDOUBLE( pCovar[10] );
+	double CoMem[100], chi, a[10], tan_angle;
+	ADD_DDA_DATA fit_dda;
+
+	if(  fabs(angle)<0.001  ) {
+		// much faster without angle
+		return MittelFitBild( pBmp, pBild, w, h, n );
+	}
+
+	n++;
+	if( pBmp == NULL  ||  pBild == NULL  ||  n > 10 ) { // Nur bis max. 9. Ordnung
+		return ( FALSE );
+	}
+
+	if( ( pX = (LPUWORD)pMalloc( sizeof( int )*(w+h) ) ) == NULL  ||
+	    ( pY = (LPUWORD)pMalloc( sizeof( long )*(w+h) ) ) == NULL  ||
+	    ( pDist = (LPLONG)pMalloc( sizeof( long )*(w+h) ) ) == NULL  ||
+	    ( pData = (LPUWORD)pMalloc( sizeof( long )*(w+h) ) ) == NULL  ||
+	    ( pMaske = (LPBYTE)pMalloc( sizeof( byte )*(w*h) ) ) == NULL
+		) {
+		StatusLineRsc( E_MEMORY );
+		return ( FALSE );
+	}
+
+	MemSet( pMaske, 0, w*h );
+
+	for( x = 0;  x < 10;  x++ ) {
+		pCovar[x] = CoMem+10*x;
+	}
+
+	fit_dda.w = w;
+	fit_dda.h = h;
+	fit_dda.MaskeW = pBmp->wMaskeW;
+	fit_dda.pMaske = pMaske;
+	fit_dda.pBmpMaske = pBmp->pMaske;
+	fit_dda.pSource = pBild->puDaten;
+	fit_dda.pX = pX;
+	fit_dda.pY = pY;
+	fit_dda.pDist = pDist;
+	fit_dda.length = &lData;
+	fit_dda.ratio_square = (pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].fY)/(pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].fX);
+	fit_dda.a = a;
+	fit_dda.n = n;
+	fit_dda.lMin = 1111111;
+	fit_dda.lMax = -1111111;
+
+	// ensure we have always a positive gradient
+	tan_angle = tan(angle);
+	if(  tan_angle < 0.0  ) {
+		tan_angle = -tan_angle;
+	}
+
+	for( y = 0; y < h;  y++ ) {
+		// Now for each point draw a line under the angle to the border of the image
+		lData = 0;
+		fit_dda.pData = pData;
+		LineDDA( 0, y, w, y+(int)(w*tan_angle+0.5), (LINEDDAPROC)LineAddData, (LPARAM)&fit_dda );
+
+		if(  lData<n  ) {
+			if(  lData>0  ) {
+				// just substratct mean value
+				LONG mean = 0;
+				for(  i=0;  i<lData;  i++  ) {
+					mean += pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ];
+				}
+				mean /= lData;
+				for(  i=0;  i<lData;  i++  ) {
+					if(  pMaske[( y*w ) + x] == 0  ) {
+						long lWert = pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ] - mean;
+						pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ] = lWert;
+						if(  lWert < fit_dda.lMin  ) {
+							fit_dda.lMin = lWert;
+						}
+						if(  lWert > fit_dda.lMax  ) {
+							fit_dda.lMax = lWert;
+						}
+						pMaske[( y*w ) + x] = 1;
+					}
+				}
+			}
+
+		}
+		else {
+			// else full fit
+			if(  !lfit( pDist, pData, lData, a, n, pCovar, &chi, fpoly ) )	{
+				MemFree( pX );
+				MemFree( pY );
+				MemFree( pMaske );
+				MemFree( pData );
+				return ( FALSE );
+			}
+
+			for(  i=0;  i<lData;  i++  ) {
+				fit_dda.pData = pBild->puDaten;
+				LineDDA( 0, y, w, y+(int)(w*tan_angle+0.5), (LINEDDAPROC)LineApplyToData, (LPARAM)&fit_dda );
+			}
+		}
+	}
+
+	for( x = 0; x < w;  x++ ) {
+		// Now for each point draw a line under the angle to the border of the image
+		lData = 0;
+		fit_dda.pData = pData;
+		fit_dda.n = n;
+		LineDDA( x, 0, x+w, (int)(w*tan_angle+0.5), (LINEDDAPROC)LineAddData, (LPARAM)&fit_dda );
+
+		if(  lData<n  ) {
+			if(  lData>0  ) {
+				// just substratct mean value
+				LONG mean = 0;
+				for(  i=0;  i<lData;  i++  ) {
+					mean += pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ];
+				}
+				mean /= lData;
+				for(  i=0;  i<lData;  i++  ) {
+					if(  pMaske[( y*w ) + x] == 0  ) {
+						long lWert = pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ] - mean;
+						pBild->puDaten[ fit_dda.pX[i] + fit_dda.pY[i]*w ] = lWert;
+						if(  lWert < fit_dda.lMin  ) {
+							fit_dda.lMin = lWert;
+						}
+						if(  lWert > fit_dda.lMax  ) {
+							fit_dda.lMax = lWert;
+						}
+						pMaske[( y*w ) + x] = 1;
+					}
+				}
+			}
+
+		}
+		else {
+			// else full fit
+			if(  !lfit( pDist, pData, lData, a, n, pCovar, &chi, fpoly ) )	{
+				MemFree( pX );
+				MemFree( pY );
+				MemFree( pMaske );
+				MemFree( pData );
+				return ( FALSE );
+			}
+
+			for(  i=0;  i<lData;  i++  ) {
+				fit_dda.pData = pBild->puDaten;
+				LineDDA( x, 0, x+w, (int)(w*tan_angle+0.5), (LINEDDAPROC)LineApplyToData, (LPARAM)&fit_dda );
+			}
+		}
+	}
+
+	MemFree( pX );
+	MemFree( pY );
+	MemFree( pDist );
+	MemFree( pMaske );
+	MemFree( pData );
+	return (1+ BildMinMax( pBild, fit_dda.lMin, fit_dda.lMax, w, h ) );
+}
+
 
 
 // Berechnet ein Polygon einer best-fit Ebenen furch die nicht maskierten Teile des Bildes

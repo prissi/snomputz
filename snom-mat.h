@@ -51,9 +51,10 @@ BOOLEAN	MittelZeile( LPUWORD puZeile, LPUCHAR puMaske, LONG w, LPDOUBLE pfMittel
 BOOLEAN	MittelBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n );
 // 26.11.97, 31.7.98
 
-/****	Mittelung eines Bildes analytisch zeilenweise ****/
-BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n );
-// 26.11.97, 31.7.98
+/**** fitting an image with order n by fittig linewise under an angle ****/
+BOOLEAN	MittelFitBildRotate( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, double angle );
+//BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n );
+// 26.11.97, 31.7.98, 1.7.2015
 
 /* Interpoliert die maskierte Region horizontal durch ein Polynom n. Grades */
 BOOLEAN	InterpolateVertikalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int grad );
