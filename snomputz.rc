@@ -127,7 +127,7 @@ BEGIN
         POPUP "&Export ..."
         BEGIN
             MENUITEM "&Topography",                 IDM_EXPORT_TOPO
-            MENUITEM "&Luminescence",               IDM_EXPORT_LUMI
+            MENUITEM "&3rd Channel",                IDM_EXPORT_LUMI
             MENUITEM "&Window View",                IDM_EXPORT_ANSICHT
             MENUITEM SEPARATOR
 			MENUITEM "&ASCII data",					IDM_EXPORT_ASCII
@@ -154,7 +154,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Work with &Topography",       IDM_NUR_TOPO, CHECKED
         MENUITEM "Work with &Error",            IDM_NUR_ERROR
-        MENUITEM "Work with &Luminescence",     IDM_NUR_LUMI, CHECKED
+        MENUITEM "Work with &3rd Channel",      IDM_NUR_LUMI, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "&dot counting mode",			IDM_DOT_MODE
         MENUITEM SEPARATOR
@@ -239,7 +239,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Show &Topography",            IDM_SHOW_TOPO, CHECKED
         MENUITEM "Show &Error",                 IDM_SHOW_ERROR
-        MENUITEM "Show &Luminescence",          IDM_SHOW_LUMI, CHECKED
+        MENUITEM "Show &3rd Channel",           IDM_SHOW_LUMI, CHECKED
     END
     POPUP "&Window"
     BEGIN
@@ -348,7 +348,7 @@ BEGIN
                     WS_TABSTOP,9,12,50,10
     CONTROL         "&Error",DLG_ERROR,"Button",BS_AUTORADIOBUTTON,61,12,28,
                     10
-    CONTROL         "&Luminescence",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
+    CONTROL         "&3rd Channel",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
                     12,60,10
     GROUPBOX        "Data location",-1,6,28,148,56
     RTEXT           "Offset in Bytes",-1,17,41,60,10
@@ -571,7 +571,7 @@ BEGIN
                     WS_TABSTOP,9,12,50,10
     CONTROL         "&Error",DLG_ERROR,"Button",BS_AUTORADIOBUTTON,61,12,28,
                     10
-    CONTROL         "&Luminescence",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
+    CONTROL         "&3rd Channel",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
                     12,60,10
     GROUPBOX        "Operation",-1,6,26,148,48,WS_GROUP
     CONTROL         "&+",MATHE_PLUS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
@@ -884,7 +884,7 @@ BEGIN
                     WS_TABSTOP,9,12,50,10
     CONTROL         "&Error",DLG_ERROR,"Button",BS_AUTORADIOBUTTON,61,12,28,
                     10
-    CONTROL         "&Luminescence",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
+    CONTROL         "&3rd Channel",DLG_LUMI,"Button",BS_AUTORADIOBUTTON,91,
                     12,60,10
     GROUPBOX        "Directions",-1,6,27,148,39
     CONTROL         "horizontal",SPIKE_X,"Button",BS_AUTOCHECKBOX | 
@@ -1025,7 +1025,7 @@ BEGIN
                     WS_TABSTOP,12,12,51,10
     CONTROL         "&Error",DLG_ERROR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     67,12,35,10
-    CONTROL         "&Luminescence",DLG_LUMI,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "&3rd Channel",DLG_LUMI,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,105,12,59,10
     GROUPBOX        "Select Output Data",-1,6,27,161,86
     CONTROL         "&Distanz from Start",PROFIL_DISTANZ,"Button",
@@ -1263,7 +1263,7 @@ BEGIN
     STR_SCANNING            "Scanning!"
     STR_NEW_F               "New Frequency %.2f Hz"
     STR_TOPO_MEAN           "The mean height is %7.5lf nm, the RMS is %5.3lf nm.\nThe median height (surface zero) is (%7.5lf +- %7.5lf)nm.\n"
-    STR_LUMI_MEAN           "The normalized mean Luminescence is %7.0lf,\nthe normalized mean Deviation is %7.0lf,\nthe zero level is %7.0lf +- %7.0lf.\n"
+    STR_LUMI_MEAN           "The normalized mean 3rd Channel is %7.0lf,\nthe normalized mean Deviation is %7.0lf,\nthe zero level is %7.0lf +- %7.0lf.\n"
     STR_ORIENT              "Angular Distribution of %s"
     STR_ANGLE_PLOT          "angle plot (°)"
     STR_CONTUR_PLOT         "Contures of %s"

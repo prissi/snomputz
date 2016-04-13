@@ -1377,7 +1377,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 
 	// Einige Defaultwerte eintagen
 	pBmp->pPsi.fRot = 0.0;
-	// Header ist hoffentlich Def.-müüig kleiner als 65536 (zumindest was den INHALT angeht ... )
+	// header shorter than 65535 (hopefully)
 	pcBuf = (LPBYTE)pMalloc( MAX_DI_HDLEN );
 	if( pcBuf == NULL ) {
 		FehlerRsc( E_MEMORY );
@@ -1575,11 +1575,11 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 					sscanf( (LPSTR)( str+27 ), "%Fhi %Fhi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iJahr );
 				}
 
-				// Lünge des Headers
+				// start of next data
 				if( strstr( str, "\\Data offset: " ) == str ) {
 					lData_start = atol( str+14 );
 				}
-				// Lünge der Daten (ist eigentlich überflüssig ...)
+				// length of next data
 				else if( strstr( str, "\\Data length: " ) == str ) {
 					lData_len = atol( str+14 );
 					if( lHeaderLen == 0 ) {
@@ -1673,9 +1673,13 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						Header = TOPO;
 						t = pSnom->Topo.strTitel;
 					}
-					else if( strstr( str, " [Deflection]" )  ||  strstr( str, " [AmplitudeError]" )  ) {
+					else if( strstr( str, "[Deflection" )  ||  strstr( str, "Error]" )  ) {
 						Header = ERRO;
 						t = pSnom->Error.strTitel;
+					}
+					else if( pSnom->Lumi.puDaten==NULL  ) {
+						Header = LUMI;
+						t = pSnom->Lumi.strTitel;
 					}
 					// Copy title name
 					if( s != NULL  &&  t != NULL ) {

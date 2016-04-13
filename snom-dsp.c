@@ -947,7 +947,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			maxrechtscol = 249.0/( (double)maxrechts+1.0 );
 		}
 
-		// Wert >1.0 (= mehrere Farben f�r einen Bitwert) sind sinnlos!
+		// Wert >1.0 (= mehrere Farben fuer einen Bitwert) sind sinnlos!
 		if( maxlinkscol > 1.0 ) {
 			maxlinkscol = 1.0;
 		}
@@ -956,7 +956,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		}
 	}       // Jetzt werden maximal 252 Farben von den Bitmaps gebraucht
 
-	// Endlich die Anzahl der n�tigen Farben berechnen
+	// Endlich die Anzahl der noetigen Farben berechnen
 	usedcol = (WORD)( maxlinks*maxlinkscol+0.5 )+(WORD)( maxrechts*maxrechtscol+0.5 );
 	if( usedcol < 2 ) {
 		return ( FALSE );
@@ -998,26 +998,26 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		endcol = FarbenSetzen( pCacheDib, pRechts, startcol, maxrechts, maxrechtscol, ( !DontEmulContrast )|pRechts->bPseudo3D );
 	}
 
-	//****  Ab hier werden die Ausma�e berechet
+	//****  calculate size
 	w = h = 0;
 	h_corrected = pSnom->h;
 	if(  pSnom->fY != pSnom->fX   &&  pSnom->fY / pSnom->fX > 0.1   ) {
 		h_corrected *= pSnom->fY/pSnom->fX;
 	}
-	SelectObject( hDC, CreateFontIndirect( &lf ) );  // F�r alle Rechnungen
-	// LinksX==0  (analog f�r RechtsX) hei�t: Nicht existent!
+	SelectObject( hDC, CreateFontIndirect( &lf ) );
+	// LinksX==0  means non existent
 
 	pBmp->rectLinks.left = pBmp->rectLinks.right = pBmp->rectRechts.left = pBmp->rectRechts.right = 0;
-	pBmp->rectLinks.top = pBmp->rectRechts.top = 0;         // Doppelte H�he der �berschriften
+	pBmp->rectLinks.top = pBmp->rectRechts.top = 0; 
 
 	if( pLinks ) {
-		// Ausma�e der Skala berechnen
+		// scale size
 		gcvt( CalcIncrement( 3, 9, pLinks->uMaxDaten*pLinks->fSkal )*5.0+0.23, 4, str );
 		GetTextExtentPoint( hDC, str, lstrlen( str ), &size );
 		skala_w = size.cx;
 		skala_h = size.cy*3+8;
 		GetTextExtentPoint( hDC, "Ty", 2, &size );
-		size.cy *= 2;   // Doppelte H�he der �berschriften
+		size.cy *= 2;   // double height title
 		CalcDibSize( hDC, pSnom->w, h_corrected, &xywh, pLinks->bPseudo3D, FALSE );
 		pBmp->rectLinks.left = (int)( 26+skala_w );
 		pBmp->rectLinks.top = 10+size.cy;
@@ -1032,7 +1032,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		skala_w = size.cx;
 		skala_h = size.cy*3+8;
 		GetTextExtentPoint( hDC, "Ty", 2, &size );
-		size.cy *= 2;   // Doppelte H�he der �berschriften
+		size.cy *= 2;
 		CalcDibSize( hDC, pSnom->w, h_corrected, &xywh, pRechts->bPseudo3D, FALSE );
 		if( h < 2l+xywh.bottom+size.cy+skala_h ) {
 			h = 20+xywh.bottom+size.cy+skala_h;
@@ -1048,12 +1048,12 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	pCacheDib->bmiHeader.biWidth = w;
 	pCacheDib->bmiHeader.biHeight = h;
 
-	// Ausma�e Fenster berechnen
+	// size window
 	pBmp->rectFenster.left = pBmp->rectFenster.top = 0;
 	pBmp->rectFenster.right = w;
 	pBmp->rectFenster.bottom = h;
 
-	// Ausma�e Scanline berechnen
+	// size scanline
 	{
 		if( !pBmp->bPlotUnten )	{
 			// Bild ist daneben
@@ -1086,7 +1086,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		}
 	}
 
-	// Platz f�r Scanline evt. schon mal dazurechnen
+	// add scanline spacing
 	if( pBmp->bIsScanLine  &&  pBmp->lMaxScan > 0 )	{
 		pBmp->rectFenster.right = 64+pBmp->rectPlot.right;      // Rechts Platz lassen
 		if( pBmp->bPlotUnten ) {
@@ -1246,9 +1246,9 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		if( !pLinks->bPseudo3D  ||  maxlinks <= 2 ) {
 			pDest = pBits+pBmp->rectLinks.left+( h-pBmp->rectLinks.top-h_corrected )*ww;
 			if( !pLinks->bShowNoZ )	{
-				// f�r die Legende den Graustreifen ...
+				// scale bar
 				for( y = 0;  y < h_corrected;  y++ ) {
-					// -1 bei y, da die Bitmap nur bis pSnom->h-1 l�uft (for y<h!)
+					// -1 for y, since Bitmap only until pSnom->h-1 (y<h)
 					for( x = 0;	 x < 8;	   x++ ) {
 						if( !DontEmulContrast ) {
 							pDest[x-pBmp->rectLinks.left+2+( h_corrected-y-1 )*ww] = (BYTE)( startcol+pLinks->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pLinks->fEnde-pLinks->fStart )/100.0/h_corrected );
@@ -1439,15 +1439,16 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 					}
 				}
 				for( y = 0;  y < h_corrected;  y++ ) {
+					pSrc = Daten + pSnom->w*(pSnom->h-(int)((double)y*(pSnom->fX/pSnom->fY)+1.0) );
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						pDest[x] = pColorConvert[ pSrc[x] ];
 					}
 					pDest += ww;
-					pSrc -= pSnom->w;
 				}
 			}
 			else {
 				for( y = 0;  y < h_corrected;  y++ ) {
+					pSrc = Daten + pSnom->w*(pSnom->h-(int)((double)y*(pSnom->fX/pSnom->fY)+1.0) );
 					for( x = 0;  x < pSnom->w;  x++ ) {
 						if( pBmp->pMaske  &&  ( ( x+y )%2 ) == 0  &&  IsMaske( pBmp, x, y ) ) {
 							pDest[x] = 4;
@@ -1468,7 +1469,6 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 						}
 					}
 					pDest += ww;
-					pSrc -= pSnom->w;
 				}
 			}
 #ifndef SIMPLE_CONTOUR

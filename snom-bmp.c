@@ -1371,9 +1371,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 				case IDM_SHOW_TOPO:
 				case IDM_SHOW_ERROR:
 				case IDM_SHOW_LUMI:
-					if( GetMenuState( hMenuBmp, wParam, MF_BYCOMMAND )&MF_CHECKED )	{
+					if(  GetMenuState( hMenuBmp, wParam, MF_BYCOMMAND )&MF_CHECKED  ) {
 						show &= ~( wParam-IDM_SHOW );
-						CheckMenuItem( hMenuBmp, wParam, MF_UNCHECKED );
 						if( ( pBmp->Links&show ) == 0  &&  pBmp->Links ) {
 							pBmp->IsDirty = TRUE;
 						}
@@ -1386,7 +1385,10 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					else {
 						show |= ( wParam-IDM_SHOW );
-						CheckMenuItem( hMenuBmp, wParam, MF_CHECKED );
+						if(  show == 7  ) {
+							// want to see error?
+							show = TOPO + (wParam-IDM_SHOW == ERRO) ? ERRO : LUMI;
+						}
 						switch( ( wParam-IDM_SHOW ) ) {
 							case TOPO:
 								if( pBmp->pSnom[pBmp->iAktuell].Topo.Typ == TOPO ) {
@@ -1395,11 +1397,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									if( pBmp->Links == 0 ) {
 										pBmp->Links = TOPO;
 									}
-									else if( pBmp->Rechts == 0 ) {
-										pBmp->Rechts = TOPO;
-									}
 									else {
-										pBmp->IsDirty = FALSE;
+										pBmp->Rechts = TOPO;
 									}
 								}
 								break;
@@ -1411,11 +1410,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									if( pBmp->Links == 0 ) {
 										pBmp->Links = ERRO;
 									}
-									else if( pBmp->Rechts == 0 ) {
-										pBmp->Rechts = ERRO;
-									}
 									else {
-										pBmp->IsDirty = FALSE;
+										pBmp->Rechts = ERRO;
 									}
 								}
 								break;
@@ -1427,11 +1423,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									if( pBmp->Links == 0 ) {
 										pBmp->Links = LUMI;
 									}
-									else if( pBmp->Rechts == 0 ) {
-										pBmp->Rechts = LUMI;
-									}
 									else {
-										pBmp->IsDirty = FALSE;
+										pBmp->Rechts = LUMI;
 									}
 								}
 								break;
@@ -1440,6 +1433,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							InvalidateRect( hwnd, NULL, FALSE );
 						}
 					}
+					CheckMenuItem( hMenuBmp, IDM_SHOW_TOPO, (show & TOPO) ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( hMenuBmp, IDM_SHOW_ERROR, (show & ERRO) ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( hMenuBmp, IDM_SHOW_LUMI, (show & LUMI) ? MF_CHECKED : MF_UNCHECKED );
 					break;
 
 				/**** Menü Analyse ****/
