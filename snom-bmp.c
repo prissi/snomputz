@@ -1929,7 +1929,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 #endif
 						break;
 					}
-					// esle go to count dots
+					// else go to count dots
 				case IDM_DOTS_ADD:
 				case IDM_DOTS_REMOVE:
 					if( pBmp->pSnom[0].Topo.puDaten ) {
@@ -2841,27 +2841,34 @@ FertigMaske:
 					else {
 						// remove from histogramm
 						int i;
+						// find closes dot
+						int closest = -1;
+						int distance = 32767+23767;
 						for( i = 0;  i < pBmp->dot_number;  i++ ) {
-							if( abs( pt.x-pBmp->dot_histogramm[i].x ) <= 1  &&  abs( pt.y-pBmp->dot_histogramm[i].y ) <= 1 ) {
-								if( pBmp->dot_number == 1 ) {
-									pBmp->dot_number = 0;
-									MemFree( pBmp->dot_histogramm );
-									pBmp->dot_histogramm = 0;
-									pBmp->dot_histogramm_count = 0;
-									pBmp->bCountDots = FALSE;
-#ifdef BIT32
-									SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
-#endif
-								}
-								else {
-									if( i+1 < pBmp->dot_number ) {
-										MemMove( pBmp->dot_histogramm+i, pBmp->dot_histogramm+i+1, ( pBmp->dot_number-i-1 )*sizeof( pBmp->dot_histogramm[0] ) );
-									}
-									pBmp->dot_number--;
-								}
-								InvalidateRect( hwnd, NULL, FALSE );
-								break;
+							const int dist = abs( pt.x-pBmp->dot_histogramm[i].x ) + abs( pt.y-pBmp->dot_histogramm[i].y );
+							if(  dist < distance  ) {
+								closest = i;
+								distance = dist;
 							}
+						}
+						if(  closest >=0   &&  distance < (int)(2.5+2.0/pBmp->fZoom)  ) {
+							if( pBmp->dot_number == 1 ) {
+								pBmp->dot_number = 0;
+								MemFree( pBmp->dot_histogramm );
+								pBmp->dot_histogramm = 0;
+								pBmp->dot_histogramm_count = 0;
+								pBmp->bCountDots = FALSE;
+#ifdef BIT32
+								SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+#endif
+							}
+							else {
+								if( closest+1 < pBmp->dot_number ) {
+									MemMove( pBmp->dot_histogramm+closest, pBmp->dot_histogramm+closest+1, ( pBmp->dot_number-closest-1 )*sizeof( pBmp->dot_histogramm[0] ) );
+								}
+								pBmp->dot_number--;
+							}
+							InvalidateRect( hwnd, NULL, FALSE );
 						}
 					}
 					// tell new result
@@ -2888,7 +2895,7 @@ FertigMaske:
 					EnableMenuItem( hMenuBmp, IDM_DOTS_SAVE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED );
 				}
 			}
-			// sacnlines?
+			// scanlines?
 			else {
 				POINT pt;
 				const double fYZoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;

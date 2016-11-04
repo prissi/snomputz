@@ -1670,6 +1670,11 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 					// Beispiel "\@2:Image Data: S [Height] "Height""
 					BYTE *t = NULL, *s = strstr( str, " \"" );
 					if( strstr( str, " [Height]" ) ) {
+						if(  pSnom->Topo.puDaten  ) {
+							// ignore second height data
+							StatusLine( "Ignored second height channel!" );
+							break;
+						}
 						Header = TOPO;
 						t = pSnom->Topo.strTitel;
 					}
@@ -1677,7 +1682,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						Header = ERRO;
 						t = pSnom->Error.strTitel;
 					}
-					else if( pSnom->Lumi.puDaten==NULL  ) {
+					else if(  pSnom->Lumi.puDaten==NULL  ) {
 						Header = LUMI;
 						t = pSnom->Lumi.strTitel;
 					}
