@@ -469,31 +469,36 @@ BOOL ReadHitachi( HFILE hFile, LPBMPDATA pBmp )
 
 //***************************************** SM2-Format *****************************************
 
-// Liest Seiko-Datei (*.xqd)
+// Liest Seiko-Datei (*.xqd and *.xqf)
 BOOL ReadSeiko( HFILE hFile, LPBMPDATA pBmp )
 {
 	LPSNOMDATA pSnom = &( pBmp->pSnom[0] );
 	WORD *pBuffer;
 	LONG lEoF, lEoH, i;
+	SHORT w, h;
 
 	/****************************************************************************
-	 *	Das Format ist nur aufgrund von Try and Error entziffert worden!
-	 *	Verwendet vorzeichenlose Intel-Notation.
-	 *	Lünge des Headers immer (?) 2944 Bytes, steht aber auch in der Datei
+	 *	Only trial and error
+	 *  Data type from extension, xqf Error, xqd Topography
+	 *	unsigned less endian format
+	 *	Headers length always (?) 2944 Bytes, but is written in file anyway
 	 *
-	 *	Es folgt der bis jetzt entzifferte Header: (Kennung: "SPIZ000DFM300A\0\0")
-	 * $10 Long Versionsnummer? (20001)
+	 *	Header magix "SPIZ000" (and maybe some more letters with meaning)
+	 * $10 Long Versions (20001)
 	 * $14 Long End File
-	 * $18 Long Start Daten (immer 2944?)
+	 * $18 Long Start Data (always 2944)
 	 * ???
-	 * $28 Nullterminierter Kommentarstring (max $70 Byte?)
-	 * $98 Double x (in Snomputzkonvention (multiplikator ergibt nm)
+	 * $28 Nullterminierted Comment (max $70 Byte?)
+	 * $98 Double x (multiply to nm)
 	 * $A0 Double y
 	 * $A8 Double z
-	 * $B0 Motorola x value?
-	 * ???
+	 * $B0 ??
+	 * $B2 either $01 for TOPO, $09 for deflection
+	 * $B4 either -9 ($FFF7) for topo and 0 for ERROR
 	 * $480 Comment again
 	 * $500 DFM info
+	 * $57A x size?
+	 * $57C y size?
 	 * $900 Graphics
 	 * $A00 Scanner info
 	 *
@@ -511,8 +516,12 @@ BOOL ReadSeiko( HFILE hFile, LPBMPDATA pBmp )
 	_lread( hFile, &( pSnom->fY ), sizeof( double ) );
 	_lread( hFile, &( pSnom->Topo.fSkal ), sizeof( double ) );
 
-	pBmp->pPsi.iCol = pSnom->w = sqrt( ( ( lEoF-lEoH )/2+1 ) );
-	pBmp->pPsi.iRow = pSnom->h = pSnom->w;
+	_llseek( hFile, 0x057Al, 0 );
+	_lread( hFile, &w, 2l );
+	_lread( hFile, &h, 2l );
+
+	pBmp->pPsi.iCol = pSnom->w = w;
+	pBmp->pPsi.iRow = pSnom->h = h;
 
 	// Original-Header lesen
 	_llseek( hFile, 0l, 0 );
