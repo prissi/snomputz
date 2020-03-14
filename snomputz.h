@@ -193,6 +193,8 @@
 #define IDM_MASZE                       582
 #define IDM_MATHE                       551
 #define IDM_MEDIAN                      548
+#define IDM_MEDIAN3                     648
+#define IDM_MEDIAN5                     649
 #define IDM_MESS                        512
 #define IDM_MESS_APPROACH               223
 #define IDM_MESS_ENDE			219

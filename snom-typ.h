@@ -46,7 +46,7 @@ typedef struct
 	LPUWORD		puDaten;					// Daten, Wert <=256 Pointer auf letzte geänderte Daten
 	UWORD			uMaxDaten;				// größter Datenwert (Kleinster==0)
 	WORKMODE	Typ;							// Datentyp, NONE=ungenutzt
-	CHAR			strTitel[32];
+	CHAR			strTitel[128];
 	double		fSkal;						// Skalierungsfaktor
 	UWORD			uKontur;
 	UWORD			uKonturToleranz;	// Für "Höhenlinien"

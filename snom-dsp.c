@@ -301,9 +301,10 @@ BOOL RedrawAll( WORD flags )
 // Skalierung zeichnen
 #define		SKALA	1
 
-#define MAX_TABLE	4
 #define	MIN_SCALE	1e-10   // Darunter waren es bestimmt sinnlose Eingabewerte
 #define	MAX_SCALE	1e10    // oder auch hier�ber
+
+#define MAX_TABLE	4
 double table[MAX_TABLE] = { 1.0, 2.0, 2.5, 5.0 };
 
 // Berechnet die "zweckmaessigste Einheit, d.h die nachste durch 1, 2, 2,5, 5 teilbare Zahl,
@@ -329,7 +330,7 @@ double CalcIncrement( int min, int max, double len )
 		return ( signum*MAX_SCALE );
 	}
 	while( 1 ) {
-		// prefactor ist zu gro�!
+		// prefactor too large
 		if( len/( prefactor*table[t_index] ) < min ) {
 			dec = TRUE;
 			t_index = ( t_index+3 ) % 4;
@@ -337,7 +338,7 @@ double CalcIncrement( int min, int max, double len )
 				prefactor /= 10.0;
 			}
 		}
-		// prefactor ist zu klein
+		// prefactor too small
 		// vorsicht, wenn vorher prefactor verkleinert wurde, kann es einen Endlosschleife geben;
 		// deswegen Abbruch, wenn dec==TRUE!
 		if( len/( prefactor*table[t_index] ) > max ) {
