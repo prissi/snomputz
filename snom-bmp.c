@@ -396,6 +396,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 						BitBlt( hDC2, 0, 0, w, h, NULL, 0, 0, WHITENESS );
 						DrawDotsPlot( hDC2, pBmp, 1.0 );
+						DrawLinesPlot( hDC2, pBmp, 1.0 );
 						DrawScanLine( hDC2, pBmp, 1 );
 						DrawScanLinePlot( hDC2, pBmp, 1, FALSE );
 
@@ -481,6 +482,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 									DrawScanLine( hDC2, pBmp, 1.0 );
 									DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
 									DrawDotsPlot( hDC2, pBmp, 1.0 );
+									DrawLinesPlot( hDC2, pBmp, 1.0 );
 									lf.lfHeight /= (int)fZoom;
 									RecalcCache( pBmp, FALSE, FALSE );
 									CloseEnhMetaFile( hDC2 );
@@ -536,6 +538,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							DrawInDC( hDC2, pBmp, FALSE, TRUE, fZoom, &xywh );
 							DrawScanLine( hDC2, pBmp, 1.0 );
 							DrawDotsPlot( hDC2, pBmp, 1.0 );
+							DrawLinesPlot( hDC2, pBmp, 1.0 );
 							DrawScanLinePlot( hDC2, pBmp, 1.0, FALSE );
 //							lf.lfHeight /= (int)fZoom;
 							hEn = CloseEnhMetaFile( hDC2 );
@@ -738,6 +741,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							DrawScanLine( PDlg.hDC, pBmp, 1.0/hfaktor );
 							DrawScanLinePlot( PDlg.hDC, pBmp, 1.0/hfaktor, FALSE );
 							DrawDotsPlot( PDlg.hDC, pBmp, 1.0/hfaktor );
+							DrawLinesPlot( PDlg.hDC, pBmp, 1.0/hfaktor );
 							StatusLineRsc( I_PRINTING );
 							EndPage( PDlg.hDC );
 							EndDoc( PDlg.hDC );
@@ -1263,7 +1267,67 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					DialogBoxParam( hInst, "MedianDialog", hwnd, MedianDialog, (LPARAM)hwnd );
 					break;
 
-				// 90ü Rechtsdrehung
+				// 3 line median
+				case IDM_MEDIAN3:
+				{
+					LPSNOMDATA pSnom;
+
+					if( WhatToDo( pBmp, modus ) == NONE ) {
+						WarnungRsc( W_NIX );
+						break;
+					}
+					pSnom = pAllocNewSnom( pBmp, modus );
+					if( pSnom != NULL ) {
+						if( (LONG)pSnom->Topo.puDaten > 256 ) {
+							BildMedianSpalten( pSnom->Topo.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Topo), pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Error.puDaten > 256 ) {
+							BildMedianSpalten( pSnom->Error.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Error), pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Lumi.puDaten > 256 ) {
+							BildMedianSpalten( pSnom->Lumi.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Lumi), pSnom->w, pSnom->h );
+						}
+						RecalcCache( pBmp, TRUE, TRUE );
+						InvalidateRect( hwnd, NULL, FALSE );
+						ClearStatusLine();
+					}
+					break;
+				}
+				
+				// 5x5 area median
+				case IDM_MEDIAN5:
+				{
+					LPSNOMDATA pSnom;
+
+					if( WhatToDo( pBmp, modus ) == NONE ) {
+						WarnungRsc( W_NIX );
+						break;
+					}
+					pSnom = pAllocNewSnom( pBmp, modus );
+					if( pSnom != NULL ) {
+						if( (LONG)pSnom->Topo.puDaten > 256 ) {
+							BildMedian( pSnom->Topo.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Topo), pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Error.puDaten > 256 ) {
+							BildMedian( pSnom->Error.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Error), pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Lumi.puDaten > 256 ) {
+							BildMedian( pSnom->Lumi.puDaten, pSnom->w, pSnom->h, 3 );
+							BildMax( &(pSnom->Lumi), pSnom->w, pSnom->h );
+						}
+						RecalcCache( pBmp, TRUE, TRUE );
+						InvalidateRect( hwnd, NULL, FALSE );
+						ClearStatusLine();
+					}
+					break;
+				}
+
+				// 90deg Rechtsdrehung
 				case IDM_DREHEN:
 				{
 					LPSNOMDATA pSnom;
@@ -1694,9 +1758,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						 * Es ist p1 links oben, p2 rechts oben, p3 links unten
 						 * Der Normalenvektor ist dann
 						 *
-						 * _          / fZ/fXü (p2-p1) \
-						 * n = -fX*fY | fZ/fYü (p3-p1) |
-						 *						\       1        /
+						 * _          / fZ/fX ? (p2-p1) \
+						 * n = -fX*fY | fZ/fY ? (p3-p1) |
+						 *			  \       1         /
 						 *
 						 * n1 und n2 sind (da delta z = 1) der arcus tangens des
 						 * Winkels in diese Richtungen ...
@@ -2033,6 +2097,148 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						}
 					}
 					break;
+
+				case IDM_DOTS_LOAD:
+					{
+						FILE *f;
+						OFSTRUCT of;
+
+						szFselHelpStr = STR_HFILE_HIST;
+						lstrcpy( str, pBmp->szName );
+						ChangeExt( str, ".hst" );
+						if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+							( f = fopen( str, "r" ) ) != NULL ) {
+							LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
+							LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
+							int i;
+							char str[ 1024 ];
+
+							if( pBmp->dot_number > 0 ) {
+								pBmp->dot_number = 0;
+							}
+							else {
+								pBmp->dot_histogramm = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*(512) );
+								pBmp->dot_histogramm_count = 512;
+							}
+
+							fgets( str, sizeof(str), f );
+							fgets( str, sizeof(str), f );
+							fgets( str, sizeof(str), f );
+
+							while( !feof( f ) ) {
+								double x, y, h, rx, ry;
+								fgets( str, sizeof( str ), f );
+								sscanf( str, "%lf\t%lf\t%lf\t%lf\t%lf", &x, &y, &h, &rx, &ry );
+
+								if( pBmp->dot_histogramm_count <= pBmp->dot_number+1 ) {
+									XYZ_COORD *tmp = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( pBmp->dot_number+512 ) );
+									MemMove( tmp, pBmp->dot_histogramm, sizeof( XYZ_COORD )*pBmp->dot_number );
+									pBmp->dot_histogramm_count = pBmp->dot_number+512;
+								}
+								pBmp->dot_histogramm[pBmp->dot_number].x = (x-pSnom->fXOff)/pSnom->fX;
+								pBmp->dot_histogramm[pBmp->dot_number].y = (y-pSnom->fYOff)/pSnom->fY;
+								pBmp->dot_histogramm[pBmp->dot_number].hgt = h;
+								pBmp->dot_histogramm[pBmp->dot_number].radius_x = rx/pSnom->fX;
+								pBmp->dot_histogramm[pBmp->dot_number].radius_y = ry/pSnom->fY;
+								pBmp->dot_number++;
+							}
+							fclose( f );
+							InvalidateRect( hwnd, NULL, FALSE );
+						}
+					}
+					break;
+
+					// dots manuell zählen
+				case IDM_LINE_MODE:
+					if(  pBmp->bCountLines  ) {
+						pBmp->bCountLines = FALSE;
+						InvalidateRect( hwnd, NULL, TRUE );
+#ifdef BIT32
+						SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, FALSE );
+#endif
+						break;
+					}
+					// else go to count lines
+				case IDM_LINE_ADD:
+				case IDM_LINE_REMOVE:
+					pBmp->bCountDots = FALSE;
+					if( pBmp->pSnom[0].Topo.puDaten ) {
+						pBmp->bCountLines = 1 + (LOWORD(wParam)==IDM_LINE_REMOVE);
+					}
+					break;
+
+				case IDM_LINE_SAVE:
+					if( pBmp->line_number > 0 ) {
+						HFILE hFile;
+						OFSTRUCT of;
+
+						szFselHelpStr = STR_HFILE_HIST;
+						lstrcpy( str, pBmp->szName );
+						ChangeExt( str, ".hst" );
+						if( CMUFileSave( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+							( hFile = OpenFile( str, &of, OF_CREATE ) ) != HFILE_ERROR ) {
+							LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
+							LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
+							int i;
+
+							int len = sprintf( str, "List of lines heights\xD\xAx\ty\td_x\td_y\xD\xA" );
+							_lwrite( hFile, str, len );
+
+							for( i = 0;  i < pBmp->line_number;  i++ ) {
+								len = sprintf( str, "%lf\t%lf\t%lf\t%lf\xD\xA", pSnom->fXOff+pSnom->fX*pBmp->line_histogramm[i].x, pSnom->fYOff+pSnom->fY*pBmp->line_histogramm[i].y, pSnom->fX*pBmp->line_histogramm[i].radius_x, pSnom->fX*pBmp->line_histogramm[i].radius_y );
+								_lwrite( hFile, str, len );
+							}
+							_lclose( hFile );
+						}
+					}
+					break;
+
+				case IDM_LINE_LOAD:
+				{
+					FILE *f;
+					OFSTRUCT of;
+
+					szFselHelpStr = STR_HFILE_HIST;
+					lstrcpy( str, pBmp->szName );
+					ChangeExt( str, ".hst" );
+					if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+						( f = fopen( str, "r" ) ) != NULL ) {
+						LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
+						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
+						int i;
+						char str[ 1024 ];
+
+						if( pBmp->line_number > 0 ) {
+							pBmp->line_number = 0;
+						}
+						else {
+							pBmp->line_histogramm = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*(512) );
+							pBmp->line_histogramm_count = 512;
+						}
+
+						fgets( str, sizeof(str), f );
+						while( !feof( f ) ) {
+							double x, y, rx, ry;
+							fgets( str, sizeof( str ), f );
+							sscanf( str, "%lf\t%lf\t%lf\t%lf", &x, &y, &rx, &ry );
+
+							if( pBmp->line_histogramm_count <= pBmp->line_number+1 ) {
+								XYZ_COORD *tmp = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( pBmp->line_number+512 ) );
+								MemMove( tmp, pBmp->line_histogramm, sizeof( XYZ_COORD )*pBmp->line_number );
+								pBmp->line_histogramm_count = pBmp->line_number+512;
+							}
+							pBmp->line_histogramm[pBmp->line_number].x = (x-pSnom->fXOff)/pSnom->fX;
+							pBmp->line_histogramm[pBmp->line_number].y = (y-pSnom->fYOff)/pSnom->fY;
+							pBmp->line_histogramm[pBmp->line_number].hgt = 0;
+							pBmp->line_histogramm[pBmp->line_number].radius_x = rx/pSnom->fX;
+							pBmp->line_histogramm[pBmp->line_number].radius_y = ry/pSnom->fY;
+							pBmp->line_number++;
+						}
+						fclose( f );
+						InvalidateRect( hwnd, NULL, FALSE );
+					}
+				}
+				break;
 
 				case IDM_MATHE:
 					DialogBoxParam( hInst, "MatheDialog", hwnd, MatheDialog, (LPARAM)hwnd );
@@ -2607,8 +2813,8 @@ FertigMaske:
 			// Fall Maus innerhalb der Bitmap bewegt, dann Kreuz als Mauszeiger
 			GetCursorPos( &pt );
 			ScreenToClient( hwnd, &pt );
-			pt.x = ( pt.x+GetScrollPos( hwnd, SB_HORZ ) )/pBmp->fZoom;
-			pt.y = ( pt.y+GetScrollPos( hwnd, SB_VERT ) )/pBmp->fZoom;
+			pt.x /= pBmp->fZoom;
+			pt.y /= pBmp->fZoom;
 			if( pt.x == OldPt.x  &&  pt.y == OldPt.y ) {
 				break;
 			}
@@ -2621,12 +2827,17 @@ FertigMaske:
 				if( pBmp->bMouseMoveMode ) {
 					pBmp->bMouseMoveMode = FALSE;
 					SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+					ClearStatusLine();
+					str[0] = 0;
 					if( pBmp->bCountDots ) {
 						sprintf( str, GetStringRsc( I_DOTS ), pBmp->dot_number, (double)pBmp->dot_number*1e14/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
 						StatusLine( str );
 					}
-					else {
-						ClearStatusLine();
+					if( pBmp->bCountLines ) {
+						char str2[ 256 ];
+						sprintf( str2, GetStringRsc( I_LINES), pBmp->line_number, pBmp->fLineLength*1e7/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
+						strcat( str, str2 );
+						StatusLine( str );
 					}
 				}
 			}
@@ -2658,6 +2869,11 @@ FertigMaske:
 					pBmp->rectScan[iScan].bottom = ( pt.y-pBmp->rectRechts.top )/fYzoom;
 				}
 
+				if( pBmp->bCountLines == 1  &&  pBmp->line_number > 0  ) {
+					pBmp->line_histogramm[pBmp->line_number-1].radius_x = pBmp->rectScan[iScan].right-pBmp->rectScan[iScan].left;
+					pBmp->line_histogramm[pBmp->line_number-1].radius_y = pBmp->rectScan[iScan].bottom-pBmp->rectScan[iScan].top;
+				}
+
 				{
 					int iSc = ( iScan <= 0 ? 0 : iScan );
 					double dDist = sqrt( pow( ( pBmp->rectScan[iSc].bottom-pBmp->rectScan[iSc].top )*pBmp->pSnom[pBmp->iAktuell].fY, 2 ) + pow( ( pBmp->rectScan[iSc].right-pBmp->rectScan[iSc].left )*pBmp->pSnom[pBmp->iAktuell].fX, 2 ) );
@@ -2670,6 +2886,11 @@ FertigMaske:
 					}
 
 					sprintf( str, GetStringRsc( STR_SCANLINE ), pBmp->rectScan[iSc].left, pBmp->rectScan[iSc].top, pBmp->rectScan[iSc].right, pBmp->rectScan[iSc].bottom, (int)( dWinkel+0.5 ), (int)dDist );
+					if( pBmp->bCountLines ) {
+						char str2[ 256 ];
+						sprintf( str2, GetStringRsc( I_LINES), pBmp->line_number, pBmp->fLineLength*1e7/( pBmp->pSnom[pBmp->iAktuell].fX*pBmp->pSnom[pBmp->iAktuell].w*pBmp->pSnom[pBmp->iAktuell].fY*pBmp->pSnom[pBmp->iAktuell].h ) );
+						strcat( str, str2 );
+					}
 					StatusLine( str );
 				}
 				DrawScanLine( hdc, pBmp, 1.0/pBmp->fZoom );
@@ -2677,6 +2898,7 @@ FertigMaske:
 					bMouseMove = TRUE;
 					DrawScanLinePlot( hdc, pBmp, 1.0/pBmp->fZoom, TRUE );
 					DrawDotsPlot( hdc, pBmp, 1.0/pBmp->fZoom );
+					DrawLinesPlot( hdc, pBmp, 1.0/pBmp->fZoom );
 					bMouseMove = FALSE;
 				}
 
@@ -2806,12 +3028,12 @@ FertigMaske:
 		// Start Scanlinie markieren
 		// Dazu werden einfach die passenden Strukturen ausgefüllt
 		case WM_LBUTTONDOWN:
-			if( pBmp->bCountDots ) {
+			if( pBmp->bCountDots ||  pBmp->bCountLines==2 ) {
 				POINT pt;
 				const double fYZoom = pBmp->pSnom[pBmp->iAktuell].fY/pBmp->pSnom[pBmp->iAktuell].fX;
 
-				pt.x = ( LOWORD( lParam )+GetScrollPos( hwnd, SB_HORZ ) )/pBmp->fZoom;
-				pt.y = ( HIWORD( lParam )+GetScrollPos( hwnd, SB_VERT ) )/pBmp->fZoom;
+				pt.x = ( LOWORD( lParam ) )/pBmp->fZoom;
+				pt.y = ( HIWORD( lParam ) )/pBmp->fZoom;
 				if( PointInRect( &pBmp->rectLinks, pt ) ) {
 					LPWORD pData = GetDataPointer( pBmp, pBmp->Links );
 					LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
@@ -2838,7 +3060,7 @@ FertigMaske:
 						CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, 1, pBmp->dot_histogramm+pBmp->dot_number, pBmp->dot_quantisation, 0, 5 );
 						pBmp->dot_number++;
 					}
-					else {
+					else if( pBmp->bCountDots == 2 ) {
 						// remove from histogramm
 						int i;
 						// find closes dot
@@ -2867,6 +3089,45 @@ FertigMaske:
 									MemMove( pBmp->dot_histogramm+closest, pBmp->dot_histogramm+closest+1, ( pBmp->dot_number-closest-1 )*sizeof( pBmp->dot_histogramm[0] ) );
 								}
 								pBmp->dot_number--;
+							}
+							InvalidateRect( hwnd, NULL, FALSE );
+						}
+					}
+					else if( pBmp->bCountLines == 2 ) {
+						// delete lines
+						int i;
+						int closest = -1;
+						int distance = 32767+23767;
+						for( i = 0;  i < pBmp->line_number;  i++ ) {
+							// distance to startpoint
+							int dist = abs( pt.x-pBmp->line_histogramm[i].x ) + abs( pt.y-pBmp->line_histogramm[i].y );
+							if(  dist < distance  ) {
+								closest = i;
+								distance = dist;
+							}
+							// distance to denpoint
+							dist = abs( pt.x+(SWORD)pBmp->line_histogramm[i].radius_x-pBmp->line_histogramm[i].x ) + abs( pt.y+(SWORD)pBmp->line_histogramm[i].radius_y-pBmp->line_histogramm[i].y );
+							if(  dist < distance  ) {
+								closest = i;
+								distance = dist;
+							}
+						}
+						if(  closest >=0   &&  distance < (int)(2.5+2.0/pBmp->fZoom)  ) {
+							if( pBmp->line_number == 1 ) {
+								pBmp->line_number = 0;
+								MemFree( pBmp->line_histogramm );
+								pBmp->line_histogramm = 0;
+								pBmp->line_histogramm_count = 0;
+								pBmp->bCountLines = FALSE;
+#ifdef BIT32
+								SendMessage( hwndToolbar, TB_CHECKBUTTON, IDM_DOT_MODE, TRUE );
+#endif
+							}
+							else {
+								if( closest+1 < pBmp->line_number ) {
+									MemMove( pBmp->line_histogramm+closest, pBmp->line_histogramm+closest+1, ( pBmp->line_number-closest-1 )*sizeof( pBmp->line_histogramm[0] ) );
+								}
+								pBmp->line_number--;
 							}
 							InvalidateRect( hwnd, NULL, FALSE );
 						}
@@ -2906,8 +3167,10 @@ FertigMaske:
 				}
 				bMouseMove = FALSE;
 
-				pt.x = ( LOWORD( lParam )+GetScrollPos( hwnd, SB_HORZ ) )/pBmp->fZoom;
-				pt.y = ( HIWORD( lParam )+GetScrollPos( hwnd, SB_VERT ) )/pBmp->fZoom;
+//				pt.x = ( LOWORD( lParam )+GetScrollPos( hwnd, SB_HORZ ) )/pBmp->fZoom;
+//				pt.y = ( HIWORD( lParam )+GetScrollPos( hwnd, SB_VERT ) )/pBmp->fZoom;
+				pt.x = ( LOWORD( lParam ) )/pBmp->fZoom;
+				pt.y = ( HIWORD( lParam ) )/pBmp->fZoom;
 				if( !pBmp->bMarkScanLine ) {
 					if( PointInRect( &pBmp->rectLinks, pt ) ) {
 						// Neue Scanline hinzufügen?
@@ -2952,6 +3215,27 @@ FertigMaske:
 					else {
 						pBmp->bMarkScanLine = FALSE;
 					}
+					if( pBmp->bCountLines==1 ) {
+						// add line 
+						if(  pBmp->line_histogramm == NULL  ) {
+							pBmp->line_histogramm = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( 512 ) );
+							pBmp->line_histogramm_count = 512;
+						}
+						if( pBmp->line_histogramm_count <= pBmp->line_number+1 ) {
+							XYZ_COORD *tmp = (XYZ_COORD *)pMalloc( sizeof( XYZ_COORD )*( pBmp->line_histogramm_count+512 ) );
+							MemMove( tmp, pBmp->line_histogramm, sizeof( XYZ_COORD )*pBmp->line_number );
+							pBmp->line_histogramm_count = pBmp->line_histogramm_count+512;
+						}
+						pt.x -= pBmp->rectLinks.left;
+						pt.y = ( pt.y-pBmp->rectLinks.top )/fYZoom;
+						pBmp->line_histogramm[pBmp->line_number].x = pt.x;
+						pBmp->line_histogramm[pBmp->line_number].y = pt.y;
+						pBmp->line_histogramm[pBmp->line_number].hgt = 0;
+						pBmp->line_histogramm[pBmp->line_number].radius_x = 0;
+						pBmp->line_histogramm[pBmp->line_number].radius_y = 0;
+						pBmp->line_number++;
+					}
+
 				}
 			}
 			break;
@@ -3007,6 +3291,7 @@ FertigMaske:
 					DrawScanLine( hdc, pBmp, 1.0/fZoom );
 					DrawScanLinePlot( hdc, pBmp, 1.0/fZoom, TRUE );
 					DrawDotsPlot( hdc, pBmp, 1.0/fZoom );
+					DrawLinesPlot( hdc, pBmp, 1.0/fZoom );
 				}
 				else {
 					// Fenster neu zeichnen
@@ -3015,6 +3300,7 @@ FertigMaske:
 					DrawScanLine( hdc, pBmp, wZoomFaktor );
 					DrawScanLinePlot( hdc, pBmp, wZoomFaktor, TRUE );
 					DrawDotsPlot( hdc, pBmp, wZoomFaktor );
+					DrawLinesPlot( hdc, pBmp, wZoomFaktor );
 					pBmp->fZoom = 1.0/(double)wZoomFaktor;
 				}
 			}
@@ -3070,6 +3356,8 @@ FertigMaske:
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_DRUCKEN, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_DREHEN, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_ZEILENMITTEL, TRUE );
+				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MEDIAN3, TRUE );
+				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MEDIAN5, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MATHE, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_FALSCHFARBEN, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_3DANSICHT, TRUE );
@@ -3098,6 +3386,8 @@ FertigMaske:
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_COPY, FALSE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_DREHEN, FALSE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_ZEILENMITTEL, FALSE );
+				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MEDIAN3, FALSE );
+				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MEDIAN5, FALSE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MATHE, FALSE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_FALSCHFARBEN, FALSE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_3DANSICHT, FALSE );
