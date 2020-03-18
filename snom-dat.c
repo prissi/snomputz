@@ -7,6 +7,8 @@
 #include	<string.h>
 #include	<math.h>
 
+#include	<tiffio.h>
+
 #include	"myportab.h"
 
 #include	"snomputz.h"
@@ -28,6 +30,10 @@
 
 #define	DEFAULT_DIGITAL_HEADER_LEN 8192l
 #define MAX_DI_HDLEN 65536
+
+#ifndef M_PI
+#define M_PI        3.14159265358979323846
+#endif
 
 
 /*****************************************************************************************
@@ -332,7 +338,7 @@ BOOL ReadWSxM( HFILE hFile, LPBMPDATA pBmp )
 			// Scaling
 			case 'X':
 				if( strstr( str, IMAGE_HEADER_CONTROL_X_AMPLITUDE ) ) {
-					sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&dWx, (LPSTR)str2 );
+					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWx, (LPSTR)str2 );
 					if( str2[0] == 'ü' ) { // micrometer
 						dWx *= 1000.0;
 					}
@@ -344,7 +350,7 @@ BOOL ReadWSxM( HFILE hFile, LPBMPDATA pBmp )
 
 			case 'Y':
 				if( strstr( str, IMAGE_HEADER_CONTROL_Y_AMPLITUDE ) ) {
-					sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&dWy, (LPSTR)str2 );
+					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWy, (LPSTR)str2 );
 					if( str2[0] == 'ü' ) { // micrometer
 						dWy *= 1000.0;
 					}
@@ -357,7 +363,7 @@ BOOL ReadWSxM( HFILE hFile, LPBMPDATA pBmp )
 			case 'Z':
 				// Attention: This is the full Ampitude from MAX to MIN!!! ...
 				if( strstr( str, IMAGE_HEADER_GENERAL_INFO_Z_AMPLITUDE ) ) {
-					sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&dWz, (LPSTR)str2 );
+					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWz, (LPSTR)str2 );
 					if( str2[0] == 'ü' ) { // micrometer
 						dWz *= 1000.0;
 					}
@@ -598,7 +604,7 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 
 	// Erste Zeile: Datum
 	_lread( hFile, (LPVOID)str, 32 );
-	sscanf( str, "%*s %*f %Fhi/%Fhi/%Fhi %Fhi:%Fhi:%Fhi", (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iJahr, (LPUWORD)&pBmp->iStunde, (LPUWORD)&pBmp->iMinute, (LPUWORD)&pBmp->iSekunde );
+	sscanf( str, "%*s %*f %hi/%hi/%hi %hi:%hi:%hi", (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iJahr, (LPUWORD)&pBmp->iStunde, (LPUWORD)&pBmp->iMinute, (LPUWORD)&pBmp->iSekunde );
 	if( pBmp->iJahr < 90 ) {
 		pBmp->iJahr += 2000;
 	}
@@ -608,7 +614,7 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 
 	// Zweite Zeile (Format: s.o.)
 	_lread( hFile, (LPVOID)str, 32 );
-	sscanf( str, "%*c %*c %*c %Fli %Fli %Fli", (LPLONG)&w, (LPLONG)&h, (LPLONG)&i );
+	sscanf( str, "%*c %*c %*c %li %li %li", (LPLONG)&w, (LPLONG)&h, (LPLONG)&i );
 	strncpy( str2, str+6, 4 );
 	str2[4] = 0;
 	w = atoi( str2 );
@@ -627,7 +633,7 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 		switch( str[0] ) {
 			case 'X':
 				if( str[1] == ' ' ) {
-					sscanf( str+2, "%Flf %Flf %Fc", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
+					sscanf( str+2, "%lf %lf %c", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
 					if( c == 'm' ) {
 						// alles in Meter ...
 						faktor = 1e9;
@@ -644,7 +650,7 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 
 			case 'Y':
 				if( str[1] == ' ' ) {
-					sscanf( str+2, "%Flf %Flf %Fc", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
+					sscanf( str+2, "%lf %lf %c", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
 					if( c == 'm' ) {
 						// alles in Meter ...
 						faktor = 1e9;
@@ -660,7 +666,7 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 
 			case 'Z':
 				if( str[1] == ' ' ) {
-					sscanf( str+2, "%Flf %Flf %Fc", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
+					sscanf( str+2, "%lf %lf %c", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
 					if( c == 'm' ) {
 						// alles in Meter ...
 						faktor = 1e9;
@@ -858,14 +864,14 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 
 		// Datum lesen?
 		if( ECSOffset[i] == 0x9Cl  &&  isdigit( *str ) ) {
-			sscanf( str, "%Fhi/%Fhi/%Fhi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iJahr );
+			sscanf( str, "%hi/%hi/%hi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iJahr );
 		}
 
 		// Uhrzeit lesen?
 		if( ECSOffset[i] == 0xEBl  &&  isdigit( *str ) ) {
 			float fMinuten;
 
-			sscanf( str, "%Fhi:%Ff", (LPUWORD)&pBmp->iStunde, (LPFLOAT)&fMinuten );
+			sscanf( str, "%hi:%f", (LPUWORD)&pBmp->iStunde, (LPFLOAT)&fMinuten );
 			pBmp->iMinute = (UWORD)fMinuten;
 			pBmp->iSekunde = (UWORD)( ( (LONG)( fMinuten*60.0 ) )%60 );
 		}
@@ -875,7 +881,7 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 			pSnom->Topo.Typ = TOPO;
 		}
 		else if( strstr( str, "Scan Size:" ) ) {
-			sscanf( str+10, "%Flf %Flf%Fc", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
+			sscanf( str+10, "%lf %lf%c", (LPDOUBLE)&f, (LPDOUBLE)&g, (LPBYTE)&c );
 			if( c == 0x8F ) {
 				// alles in Angstrom
 				faktor = 0.1;
@@ -888,7 +894,7 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 			pSnom->Topo.fSkal = g*faktor/65536.0;
 		}
 		else if( strstr( str, "Tip position:" ) ) {
-			sscanf( str+13, "%Flf,%Flf", (LPDOUBLE)&( pSnom->fXOff ), (LPDOUBLE)&( pSnom->fYOff ) );
+			sscanf( str+13, "%lf,%lf", (LPDOUBLE)&( pSnom->fXOff ), (LPDOUBLE)&( pSnom->fYOff ) );
 			// Einheit korrigieren
 			pSnom->fXOff *= faktor;
 			pSnom->fYOff *= faktor;
@@ -1051,7 +1057,7 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 
 			case 'D':
 				// Datum lesen
-				sscanf( pcC2, "%Fhi.%Fhi.%Fhi %Fhi:%Fhi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iJahr, (LPUWORD)&pBmp->iStunde, (LPUWORD)&pBmp->iMinute );
+				sscanf( pcC2, "%hi.%hi.%hi %hi:%hi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iMonat, (LPUWORD)&pBmp->iJahr, (LPUWORD)&pBmp->iStunde, (LPUWORD)&pBmp->iMinute );
 				pBmp->iSekunde = 0;
 				if( pBmp->iJahr < 90 ) {
 					pBmp->iJahr += 2000;
@@ -1258,7 +1264,7 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 
 	// File-Header ...
 	strcpy( sHeader, "\\*File list\xD\xA\\Version: 0x04230203\xD\xA" );
-	sprintf( str, "\\Date: %02i:%02i:%02i %Fs ??? %Fs %2i %i\xD\xA", pBmp->iStunde%12, pBmp->iMinute, pBmp->iSekunde, (LPSTR)( ( pBmp->iStunde > 12 ) ? "PM" : "AM" ), (LPSTR)( sAllMonth[pBmp->iMonat-1] ), pBmp->iTag, pBmp->iJahr );
+	sprintf( str, "\\Date: %02i:%02i:%02i %s ??? %s %2i %i\xD\xA", pBmp->iStunde%12, pBmp->iMinute, pBmp->iSekunde, (LPSTR)( ( pBmp->iStunde > 12 ) ? "PM" : "AM" ), (LPSTR)( sAllMonth[pBmp->iMonat-1] ), pBmp->iTag, pBmp->iJahr );
 	strcat( sHeader, str );
 	if( i > 1 ) {
 		sprintf( str, "\\Start context: OL%i\xD\xA", i );
@@ -1528,14 +1534,29 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						pSnom->w = atol( str+13 );
 					}
 					else {
-						sscanf( str+13, "%Fli %Fli", (LPLONG)&( pSnom->w ), (LPLONG)&( pSnom->h ) );
+						sscanf( str+13, "%li %li", (LPLONG)&( pSnom->w ), (LPLONG)&( pSnom->h ) );
 					}
 				}
 				// Ausmaüe (hoffentlich!)
 				else if( strstr( str, "\\Scan size: " ) == str  ||  strstr( str, "\\Scan Size: " ) == str ) {
-					if( lVersion < 0x04400000l  ||  3!=sscanf( str+12, "%Flf %Flf %Fs", (LPDOUBLE)&lfX, (LPDOUBLE)&lfY, (LPSTR)str2 )   ) {
-						sscanf( str+12, "%Flf %Fs", (LPDOUBLE)&lfX, (LPSTR)str2 );
+					if( lVersion < 0x04400000l  ) {
+						sscanf( str+12, "%lf %s", (LPDOUBLE)&lfX, (LPSTR)str2 );
 						lfY = lfX;
+					}
+					else {
+						unsigned char *p = str+12;
+						lfX = atof( p );
+						while( *p++ > ' ' )
+							;
+						lfY = atof( p );
+						if( lfY == 0 ) {
+							lfY = lfX;
+						}
+						else {
+							while( *p++ > ' ' )
+								;
+						}
+						strcpy( str2, p );
 					}
 					if( ReadWord( str2 ) == ReadWord( "um" )  ||  ReadWord( str2 ) == ReadWord( "~m" ) ) {
 						lfX *= 1000.0;
@@ -1547,7 +1568,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 			case 'X':
 				// X-Offset (wird nur in PS-Struktur eingetragen)
 				if( strstr( str, "\\X offset: " ) == str ) {
-					sscanf( str+11, "%Flf %Fs", (LPDOUBLE)&( pSnom->fXOff ), (LPSTR)str2 );
+					sscanf( str+11, "%lf %s", (LPDOUBLE)&( pSnom->fXOff ), (LPSTR)str2 );
 					if( ReadWord( str2 ) == ReadWord( "um" ) ) {
 						pSnom->fXOff *= 1000.0;
 					}
@@ -1557,7 +1578,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 			case 'Y':
 				// Y-Offset (->pPsi)
 				if( strstr( str, "\\Y offset: " ) == str ) {
-					sscanf( str+11, "%Flf %Fs", (LPDOUBLE)&( pSnom->fYOff ), (LPSTR)str2 );
+					sscanf( str+11, "%lf %s", (LPDOUBLE)&( pSnom->fYOff ), (LPSTR)str2 );
 					if( ReadWord( str2 ) == ReadWord( "um" ) ) {
 						pSnom->fYOff *= 1000.0;
 					}
@@ -1581,7 +1602,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 							break;
 						}
 					}
-					sscanf( (LPSTR)( str+27 ), "%Fhi %Fhi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iJahr );
+					sscanf( (LPSTR)( str+27 ), "%hi %hi", (LPUWORD)&pBmp->iTag, (LPUWORD)&pBmp->iJahr );
 				}
 
 				// start of next data
@@ -1647,7 +1668,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 			case 'A':
 				// Ausmasse
 				if( strstr( str, "\\Aspect ratio: " ) == str  ||  strstr( str, "\\Aspect Ratio: " ) == str ) {
-					sscanf( str+15, "%Flf%*c%Flf", (LPDOUBLE)&lfAspect, (LPDOUBLE)&lfY );
+					sscanf( str+15, "%lf%*c%lf", (LPDOUBLE)&lfAspect, (LPDOUBLE)&lfY );
 					lfAspect /= lfY;
 				}
 				break;
@@ -1678,7 +1699,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				else if( strstr( str, "\\@2:Image Data: " ) == str ) { // Art der Daten
 					// Beispiel "\@2:Image Data: S [Height] "Height""
 					BYTE *t = NULL, *s = strstr( str, " \"" );
-					if( strstr( str, " [Height]" ) ) {
+					if( strstr( str, " [Height]" )  ||  strstr( str, "[ZSensor]" )  ) {
 						if(  pSnom->Topo.puDaten  ) {
 							// ignore second height data
 							StatusLine( "Ignored second height channel!" );
@@ -1688,6 +1709,11 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						t = pSnom->Topo.strTitel;
 					}
 					else if( strstr( str, "[Deflection" )  ||  strstr( str, "Error]" )  ) {
+						if(  pSnom->Error.puDaten  ) {
+							// ignore second height data
+							StatusLine( "Ignored second error channel!" );
+							break;
+						}
 						Header = ERRO;
 						t = pSnom->Error.strTitel;
 					}
@@ -1786,7 +1812,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 		} // switch
 
 		// newer files always terminate by "File list end"
-		if(  strstr( str, "\\*NCAFM image list" ) == str  ||  strstr( str, "\\*Ciao image list" ) == str  ||  strstr( str, "\\**File list end" ) == str  ||  *str == 0x1A ) {
+		if(  strstr( str, "\\*NCAFM image list" ) == str  ||  strstr( str, "\\*Ciao image list" ) == str  ||  strstr( str, "\\*File list end" ) == str  ||  *str == 0x1A ) {
 			if( Header ) {
 				LONG lOldpos = _llseek( hFile, 0l, 1 );
 				LPBYTE pPtr;
@@ -2435,28 +2461,171 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 	BOOLEAN	bResult;
 
 	HFILE hFile;
-	unsigned char str[4];
+	unsigned char str[ 4 ];
 	LONG lNextTags;
 
-	ASSERT( pBmp != NULL  );
+	ASSERT( pBmp != NULL );
 
 	// Erst einmal davon ausgehen, dass die Datei nix sinnvolles enthült
-	pBmp->pSnom[0].Topo.puDaten = NULL;
-	pBmp->pSnom[0].Topo.Typ = NONE;
-	pBmp->pSnom[0].Error.puDaten = NULL;
-	pBmp->pSnom[0].Error.Typ = NONE;
-	pBmp->pSnom[0].Lumi.puDaten = NULL;
-	pBmp->pSnom[0].Lumi.Typ = NONE;
+	pBmp->pSnom[ 0 ].Topo.puDaten = NULL;
+	pBmp->pSnom[ 0 ].Topo.Typ = NONE;
+	pBmp->pSnom[ 0 ].Error.puDaten = NULL;
+	pBmp->pSnom[ 0 ].Error.Typ = NONE;
+	pBmp->pSnom[ 0 ].Lumi.puDaten = NULL;
+	pBmp->pSnom[ 0 ].Lumi.Typ = NONE;
 
 	pBmp->pPsi.fXOff0 = 0.0;
 	pBmp->pPsi.fYOff0 = 0.0;
 
+	// check for Tiff
+	WarteMaus();
+	{
+		uint32 width, height;
+		boolean ok = FALSE;
+
+		TIFF* tiff = TIFFOpen( datei, "r" );
+		if( tiff ) {
+
+			// Read dimensions of image
+			if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) ) {
+				if( TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) ) {
+
+					uint32 imagelength;
+					uint16 planarconfig, spp, sformat = 1, bps;
+					tdata_t buf;
+					uint32 row;
+					uint16 mindd = 65536;
+
+					WORD *pTopo = (WORD *)pMalloc( width*height * sizeof( WORD ) ), maxdd = 0;
+
+					TIFFGetField( tiff, TIFFTAG_SAMPLESPERPIXEL, &spp );
+					if( spp < 5 ) {
+						TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &imagelength );
+						TIFFGetField( tiff, TIFFTAG_PLANARCONFIG, &planarconfig );
+						int format_ok = TIFFGetField( tiff, TIFFTAG_SAMPLEFORMAT, &sformat );
+						if( !format_ok || sformat <= 2 ) {
+							if( !format_ok ) sformat = 1;
+							TIFFGetField( tiff, TIFFTAG_BITSPERSAMPLE, &bps );
+							size_t scanlinesize = TIFFScanlineSize( tiff );
+							buf = _TIFFmalloc( TIFFScanlineSize( tiff ) );
+							if( planarconfig == PLANARCONFIG_CONTIG ) {
+								for( row = 0; row < imagelength; row++ ) {
+									TIFFReadScanline( tiff, buf, row, 0 );
+									if( bps == 8 ) {
+										for( int x = 0; x < width; x++ ) {
+											uint8 *p = (uint8 *)buf;
+											WORD dd = p[ x*spp ];
+											if( sformat == 2 ) dd += 128;
+											pTopo[ width*row + x ] = dd;
+										}
+									}
+									else {
+										for( int x = 0; x < width; x++ ) {
+											uint16 *p = (uint16 *)buf;
+											WORD dd = 0;
+											for( int i = 0; i < 1; i++ ) {
+												dd += p[ x*spp ];
+											}
+											if( sformat == 2 ) dd += 32768;
+											pTopo[ width*row + x ] = dd;
+										}
+									}
+								}
+								ok = TRUE;
+							}
+							else if( planarconfig == PLANARCONFIG_SEPARATE ) {
+								uint16 s, nsamples;
+
+								TIFFGetField( tiff, TIFFTAG_SAMPLESPERPIXEL, &nsamples );
+								for( s = 0; s < nsamples; s++ ) {
+									for( row = 0; row < imagelength; row++ ) {
+										TIFFReadScanline( tiff, buf, row, s );
+									}
+								}
+								ok = TRUE;
+							}
+							// now convert to snomimage
+							char textfile[ 1024 ];
+							strcpy( textfile, datei );
+							char *ext = strrchr( textfile, '.' );
+							if( ok ) {
+								char textfile[ 1024 ];
+								strcpy( textfile, datei );
+								char *ext = strrchr( textfile, '.' );
+								char *pathname = strrchr( textfile, '\\' )==0 ? textfile : strrchr( textfile, '\\' )+1;
+								size_t len = min( ext - pathname, 127 );
+
+								SNOMDATA *pSnom = &(pBmp->pSnom[ 0 ]);
+								memcpy( pSnom->Topo.strTitel, pathname, len );
+								pSnom->Topo.strTitel[ len ] = 0;
+								pSnom->Topo.bPseudo3D = FALSE;
+								pSnom->Topo.bModuloKonturen = FALSE;
+								pSnom->Topo.bKonturen = FALSE;
+								pSnom->Topo.Farben[ 0 ] = 0x0l;
+								pSnom->Topo.Farben[ 1 ] = 0x00004080ul;
+								pSnom->Topo.Farben[ 2 ] = 0x00FFFFFFul;
+								pSnom->Topo.bNoLUT = TRUE;
+								pSnom->Topo.fStart = 0.0;
+								pSnom->Topo.fEnde = 100.0;
+								pSnom->Topo.bSpecialZUnit = FALSE;
+								pSnom->Topo.bShowNoZ = TRUE;
+								lstrcpy( pSnom->Topo.strZUnit, STR_TOPO_UNIT );
+								pSnom->Topo.iNumColors = 0;
+								pSnom->w = width;
+								pSnom->h = height;
+								pSnom->fX = pSnom->fY = 1.0;
+								pSnom->fXOff = pSnom->fYOff = 0.0;
+								pSnom->Topo.puDaten = pTopo;
+								pSnom->Topo.Typ = TOPO;
+								pSnom->Topo.uMaxDaten = 65535;
+								pBmp->Links = TOPO;
+								BildMax( &(pSnom->Topo), width, height );
+								// test if this is an Hitachi microscope image, and load the data to it
+								if( ext ) {
+									strcpy( ext, ".txt" );
+									double tilt = 0.0;
+									FILE *f = fopen( textfile, "r" );
+									if( f ) {
+										// has helper file!
+										SNOMDATA *pSnom = &(pBmp->pSnom[ 0 ]);
+										while( !feof( f ) ) {
+											char data[ 1024 ];
+											fgets( data, 1024, f );
+											if( strncmp( data, "PixelSize=", 10 ) == 0 ) {
+												pSnom->fX = pSnom->fY = atof( data + 10 );
+											}
+											else if( strncmp( data, "StagePositionT=", 15 ) == 0 ) {
+												tilt = atof( data + 15 );
+											}
+										}
+										if( tilt != 0.0 ) pSnom->fY /= cos( tilt*M_PI / 180.0 );
+										fclose( f );
+									}
+								}
+								_TIFFfree( buf );
+							}
+						}
+						else {
+							// no support for RGB TIFF
+						}
+					}
+				}
+			}
+			TIFFClose( tiff );
+		}
+		// not a tiff file, try other methods
+		if( ok ) {
+			NormalMaus();
+			return (TRUE);
+		}
+	}
+
 	if( ( hFile = _lopen( datei, OF_READ|OF_SHARE_DENY_WRITE ) ) == -1 ) {
 		FehlerRsc( E_FILE );
+		NormalMaus();
 		return ( FALSE );
 	}
 
-	WarteMaus();
 #ifdef BIT32
 	{
 		FILETIME ft;
