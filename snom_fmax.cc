@@ -41,13 +41,13 @@ extern "C" void CalcDotRadius( LPUWORD puData, const LONG w, const LONG h, const
 
 UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LONG tolerance, XYZ_COORD **pOutputKoord )
 {
-	char *maxmap = (char*)pMalloc( width*height );
+	char *maxmap = (char*)pMalloc( sizeof(char)*width*height );
 
 	int maxSortingError = 0;
 
-	int nMax = 0;
-	int nResult = 0;
-	XYZ_COORD *maxpts = (XYZ_COORD*)pMalloc( ( width*height )*sizeof( XYZ_COORD ) );
+	long nMax = 0;
+	long nResult = 0;
+	XYZ_COORD *maxpts = (XYZ_COORD*)pMalloc( sizeof( XYZ_COORD )*width*height );
 	XYZ_COORD *pResult = 0;
 	XY_COORD *pList = 0;
 
@@ -55,9 +55,9 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LON
 
 	assert( maxmap );
 
-	for( int y = 1; y < height-1; y++ ) {         // find local maxima now
+	for( long y = 1; y < height-1; y++ ) {         // find local maxima now
 
-		for( int x = 1; x < width-1; x++ ) {      // for better performance with rois, restrict search to roi
+		for( long x = 1; x < width-1; x++ ) {      // for better performance with rois, restrict search to roi
 
 			UWORD vTrue = puData[( y*width )+x];
 			boolean isMax = true;
@@ -91,11 +91,11 @@ UWORD ListOfMaxima( LPUWORD puData, LONG width, LONG height, UWORD uMaxData, LON
 	// now we have a list of all local maxima 0> sort
 	qsort( maxpts, nMax, sizeof( *maxpts ), CompareXYZ_COORD );
 
-	pList = (XY_COORD*)pMalloc( width*height*sizeof( XY_COORD ) );  // temporary
-	pResult = (XYZ_COORD*)pMalloc( (nMax+1)*sizeof( XYZ_COORD ) );     // final ... );
+	pList = (XY_COORD*)pMalloc( sizeof( XY_COORD )*width*height );  // temporary
+	pResult = (XYZ_COORD*)pMalloc( sizeof( XYZ_COORD )*(nMax+1) );     // final ... );
 
 	// now process all maximas, heighest first
-	for( int iMax = nMax-1;  iMax >= 0;  iMax-- ) {
+	for( long iMax = nMax-1;  iMax >= 0;  iMax-- ) {
 		int x0 = maxpts[iMax].x;
 		int y0 = maxpts[iMax].y;
 		long offset0 = x0 + y0*width;
