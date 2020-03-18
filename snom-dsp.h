@@ -70,6 +70,10 @@ void	DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 void	DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale );
 // 21.11.11
 
+// BSF zeichnen
+void	DrawLinesPlot( HDC hdc, LPBMPDATA pBmp, double fScale );
+// 18.3.20
+
 // Stellt die aktuelle Dib im Cache dar
 void	DisplayDib( HDC hdc, LPBITMAPINFO lpDib, HWND TopHwnd, LPRECT pCoord, WORD wZoom, LPUCHAR lpDibBits );
 // 27.7.97

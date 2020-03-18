@@ -180,6 +180,7 @@
 #define IDM_INTEGRAL                    553
 #define IDM_INVERT_MASKE                560
 #define IDM_KONTOUR                     574
+
 #define IDM_DOT_MODE					673
 #define IDM_DOTS_ADD					674
 #define IDM_DOTS_REMOVE					675
@@ -187,6 +188,15 @@
 #define IDM_DOTS_MARK					677
 #define IDM_DOTS_CLEAR					678
 #define IDM_DOTS_SAVE					679
+
+#define IDM_LINE_MODE					683
+#define IDM_LINE_ADD					684
+#define IDM_LINE_REMOVE					685
+#define IDM_LINE_AUTO					686
+#define IDM_LINE_MARK					687
+#define IDM_LINE_CLEAR					688
+#define IDM_LINE_SAVE					689
+
 #define IDM_LOESCHE_MASKE               562
 #define IDM_MASKE_HORIZONTAL_MITTELN    563
 #define IDM_MASKE_VERTIKAL_MITTELN      564

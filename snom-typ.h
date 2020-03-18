@@ -55,6 +55,7 @@ typedef struct
 	FLAG 	bPseudo3D;
 	FLAG 	bKonturen;
 	FLAG 	bModuloKonturen;
+	enum { MARK_DOTS=0, MARK_LINES=1 } markmode;
 	COLORREF	Farben[3];
 	float			fStart;
 	float			fEnde;							// Zu zeigender Farbbereich in Prozent
@@ -141,13 +142,18 @@ typedef struct
 	RECT		rectFenster;	// Ausmaﬂe des gesamten Fensters (Bilder+Scanlines+Text)
 	RECT		rectPlot;			// Plotkoordinaten (in BITMAPKOORDINATEN!)
 
+	BYTE		bCountLines;	// 1, if countin, 2 if removing
+	UWORD		line_number;
+	XYZ_COORD	*line_histogramm;	// data for line
+	UWORD		line_histogramm_count;	// availabe size
+
 	BYTE		bCountDots;	// 1, if countin, 2 if removing
 	UWORD		dot_number;
 	UWORD		dot_radius;
 	UWORD		dot_mean_level;			// zero level
 	UWORD		dot_quantisation;	// how many height level are one hist level
 	XYZ_COORD	*dot_histogramm;	// height data for each dot
-	UWORD		dot_histogramm_count;	// height data for each dot
+	UWORD		dot_histogramm_count;	// availabe size
 
 	BOOL		bMarkScanLine;	// TRUE, wenn gerade Scanline markiert wird
 	LPDOUBLE pScanLine;		// Pointer auf Scanlinie (7-Spalten!)
