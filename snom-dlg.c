@@ -357,7 +357,7 @@ AddFile:
 			continue;
 		}
 		// check extension for: par, hdf, hdz, xyz 000...999
-		if( !( *p == '0'  ||  atoi( p ) > 0 )  &&  lstrcmpi( p, "par" )  &&  lstrcmpi( p, "hdf" )  &&  lstrcmpi( p, "hdz" )  &&  lstrcmpi( p, "afm" )  &&  lstrcmpi( p, "xqd" ) ) {
+		if( !( *p == '0'  ||  atoi( p ) > 0 )  &&  lstrcmpi( p, "par" )  &&  lstrcmpi( p, "hdf" )  &&  lstrcmpi( p, "hdz" )  &&  lstrcmpi( p, "afm" )  &&  lstrcmpi( p, "xqd" )  &&  lstrcmpi( p, "tif" )  ) {
 			continue;
 		}
 		// add file here!

@@ -2594,6 +2594,55 @@ void DrawDotsPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
 }
 
 
+// Line defects draw
+void DrawLinesPlot( HDC hdc, LPBMPDATA pBmp, double fScale )
+{
+	HGDIOBJ	hOld;
+	BOOLEAN	bRahmenZeichnen = TRUE;
+	LPSNOMDATA pSnom = &pBmp->pSnom[pBmp->iAktuell];
+	int i, j, iSize = 2;
+	// zoom factor for crosses and radius
+	const double fZoom = fScale!=1.0 ? fScale : (double)pBmp->pSnom[pBmp->iAktuell].h / (double)( pBmp->rectLinks.bottom-pBmp->rectLinks.top );
+	const int endwidth = max( 2, 2/fZoom );
+
+	if( pBmp->line_histogramm_count == 0  ||  pSnom->Topo.bPseudo3D ) {
+		return;
+	}
+
+	double total_len = 0.0;
+	hOld = SelectObject( hdc, CreatePen( PS_SOLID, 1, cMarkierungLinks ) );
+	for( j = i = 0;  i < pBmp->line_number;  i++ ) {
+
+		POINT pt, d;
+
+		pt.x = (int)( ( pBmp->rectLinks.left+pBmp->line_histogramm[i].x*( pBmp->rectLinks.right-pBmp->rectLinks.left )/pBmp->pSnom[pBmp->iAktuell].w )/fScale );
+		pt.y = (int)( ( pBmp->rectLinks.top+pBmp->line_histogramm[i].y*( pBmp->rectLinks.bottom-pBmp->rectLinks.top )/pBmp->pSnom[pBmp->iAktuell].h )/fScale );
+		d.x = (SWORD)pBmp->line_histogramm[i].radius_x/fZoom;
+		d.y = (SWORD)pBmp->line_histogramm[i].radius_y/fZoom;
+
+		// line
+		MoveToEx( hdc, pt.x+d.x, pt.y+d.y, NULL );
+		LineTo( hdc, pt.x, pt.y );
+		// mark start
+		MoveToEx( hdc, pt.x-3, pt.y, NULL );
+		LineTo( hdc, pt.x+3, pt.y );
+		MoveToEx( hdc, pt.x, pt.y-3, NULL );
+		LineTo( hdc, pt.x, pt.y+3 );
+		// mark end
+		MoveToEx( hdc, pt.x-3+d.x, pt.y+d.y, NULL );
+		LineTo( hdc, pt.x+3+d.x, pt.y+d.y );
+		MoveToEx( hdc, pt.x+d.x, pt.y-3+d.y, NULL );
+		LineTo( hdc, pt.x+d.x, pt.y+3+d.y );
+
+		double dx = abs( (SWORD)pBmp->line_histogramm[ i ].radius_x )*pSnom->fX;
+		double dy = abs( (SWORD)pBmp->line_histogramm[ i ].radius_y )*pSnom->fY;
+		total_len += sqrt( dx*dx + dy*dy );
+	}
+	pBmp->fLineLength = total_len;
+	DeleteObject( SelectObject( hdc, hOld ) );
+}
+
+
 // Stellt eine Dib dar (NO_PALETTE: RGB-Farben verwenden
 void DisplayDib( HDC hdc, LPBITMAPINFO lpDib, HWND TopHwnd, LPRECT pCoord, WORD wZoom, LPUCHAR lpDibBits )
 {

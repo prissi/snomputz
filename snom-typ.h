@@ -98,8 +98,8 @@ typedef struct {
 	UWORD x;
 	UWORD y;
 	UWORD hgt;
-	UWORD radius_x;
-	UWORD radius_y;
+	SWORD radius_x;
+	SWORD radius_y;
 } XYZ_COORD;
 
 
@@ -146,6 +146,7 @@ typedef struct
 	UWORD		line_number;
 	XYZ_COORD	*line_histogramm;	// data for line
 	UWORD		line_histogramm_count;	// availabe size
+	double      fLineLength; // total length of all lines
 
 	BYTE		bCountDots;	// 1, if countin, 2 if removing
 	UWORD		dot_number;

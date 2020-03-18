@@ -187,7 +187,8 @@
 #define IDM_DOTS_AUTO					676
 #define IDM_DOTS_MARK					677
 #define IDM_DOTS_CLEAR					678
-#define IDM_DOTS_SAVE					679
+#define IDM_DOTS_LOAD					679
+#define IDM_DOTS_SAVE					680
 
 #define IDM_LINE_MODE					683
 #define IDM_LINE_ADD					684
@@ -195,7 +196,8 @@
 #define IDM_LINE_AUTO					686
 #define IDM_LINE_MARK					687
 #define IDM_LINE_CLEAR					688
-#define IDM_LINE_SAVE					689
+#define IDM_LINE_LOAD					689
+#define IDM_LINE_SAVE					690
 
 #define IDM_LOESCHE_MASKE               562
 #define IDM_MASKE_HORIZONTAL_MITTELN    563
@@ -283,6 +285,7 @@
 #define I_WINKEL                        21
 #define I_X_DIFF                        15
 #define I_DOTS							217
+#define I_LINES							218
 #define I_Y_DIFF                        17
 #define I_ZEILENMITTEL                  5
 

@@ -173,7 +173,9 @@ BEGIN
         MENUITEM "&FFT-Smoothing ...",          IDM_FFT_MITTEL
         MENUITEM "Max/Min &Interpolation ...",  IDM_DESPIKE
         MENUITEM "&Medianfiltering ...",        IDM_MEDIAN
-        MENUITEM SEPARATOR
+		MENUITEM "Medianfilter 3 lines",        IDM_MEDIAN3
+		MENUITEM "Medianfilter 5x5 area",       IDM_MEDIAN5
+		MENUITEM SEPARATOR
         MENUITEM "Rotate &right 90°",           IDM_DREHEN
         MENUITEM "Resize ...",                  IDM_GROESSE
         MENUITEM SEPARATOR
@@ -196,17 +198,30 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Mark I&solines ...",          IDM_KONTOUR
     END
-    POPUP "&Dots"
-	BEGIN
-        MENUITEM "&Add dots",		IDM_DOTS_ADD
-        MENUITEM "&Remove dots",	IDM_DOTS_REMOVE
-        MENUITEM "&Count dots ...",	IDM_DOTS_AUTO
-        MENUITEM "&Mark radius",	IDM_DOTS_MARK
-        MENUITEM SEPARATOR
-        MENUITEM "Clea&r dots",	IDM_DOTS_CLEAR
-        MENUITEM "Save dot statistics ...",	IDM_DOTS_SAVE
-	END
-    POPUP "A&nalysis"
+			POPUP "&Dot statistics"
+			BEGIN
+			MENUITEM "&Add dots",		IDM_DOTS_ADD
+			MENUITEM "&Remove dots",	IDM_DOTS_REMOVE
+			MENUITEM "&Count dots ...",	IDM_DOTS_AUTO
+			MENUITEM "&Mark radius",	IDM_DOTS_MARK
+			MENUITEM SEPARATOR
+			MENUITEM "Clea&r dots",	IDM_DOTS_CLEAR
+			MENUITEM SEPARATOR
+			MENUITEM "Load dot statistics ...",	IDM_DOTS_LOAD
+			MENUITEM "Save dot statistics ...",	IDM_DOTS_SAVE
+			END
+		POPUP "&Line statistics"
+		BEGIN
+		MENUITEM "&Add line",		IDM_LINE_ADD
+		MENUITEM "&Remove dots",	IDM_LINE_REMOVE
+		MENUITEM "&Mark lines",	IDM_LINE_MARK, GRAYED
+		MENUITEM SEPARATOR
+		MENUITEM "Clea&r lines",	IDM_LINE_CLEAR
+		MENUITEM SEPARATOR
+		MENUITEM "Load line statistics ...",	IDM_LINE_LOAD
+		MENUITEM "Save line statistics ...",	IDM_LINE_SAVE
+		END
+		POPUP "A&nalysis"
     BEGIN
         MENUITEM "&RMS ...",                    IDM_RMS
         MENUITEM "&Histogram ...",              IDM_HISTOGRAMM
@@ -1256,6 +1271,7 @@ BEGIN
     I_UNDO                  "UNDO"
     I_X_DIFF                "Flatten by X-Deviation minimization"
 	I_DOTS					"Counted %i dots (right click to end) density %.3e/cm²  "
+	I_LINES					"%d lines, density %.3e/cm  "
 END
 
 STRINGTABLE DISCARDABLE 

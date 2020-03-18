@@ -584,7 +584,7 @@ BOOL WINAPI CMUGetFolderCallbackProc( HWND hwnd, UINT uMsg, LPARAM lParam, LPARA
 						continue;
 					}
 					// check extension for: par, hdf, hdz, xyz 000...999
-					if( !( *p == '0'  ||  atoi( p ) > 0 )  &&  lstrcmpi( p, "par" )  &&  lstrcmpi( p, "hdf" )  &&  lstrcmpi( p, "hdz" )  &&  lstrcmpi( p, "afm" )  &&  lstrcmpi( p, "xqd" ) ) {
+					if( !( *p == '0'  ||  atoi( p ) > 0 )  &&  lstrcmpi( p, "par" )  &&  lstrcmpi( p, "hdf" )  &&  lstrcmpi( p, "hdz" )  &&  lstrcmpi( p, "afm" )  &&  lstrcmpi( p, "xqd" )  &&  lstrcmpi( p, "tif" )  &&  lstrcmpi( p, "tiff" ) ) {
 						continue;
 					}
 					// add file here!
