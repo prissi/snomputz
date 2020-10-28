@@ -169,8 +169,9 @@ BEGIN
     END
     POPUP "&Manipulation"
     BEGIN
-        MENUITEM "&Averaging ...",              IDM_GLEITEND_MITTEL
-        MENUITEM "&FFT-Smoothing ...",          IDM_FFT_MITTEL
+		MENUITEM "A&veraging lines ...",        IDM_GLEITEND_MITTEL
+		MENUITEM "&Averaging 2D ...",           IDM_GLEITEND_MITTEL_2D
+		MENUITEM "&FFT-Smoothing ...",          IDM_FFT_MITTEL
         MENUITEM "Max/Min &Interpolation ...",  IDM_DESPIKE
         MENUITEM "&Medianfiltering ...",        IDM_MEDIAN
 		MENUITEM "Medianfilter 3 lines",        IDM_MEDIAN3

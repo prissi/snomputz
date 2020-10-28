@@ -33,6 +33,12 @@ BOOLEAN	BildGleitendesMittel( LPBILD pBild, LONG lPunkte, const LONG w, const LO
 // 24.10.98
 
 
+// Arera average, right bottom border bocme constant
+// TRUE, wenn erfolgreich
+BOOLEAN	BildGleitendesMittel2D( LPBILD pBild, LONG lPunkte, const LONG w, const LONG h );
+// 24.10.98
+
+
 // Negativ berechnen
 // TRUE (immer erfolgreich)
 BOOLEAN	BildNegieren( LPBILD pBild, const LONG w, const LONG h );

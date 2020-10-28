@@ -432,6 +432,60 @@ BOOLEAN	BildGleitendesMittel( LPBILD pBild, LONG lPunkte, const LONG w, const LO
 // 24.10.98
 
 
+// Berechnet ein gleitendes Mittel
+// TRUE, wenn erfolgreich
+BOOLEAN	BildGleitendesMittel2D( LPBILD pBild, LONG lPunkte, const LONG w, const LONG h )
+{
+	LONG lMittel;
+	LPUWORD	puZeile;
+	LONG lMax, lMin;
+	LONG x, y, i;
+	const LONG lCount = ((lPunkte) & 0xFFFE) + 1;
+
+	ASSERT(  lPunkte > 1  &&  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256 );
+
+	// Es is immer eine ungerade Anzahl von Punkten, so oder so ...
+	lPunkte /= 2;
+
+	// Nun mitteln
+	puZeile = pBild->puDaten;
+	lMin = 100000l;
+	lMax = -100000l;
+	for( y = 0; y < h - lCount; y++ ) {
+		// Mittelwerte berechnen
+		for( x = 0; x < w - lCount; x++ ) {
+			lMittel = 0;
+			for( int yy = y; yy < y + lCount; yy++ ) {
+				puZeile = pBild->puDaten + (yy*w) + x;
+				for( int i = 0; i < lCount; i++ ) {
+					lMittel += puZeile[ i ];
+				}
+			}
+			lMittel /= (lCount*lCount);
+			if( lMax < lMittel ) {
+				lMax = lMittel;
+			}
+			if( lMin > lMittel ) {
+				lMin = lMittel;
+			}
+			pBild->puDaten[ (y*w) + x ] = lMittel;
+		}
+		// right border get constant value, since resizing is not handled well
+		for( x = w - lPunkte; x < w; x++ ) {
+			pBild->puDaten[ (y*w) + x ] = lMittel;
+		}
+	}
+	puZeile = pBild->puDaten + (h - lPunkte-1)*w;
+	for( ; y < h; y++ ) {
+		hmemcpy( pBild->puDaten + y*w, puZeile, w * sizeof( WORD ) );
+	}
+	// Minimum korrigieren
+	BildMinMax( pBild, lMin, lMax, w, h );
+	return ( TRUE );
+}
+// 24.10.98
+
+
 // Negativ berechnen
 // TRUE (immer erfolgreich)
 BOOLEAN	BildNegieren( LPBILD pBild, const LONG w, const LONG h )

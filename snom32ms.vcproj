@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Snom32ms"
+	Name="snom32ms"
 	ProjectGUID="{D73023C9-FB88-4C2F-AE28-A2186E973B77}"
 	TargetFrameworkVersion="131072"
 	>
@@ -41,7 +41,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Snom32ms.tlb"
+				TypeLibraryName=".\Debug/snom32ms.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -52,7 +52,7 @@
 				ExceptionHandling="0"
 				RuntimeLibrary="1"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\Debug/Snom32ms.pch"
+				PrecompiledHeaderFile=".\Debug/snom32ms.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -76,11 +76,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib comdlg32.lib shell32.lib vfw32.lib kernel32.lib gdi32.lib user32.lib Advapi32.lib Winmm.lib"
-				OutputFile=".\Debug/Snom32ms.exe"
+				OutputFile=".\Debug/snom32ms.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/Snom32ms.pdb"
+				ProgramDatabaseFile=".\Debug/snom32ms.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/Snom32ms.bsc"
+				OutputFile=".\Debug/snom32ms.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -137,7 +137,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Snom32ms.tlb"
+				TypeLibraryName=".\Release/snom32ms.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -148,7 +148,7 @@
 				OmitFramePointers="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
-				PrecompiledHeaderFile=".\Release/Snom32ms.pch"
+				PrecompiledHeaderFile=".\Release/snom32ms.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -170,10 +170,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib comdlg32.lib shell32.lib vfw32.lib kernel32.lib gdi32.lib user32.lib Advapi32.lib Winmm.lib"
-				OutputFile=".\Release/Snom32ms.exe"
+				OutputFile=".\Release/snom32ms.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				ProgramDatabaseFile=".\Release/Snom32ms.pdb"
+				ProgramDatabaseFile=".\Release/snom32ms.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -191,7 +191,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/Snom32ms.bsc"
+				OutputFile=".\Release/snom32ms.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -253,7 +253,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Filebox.c"
+				RelativePath="filebox.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -273,7 +273,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-avi.c"
+				RelativePath="snom-avi.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -293,7 +293,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-bmp.c"
+				RelativePath="snom-bmp.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -313,7 +313,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-dat.c"
+				RelativePath="snom-dat.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -333,7 +333,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-dlg.c"
+				RelativePath="snom-dlg.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -353,7 +353,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-dsp.c"
+				RelativePath="snom-dsp.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -373,7 +373,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-fit.c"
+				RelativePath="snom-fit.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -393,7 +393,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Snom-mat.c"
+				RelativePath=".\snom-mat.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -414,7 +414,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-mem.c"
+				RelativePath="snom-mem.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -434,7 +434,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-pac.c"
+				RelativePath="snom-pac.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -474,7 +474,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snom-wrk.c"
+				RelativePath="snom-wrk.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -498,7 +498,7 @@
 				>
 			</File>
 			<File
-				RelativePath="Snomputz.c"
+				RelativePath="snomputz.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -518,7 +518,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Snomputz.rc"
+				RelativePath="snomputz.rc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

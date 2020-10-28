@@ -170,6 +170,7 @@
 #define IDM_FFT_MITTEL                  546
 #define IDM_FIT_TO_WINDOW               585
 #define IDM_GLEITEND_MITTEL             545
+#define IDM_GLEITEND_MITTEL_2D          614
 #define IDM_GROESSE                     549
 #define IDM_HILFEINHALT                 611
 #define IDM_HILFESUCHEN                 612

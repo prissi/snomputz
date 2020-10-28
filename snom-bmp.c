@@ -1153,6 +1153,42 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					break;
 				}
 
+				// Gleitendes Mittel berechen
+				case IDM_GLEITEND_MITTEL_2D:
+				{
+					LPSNOMDATA pSnom;
+					LONG lTeiler = 0;
+
+					if( WhatToDo( pBmp, modus ) == NONE ) {
+						WarnungRsc( W_NIX );
+						break;
+					}
+					lTeiler = DialogBoxParam( hInst, "GleitendDialog", hwnd, StdDialog, (LPARAM)3 );
+					if( lTeiler < 2 ) {
+						break;
+					}
+					StatusLineRsc( I_Y_DIFF );
+					pSnom = pAllocNewSnom( pBmp, modus );
+					if( pSnom != NULL ) {
+						WarteMaus();
+
+						if( (LONG)pSnom->Topo.puDaten > 256 ) {
+							BildGleitendesMittel2D( &( pSnom->Topo ), lTeiler, pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Error.puDaten > 256 ) {
+							BildGleitendesMittel2D( &( pSnom->Error ), lTeiler, pSnom->w, pSnom->h );
+						}
+						if( (LONG)pSnom->Lumi.puDaten > 256 ) {
+							BildGleitendesMittel2D( &( pSnom->Lumi ), lTeiler, pSnom->w, pSnom->h );
+						}
+
+						RecalcCache( pBmp, TRUE, TRUE );
+						NormalMaus();
+						InvalidateRect( hwnd, NULL, FALSE );
+					}
+					break;
+				}
+
 				// Zeilenweise FFT-Mittel berechen
 				case IDM_FFT_MITTEL:
 					if( WhatToDo( pBmp, modus ) == NONE ) {
