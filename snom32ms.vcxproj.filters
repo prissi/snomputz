@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{8c492ee0-033e-465d-8eee-dc4081c425e2}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{46269d8e-2160-420e-8479-7acbe91ecbf0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="avi_utils.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Dsp-mes.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="filebox.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-avi.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-bmp.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-dat.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-dlg.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-dsp.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-fit.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-mat.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-mem.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-pac.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-prg.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom-wrk.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snom_fmax.cc">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="snomputz.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="snomputz.rc">
+      <Filter>Quelldateien</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="afxres.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="avi_utils.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="dsp-mes.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="filebox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="hdf-file.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="hitachi.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="hntdefs.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="htags.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="myportab.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="nrutil.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="psi-hdf.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-avi.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-dat.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-def.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-dlg.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-dsp.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-fit.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-fmax.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snomlang.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-mat.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-mem.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-pac.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-prg.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snomputz.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-typ.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-var.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-win.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="snom-wrk.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="wsxm.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
