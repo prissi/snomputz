@@ -88,7 +88,7 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 		puZeile = puData;
 		for( y = 0;  y < h;  y++ ) {
 			for( x = 0;  x < w;  x++ ) { // attention: Never put the next two lines into a single one!!!! (MS compiler error!!!!)
-				i = (signed short)puSrc[x];
+				WORD i = (signed short)puSrc[x];
 				i += uAdd;
 				if( i > iMax ) {
 					iMax = i;
@@ -251,12 +251,12 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 
 
 
-/*************************************** WSxM-Format ***************************************
- * See description from www.nanotec.es
- */
-BOOL ReadWSxM( HFILE hFile, LPBMPDATA pBmp )
+ /*************************************** WSxM-Format ***************************************
+  * See description from www.nanotec.es
+  */
+BOOL ReadWSxM(HFILE hFile, LPBMPDATA pBmp)
 {
-	LPSNOMDATA pSnom = &( pBmp->pSnom[0] );
+	LPSNOMDATA pSnom = &(pBmp->pSnom[0]);
 	LPBYTE pcBuf, pcC, pcC2;
 	CHAR str[1024], str2[16];
 	long iLen = 0, lDataLen, lHeaderLen = MAX_DI_HDLEN;
@@ -268,155 +268,265 @@ BOOL ReadWSxM( HFILE hFile, LPBMPDATA pBmp )
 	Header = TOPO;
 	pBmp->pPsi.fRot = 0.0;
 	// Header ist hoffentlich kleiner als 65536 (zumindest was den INHALT angeht ... )
-	pcBuf = (LPBYTE)pMalloc( MAX_DI_HDLEN );
-	if( pcBuf == NULL ) {
-		FehlerRsc( E_MEMORY );
-		return ( FALSE );
+	pcBuf = (LPBYTE)pMalloc(MAX_DI_HDLEN);
+	if (pcBuf == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
 	}
 
 	// Ganzen Header auf einmal lesen
-	_llseek( hFile, 0l, 0 );
-	_lread( hFile, pcBuf, MAX_DI_HDLEN );
+	_llseek(hFile, 0l, 0);
+	_lread(hFile, pcBuf, MAX_DI_HDLEN);
 
-	lstrcpy( pSnom->Topo.strTitel, STR_TOPO );
-	lstrcpy( pSnom->Error.strTitel, STR_ERROR );
-	lstrcpy( pSnom->Lumi.strTitel, STR_LUMI );
+	lstrcpy(pSnom->Topo.strTitel, STR_TOPO);
+	lstrcpy(pSnom->Error.strTitel, STR_ERROR);
+	lstrcpy(pSnom->Lumi.strTitel, STR_LUMI);
 
 	pcC = pcBuf;
-	while( iLen++ < lHeaderLen ) {
+	while (iLen++ < lHeaderLen) {
 		// Skip leading Spaces
-		while( iLen < lHeaderLen  &&  *pcC <= ' ' ) {
+		while (iLen < lHeaderLen && *pcC <= ' ') {
 			pcC++;
 			iLen++;
 		}
 		// copy now to string
 		pcC2 = str;
-		for( lDataLen = 0;  lDataLen < 1022  &&  iLen++ < lHeaderLen  &&  *pcC >= ' ';  lDataLen++ ) {
+		for (lDataLen = 0; lDataLen < 1022 && iLen++ < lHeaderLen && *pcC >= ' '; lDataLen++) {
 			*pcC2++ = *pcC++;
 		}
-		while( *pcC <= 13  &&  iLen++ < lHeaderLen )
+		while (*pcC <= 13 && iLen++ < lHeaderLen)
 			pcC++;
 		*pcC2++ = 0;
 
-		switch( str[0] ) { // Um das Laden zu beschleunigen ...
+		switch (str[0]) { // Um das Laden zu beschleunigen ...
 			// Channel
-			case 'A':
-				if( strstr( str, IMAGE_HEADER_GENERAL_INFO_ACQUISITION ) ) {
-					if( strstr( str, "Topo" ) ) {
-						Header = TOPO;
-					}
-					else {
-						Header = ERRO;
-					}
+		case 'A':
+			if (strstr(str, IMAGE_HEADER_GENERAL_INFO_ACQUISITION)) {
+				if (strstr(str, "Topo")) {
+					Header = TOPO;
 				}
-				break;
+				else {
+					Header = ERRO;
+				}
+			}
+			break;
 
 			// length of Header
-			case 'I':
-				if( strstr( str, IMAGE_HEADER_SIZE_TEXT ) ) {
-					lHeaderLen = atoi( str+19 );
-					break;
-				}
-				// Newer Versions save double Data ...
-				if( strstr( str, IMAGE_DOUBLE_DATA ) ) {
-					bDoubleData = TRUE;
-				}
+		case 'I':
+			if (strstr(str, IMAGE_HEADER_SIZE_TEXT)) {
+				lHeaderLen = atoi(str + 19);
 				break;
+			}
+			// Newer Versions save double Data ...
+			if (strstr(str, IMAGE_DOUBLE_DATA)) {
+				bDoubleData = TRUE;
+			}
+			break;
 
 			// width/height
-			case 'N':
-				if( strstr( str, IMAGE_HEADER_GENERAL_INFO_NUM_COLUMNS ) ) {
-					pSnom->w = atoi( str+19 );
-					break;
-				}
-				if( strstr( str, IMAGE_HEADER_GENERAL_INFO_NUM_ROWS ) )	{
-					pSnom->h = atoi( str+15 );
-					break;
-				}
+		case 'N':
+			if (strstr(str, IMAGE_HEADER_GENERAL_INFO_NUM_COLUMNS)) {
+				pSnom->w = atoi(str + 19);
 				break;
+			}
+			if (strstr(str, IMAGE_HEADER_GENERAL_INFO_NUM_ROWS)) {
+				pSnom->h = atoi(str + 15);
+				break;
+			}
+			break;
 
 			// Scaling
-			case 'X':
-				if( strstr( str, IMAGE_HEADER_CONTROL_X_AMPLITUDE ) ) {
-					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWx, (LPSTR)str2 );
-					if( str2[0] == 'ü' ) { // micrometer
-						dWx *= 1000.0;
-					}
-					if( str2[0] == 'ü' ) { // Aangstroem
-						dWx /= 10.0;
-					}
+		case 'X':
+			if (strstr(str, IMAGE_HEADER_CONTROL_X_AMPLITUDE)) {
+				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWx, (LPSTR)str2);
+				if (str2[0] == 'ü') { // micrometer
+					dWx *= 1000.0;
 				}
-				break;
+				if (str2[0] == 'ü') { // Aangstroem
+					dWx /= 10.0;
+				}
+			}
+			break;
 
-			case 'Y':
-				if( strstr( str, IMAGE_HEADER_CONTROL_Y_AMPLITUDE ) ) {
-					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWy, (LPSTR)str2 );
-					if( str2[0] == 'ü' ) { // micrometer
-						dWy *= 1000.0;
-					}
-					if( str2[0] == 'ü' ) { // Aangstroem
-						dWy /= 10.0;
-					}
+		case 'Y':
+			if (strstr(str, IMAGE_HEADER_CONTROL_Y_AMPLITUDE)) {
+				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWy, (LPSTR)str2);
+				if (str2[0] == 'ü') { // micrometer
+					dWy *= 1000.0;
 				}
-				break;
+				if (str2[0] == 'ü') { // Aangstroem
+					dWy /= 10.0;
+				}
+			}
+			break;
 
-			case 'Z':
-				// Attention: This is the full Ampitude from MAX to MIN!!! ...
-				if( strstr( str, IMAGE_HEADER_GENERAL_INFO_Z_AMPLITUDE ) ) {
-					sscanf( str+12, "%lf %s", (LPDOUBLE)&dWz, (LPSTR)str2 );
-					if( str2[0] == 'ü' ) { // micrometer
-						dWz *= 1000.0;
-					}
-					if( str2[0] == 'ü' ) { // Aangstroem
-						dWz /= 10.0;
-					}
+		case 'Z':
+			// Attention: This is the full Ampitude from MAX to MIN!!! ...
+			if (strstr(str, IMAGE_HEADER_GENERAL_INFO_Z_AMPLITUDE)) {
+				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWz, (LPSTR)str2);
+				if (str2[0] == 'ü') { // micrometer
+					dWz *= 1000.0;
 				}
-				break;
+				if (str2[0] == 'ü') { // Aangstroem
+					dWz /= 10.0;
+				}
+			}
+			break;
 
-			case '[':
-				if( strstr( str, "[Header_end]" ) ) {
-					goto ReadWSxMNow;
-				}
+		case '[':
+			if (strstr(str, "[Header_end]")) {
+				goto ReadWSxMNow;
+			}
 		}
 	}
 ReadWSxMNow:
 	// Ok, there is always only a single Bitmap to read
-	pSnom->fX = dWx/pSnom->w;
-	pSnom->fY = dWy/pSnom->h;
-	if( ( pBmp->pExtra = pMalloc( lHeaderLen ) ) != NULL ) {
+	pSnom->fX = dWx / pSnom->w;
+	pSnom->fY = dWy / pSnom->h;
+	if ((pBmp->pExtra = pMalloc(lHeaderLen)) != NULL) {
 		pBmp->Typ = WSxM;
 		pBmp->lExtraLen = lHeaderLen;
-		MemMove( pBmp->pExtra, pcBuf, lHeaderLen );
+		MemMove(pBmp->pExtra, pcBuf, lHeaderLen);
 	}
-	MemFree( pcBuf );
-	_llseek( hFile, lHeaderLen, 0 );
-	lDataLen = pSnom->w*pSnom->h*sizeof( short );
-	pcBuf = pMalloc( lDataLen );
-	if( !bDoubleData ) {
-		if( pcBuf == 0  ||  _hread( hFile, pcBuf, lDataLen ) < lDataLen ) {
-			MemFree( pcBuf );
-			_lclose( hFile );
-			FehlerRsc( E_FILE );
-			return ( FALSE );
+	MemFree(pcBuf);
+	_llseek(hFile, lHeaderLen, 0);
+	lDataLen = pSnom->w * pSnom->h * sizeof(short);
+	pcBuf = pMalloc(lDataLen);
+	if (!bDoubleData) {
+		if (pcBuf == 0 || _hread(hFile, pcBuf, lDataLen) < lDataLen) {
+			MemFree(pcBuf);
+			_lclose(hFile);
+			FehlerRsc(E_FILE);
+			return (FALSE);
 		}
 	}
 	else {
 		// this translates to trouble data ...
 	}
-	_lclose( hFile );
-	LadeBlock( pBmp, pcBuf, pSnom->w, pSnom->w, pSnom->h, 16, Header, 32767, TRUE );
-	MemFree( pcBuf );
-	if( Header == TOPO ) {
-		pSnom->Topo.fSkal = dWz/(double)pSnom->Topo.uMaxDaten;
+	_lclose(hFile);
+	LadeBlock(pBmp, pcBuf, pSnom->w, pSnom->w, pSnom->h, 16, Header, 32767, TRUE);
+	MemFree(pcBuf);
+	if (Header == TOPO) {
+		pSnom->Topo.fSkal = dWz / (double)pSnom->Topo.uMaxDaten;
 	}
 	else {
-		pSnom->Error.fSkal = dWz/(double)pSnom->Error.uMaxDaten;
+		pSnom->Error.fSkal = dWz / (double)pSnom->Error.uMaxDaten;
 	}
-	return ( TRUE );
+	return (TRUE);
 }
 
 
 // Finish read WSxM
+
+
+/*************************************** SDF-Format ***************************************
+ * reverse engineered
+ */
+
+#define MAX_SDF_HDLEN (0x54)
+
+BOOL ReadSDF(HFILE hFile, LPBMPDATA pBmp)
+{
+	LPUWORD puData, puZeile;
+	LONG i, iMax = 0, iMin = 65536;
+	LONG x, y;
+
+	LPSNOMDATA pSnom = &(pBmp->pSnom[0]);
+	BYTE pcBuf[MAX_SDF_HDLEN];
+	CHAR str[1024], str2[16];
+	long iLen = 0, lDataLen;
+	WORKMODE Header = 0;
+	double dWx, dWy, dWz;
+	float* fData, last_good_value, fmin, fmax;
+	double fZ;
+
+	// defaults
+	_llseek(hFile, 0l, 0);
+	_lread(hFile, pcBuf, MAX_SDF_HDLEN);
+
+	lstrcpy(pSnom->Topo.strTitel, STR_TOPO);
+	lstrcpy(pSnom->Error.strTitel, STR_ERROR);
+	lstrcpy(pSnom->Lumi.strTitel, STR_LUMI);
+
+	pSnom->w = pcBuf[0x2A] + pcBuf[0x2B] * 256u;
+	pSnom->h = pcBuf[0x2C] + pcBuf[0x2D] * 256u;
+	
+	fData = (float *)pMalloc(pSnom->w* pSnom->h*4);
+	if (pcBuf == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
+	}
+	
+	lDataLen = pSnom->w * pSnom->h;
+	_hread(hFile, fData, lDataLen * 4);
+
+	_llseek(hFile, 128+5, 1);
+	_lread(hFile, pcBuf, MAX_SDF_HDLEN);
+
+	_lclose(hFile);
+
+	sscanf(pcBuf, "%lf %s", &fZ, str);
+
+	// there might be outliers
+	last_good_value = 10.0;
+	fmin = 1e38;
+	fmax = 1e-38;
+	for (long i = 0; i < lDataLen; i++) {
+		if (fData[i] > 1e38 || fData[i] < 1e-38) {
+			fData[i] = last_good_value;
+		}
+		else if (fData[i] > fmax) {
+			fmax = fData[i];
+		}
+		else if (fData[i] < fmin) {
+			fmin = fData[i];
+		}
+	}
+
+	puData = (LPUWORD)pMalloc(pSnom->w * pSnom->h * sizeof(WORD));
+	if (puData == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
+	}
+
+	// Eh 16-Bit Daten? Dann einfach kopieren
+	puZeile = puData;
+	iMax = 45000;
+	iMin = 0;
+	for (long i = 0; i < lDataLen; i++) {
+		puData[i] = (WORD)(45000.0 * (fData[i] - fmin) / (fmax - fmin));
+	}
+
+	pBmp->pPsi.fRot = 0.0;
+	pSnom->Topo.puDaten = puData;
+	pSnom->Topo.Typ = TOPO;
+	pSnom->Topo.uMaxDaten = 45001u;
+	// Evt. initialisieren
+	pSnom->Topo.bPseudo3D = FALSE;
+	pSnom->Topo.bModuloKonturen = FALSE;
+	pSnom->Topo.bKonturen = FALSE;
+	pSnom->Topo.Farben[0] = 0x0l;
+	pSnom->Topo.Farben[1] = 0x00004080ul;
+	pSnom->Topo.Farben[2] = 0x00FFFFFFul;
+	pSnom->Topo.bNoLUT = TRUE;
+	pSnom->Topo.fStart = 0.0;
+	pSnom->Topo.fEnde = 100.0;
+	pBmp->Links = TOPO;
+	pSnom->Topo.fXYWinkel3D = f3DXYWinkel;
+	pSnom->Topo.fZWinkel3D = f3DZWinkel;
+	pSnom->Topo.fZSkal3D = f3DZWinkel;
+	pSnom->Topo.bSpecialZUnit = FALSE;
+	pSnom->Topo.bShowNoZ = FALSE;
+	lstrcpy(pSnom->Topo.strZUnit, STR_TOPO_UNIT);
+	pSnom->Topo.iNumColors = 0;
+	pSnom->Topo.fSkal = fZ / (double)pSnom->Topo.uMaxDaten;
+
+	MemFree(fData);
+	return (TRUE);
+}
+
+
+// Finish read SDF
 
 
 //*************************************** Hitachi-Format ***************************************
@@ -468,7 +578,7 @@ BOOL ReadHitachi( HFILE hFile, LPBMPDATA pBmp )
 	for( i = 0;  i < pHeader->nx*pHeader->ny;  i++ ) {
 		pBuffer[i] += pHeader->ns;
 	}
-	LadeBlock( pBmp, pBuffer, pSnom->w, pSnom->w, pSnom->h, 16, TOPO, 32766, TRUE );
+	LadeBlock( pBmp, pBuffer, pSnom->w, pSnom->w, pSnom->h, 16, TOPO, 0, TRUE );
 	return ( TRUE );
 }
 
@@ -482,6 +592,7 @@ BOOL ReadSeiko( HFILE hFile, LPBMPDATA pBmp )
 	WORD *pBuffer;
 	LONG lEoF, lEoH, i;
 	SHORT w, h;
+	BOOLEAN bUnsigned = FALSE;
 
 	/****************************************************************************
 	 *	Only trial and error
@@ -537,6 +648,10 @@ BOOL ReadSeiko( HFILE hFile, LPBMPDATA pBmp )
 		pBmp->lExtraLen = lEoH;
 	}
 
+	// version larger than 30000 have unsigend headers ...
+	i = *(WORD*)(pBmp->pExtra + 0x10);
+	bUnsigned = i < 30000;
+		
 	// Daten laden
 	i = lEoF-lEoH;
 	_llseek( hFile, lEoH, 0 );
@@ -547,10 +662,17 @@ BOOL ReadSeiko( HFILE hFile, LPBMPDATA pBmp )
 		FehlerRsc( E_FILE );
 		return ( FALSE );
 	}
-	_lclose( hFile );
+	_lclose(hFile);
 
 	// Und endlich konvertieren ...
-	LadeBlock( pBmp, pBuffer, pSnom->w, pSnom->w, pSnom->h, 16, TOPO, 0x8000u, TRUE );
+	LadeBlock(pBmp, pBuffer, pSnom->w, pSnom->w, pSnom->h, 16, TOPO, 0x8000u * bUnsigned, TRUE);
+
+	if (i > pSnom->w * pSnom->h * 2l) {
+		// second header (will be skipped for now)
+		// contains only usedless double data
+		// LadeBlock(pBmp, pBuffer+(pSnom->w * pSnom->h+lEoH/2), pSnom->w, pSnom->w, pSnom->h, 16, ERRO, 0, TRUE);
+	}
+
 	MemFree( pBuffer );
 	return ( TRUE );
 }
@@ -2649,6 +2771,13 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 		bResult = ReadAscii( hFile, pBmp );
 		NormalMaus();
 		return ( bResult );
+	}
+
+	if (strncmp(str,"bBCR",4)==0) {
+		// Total energy data from Jena ...
+		bResult = ReadSDF(hFile, pBmp);
+		NormalMaus();
+		return (bResult);
 	}
 
 	if( str[0] == 'T'  &&  str[1] == 'E' ) {
