@@ -339,10 +339,10 @@ BOOL ReadWSxM(HFILE hFile, LPBMPDATA pBmp)
 		case 'X':
 			if (strstr(str, IMAGE_HEADER_CONTROL_X_AMPLITUDE)) {
 				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWx, (LPSTR)str2);
-				if (str2[0] == 'ü') { // micrometer
+				if (str2[0] == 0xB5) { // micrometer
 					dWx *= 1000.0;
 				}
-				if (str2[0] == 'ü') { // Aangstroem
+				if (str2[0] == 0xC5) { // Aangstroem
 					dWx /= 10.0;
 				}
 			}
@@ -351,11 +351,11 @@ BOOL ReadWSxM(HFILE hFile, LPBMPDATA pBmp)
 		case 'Y':
 			if (strstr(str, IMAGE_HEADER_CONTROL_Y_AMPLITUDE)) {
 				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWy, (LPSTR)str2);
-				if (str2[0] == 'ü') { // micrometer
-					dWy *= 1000.0;
+				if (str2[0] == 0xB5) { // micrometer
+					dWx *= 1000.0;
 				}
-				if (str2[0] == 'ü') { // Aangstroem
-					dWy /= 10.0;
+				if (str2[0] == 0xC5) { // Aangstroem
+					dWx /= 10.0;
 				}
 			}
 			break;
@@ -364,11 +364,11 @@ BOOL ReadWSxM(HFILE hFile, LPBMPDATA pBmp)
 			// Attention: This is the full Ampitude from MAX to MIN!!! ...
 			if (strstr(str, IMAGE_HEADER_GENERAL_INFO_Z_AMPLITUDE)) {
 				sscanf(str + 12, "%lf %s", (LPDOUBLE)&dWz, (LPSTR)str2);
-				if (str2[0] == 'ü') { // micrometer
-					dWz *= 1000.0;
+				if (str2[0] == 0xB5) { // micrometer
+					dWx *= 1000.0;
 				}
-				if (str2[0] == 'ü') { // Aangstroem
-					dWz /= 10.0;
+				if (str2[0] == 0xC5) { // Aangstroem
+					dWx /= 10.0;
 				}
 			}
 			break;
