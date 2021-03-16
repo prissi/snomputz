@@ -2,16 +2,16 @@
 ****	SNOM-MEM:	Konvertierung-, Speicher- und verwandte Routinen
 **************************************************************************************/
 
-// Aus Motorola mach Intel und zurück (Langwort)
+// Aus Motorola mach Intel und zurÃ¼ck (Langwort)
 LONG LongBig2Little( LONG i );
 
-// Aus Motorola mach Intel und zurück (Wort)
+// Aus Motorola mach Intel und zurÃ¼ck (Wort)
 UWORD Big2Little( UWORD i );
 
 
 /* Macht aus einer Tabelle einen Texttabelle
  * Trennzeichen ist Tabulator
- * Rückgabewert ist die neue Länge (negativ, wenn zu klein!)
+ * RÃ¼ckgabewert ist die neue LÃ¤nge (negativ, wenn zu klein!)
  */
 LONG	CopyFloat2Text( LPFLOAT pfWerte[], LONG lSpalten, LONG lZeilen, LPSTR strText, LONG lMaxLaenge );
 // 10.10.97
@@ -23,20 +23,20 @@ void	MemMove( LPVOID pvTarget, LPVOID pvSrc, LONG lLen );
 void	MemSet( LPVOID pvTarget, UCHAR cConst, LONG lLen );
 
 #ifndef	BIT32
-// Routinen für 16-Bit kompatibilität: Windows-Routinen
+// Routinen fÃ¼r 16-Bit kompatibilitÃ¤t: Windows-Routinen
 #define strcpy( i, j ) lstrcpy( (i), (j) )
 #define strlen( i ) lstrlen( (i) )
 #define strcat( i, j ) lstrcat( (i), (j) )
 #endif
 
 
-/****	Gibt TRUE zurück, wenn diese Position maskiert ist ****/
-/**** ACHTUNG: Keine Fehlerprüfung! ****/
+/****	Gibt TRUE zurÃ¼ck, wenn diese Position maskiert ist ****/
+/**** ACHTUNG: Keine FehlerprÃ¼fung! ****/
 BOOL	IsMaske( LPBMPDATA pBmp, int x, int y );
 // 26.1.99
 
 
-/****	Vergrössert Bild (ist hier, da extensiver Einsatz von Kopierroutinen) ****/
+/****	VergrÃ¶ssert Bild (ist hier, da extensiver Einsatz von Kopierroutinen) ****/
 BOOL	BildResize( LPBILD pBild, LONG w, LONG h, LONG NeuW, LONG NeuH );
 // 4.7.98
 
@@ -46,20 +46,20 @@ BOOLEAN	FreeBmp( LPBMPDATA pBmp, WORD i );
 // 6.8.97
 
 
-/* Gibt Pointer auf Daten oder Null zurück */
+/* Gibt Pointer auf Daten oder Null zurÃ¼ck */
 LPUWORD	GetDataPointer( LPBMPDATA pBmp, WORKMODE modus );
 // 11.11.98
 
 
-/* Gibt Pointer auf Bild oder Null zurück */
+/* Gibt Pointer auf Bild oder Null zurÃ¼ck */
 LPBILD	GetBildPointer( LPBMPDATA pBmp, WORKMODE modus );
 // 26.1.99
 
 
 
-/* Testet, ob und was überhaupt verändert werden soll
+/* Testet, ob und was Ã¼berhaupt verÃ¤ndert werden soll
  * Sollte vor pAllocNewSnom aufgerufen werden!
- * Rückgabewert: Die tatsächlich zu ändernden Teile
+ * RÃ¼ckgabewert: Die tatsÃ¤chlich zu Ã¤ndernden Teile
  */
 WORKMODE	WhatToDo( LPBMPDATA pBmp, WORKMODE modus );
 // 28.10.98
@@ -67,8 +67,8 @@ WORKMODE	WhatToDo( LPBMPDATA pBmp, WORKMODE modus );
 
 
 /* Bereitet neue Topografie/Error/Luminzensdaten-Bitmap vor
- * Dabei ist zu beachten, dass Werte für den Pointer <= 256
- * Indizes für die Originaldaten sind!
+ * Dabei ist zu beachten, dass Werte fÃ¼r den Pointer <= 256
+ * Indizes fÃ¼r die Originaldaten sind!
  */
 LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus );
 // 28.7.97

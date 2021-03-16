@@ -2,7 +2,7 @@
 ****	Konvertierung-, Speicher- und verwandte Routinen
 **************************************************************************************/
 
-#include <stdlib.h>     //für _rotr() und _rotl()
+#include <stdlib.h>     //fÃ¼r _rotr() und _rotl()
 
 #include "snomputz.h"
 #include "snom-typ.h"
@@ -13,7 +13,7 @@
 
 /********************************************************************************************/
 
-// Aus Motorola mach Intel und zurück (Langwort)
+// Aus Motorola mach Intel und zurÃ¼ck (Langwort)
 LONG LongBig2Little( LONG i )
 {
 	LONG j = i;
@@ -23,7 +23,7 @@ LONG LongBig2Little( LONG i )
 }
 
 
-// Aus Motorola mach Intel und zurück (Wort)
+// Aus Motorola mach Intel und zurÃ¼ck (Wort)
 UWORD Big2Little( UWORD i )
 {
 	UWORD j = i;
@@ -35,7 +35,7 @@ UWORD Big2Little( UWORD i )
 
 // Macht aus einer Tabelle einen Texttabelle;
 // Trennzeichen ist Tabulator
-// Rückgabewert ist die neue Länge (negativ, wenn zu klein!)
+// RÃ¼ckgabewert ist die neue LÃ¤nge (negativ, wenn zu klein!)
 LONG CopyFloat2Text( LPFLOAT( pfWerte[] ), LONG lSpalten, LONG lZeilen, LPSTR strText, LONG lMaxLaenge )
 {
 	LONG lPos = 0, i, j;
@@ -57,7 +57,7 @@ LONG CopyFloat2Text( LPFLOAT( pfWerte[] ), LONG lSpalten, LONG lZeilen, LPSTR st
 		lstrcpy( (LPSTR)( strText+lPos-1 ), "\xD\xA" );
 		lPos += 1;
 
-		// Maximale Länge überschritten?
+		// Maximale LÃ¤nge Ã¼berschritten?
 		if( lMaxLaenge < lPos+12 ) {
 			return ( -lPos );
 		}
@@ -106,9 +106,9 @@ void MemFree( LPVOID pvPtr )
 void MemMove( LPVOID pvTarget, LPVOID pvSrc, LONG lLen )
 {
 #ifndef	BIT32
-	// Klimmzüge für 16 Bit
+	// KlimmzÃ¼ge fÃ¼r 16 Bit
 	if( (LPCHAR)pvTarget+lLen < (LPCHAR)pvSrc  ||  (LPCHAR)pvTarget > (LPCHAR)pvSrc+lLen ) {
-		// Wenn nicht überlappend: Einfach
+		// Wenn nicht Ã¼berlappend: Einfach
 		hmemcpy( pvTarget, pvSrc, lLen );
 	}
 	else {
@@ -137,7 +137,7 @@ void MemMove( LPVOID pvTarget, LPVOID pvSrc, LONG lLen )
 void MemSet( LPVOID pvTarget, UCHAR cConst, LONG lLen )
 {
 #ifndef	BIT32
-	// Klimmzüge für 16 Bit
+	// KlimmzÃ¼ge fÃ¼r 16 Bit
 	// Ansonsten mit krepligen Bibliotheksroutinen ...
 	void far * far _fmemset( void far *dest, unsigned const, size_t n );
 
@@ -161,8 +161,8 @@ void MemSet( LPVOID pvTarget, UCHAR cConst, LONG lLen )
 /********************************************************************************************/
 
 
-/****	Gibt TRUE zurück, wenn diese Position maskiert ist ****/
-/**** ACHTUNG: Keine Fehlerprüfung! ****/
+/****	Gibt TRUE zurÃ¼ck, wenn diese Position maskiert ist ****/
+/**** ACHTUNG: Keine FehlerprÃ¼fung! ****/
 BOOL IsMaske( LPBMPDATA pBmp, int x, int y )
 {
 	int w = pBmp->wMaskeW, i;
@@ -180,7 +180,7 @@ BOOL IsMaske( LPBMPDATA pBmp, int x, int y )
 // 26.1.99
 
 
-/****	Vergrössert Bild (ist hier, da extensiver Einsatz von Kopierroutinen) ****/
+/****	VergrÃ¶ssert Bild (ist hier, da extensiver Einsatz von Kopierroutinen) ****/
 BOOL BildResize( LPBILD pBild, LONG w, LONG h, LONG NeuW, LONG NeuH )
 {
 	LPUWORD	puNeu;
@@ -193,7 +193,7 @@ BOOL BildResize( LPBILD pBild, LONG w, LONG h, LONG NeuW, LONG NeuH )
 		return ( FALSE );
 	}
 
-	// Vergrössern in x-Rtg
+	// VergrÃ¶ssern in x-Rtg
 	if( fw < 1.0 ) {
 		for( y = 0;  y < h;  y++ ) {
 			x = old_x = 0;
@@ -273,7 +273,7 @@ BOOL BildResize( LPBILD pBild, LONG w, LONG h, LONG NeuW, LONG NeuH )
 // Gibt die i-te Bitmap frei
 BOOLEAN	FreeBmp( LPBMPDATA pBmp, WORD i )
 {
-/* Ungültiger Parameterbereich */
+/* UngÃ¼ltiger Parameterbereich */
 	ASSERT( ( i > 0  &&  pBmp->iMax > 1 )  &&  i < pBmp->iMax  );
 
 	// Zuerst Daten freigeben
@@ -288,7 +288,7 @@ BOOLEAN	FreeBmp( LPBMPDATA pBmp, WORD i )
 	}
 	pBmp->iMax--;
 
-	// Evt. die aktuelle Bitmap verändern
+	// Evt. die aktuelle Bitmap verÃ¤ndern
 	if( pBmp->iAktuell >= i ) {
 		pBmp->iAktuell--;
 	}
@@ -298,10 +298,10 @@ BOOLEAN	FreeBmp( LPBMPDATA pBmp, WORD i )
 	if( pBmp->iSaved > i ) {
 		pBmp->iSaved++;
 	}
-	// Wenn aus der Mitte gelöscht, muss verschoben werden
+	// Wenn aus der Mitte gelÃ¶scht, muss verschoben werden
 	MemMove( &( pBmp->pSnom[i] ), &( pBmp->pSnom[i+1] ), sizeof( SNOMDATA )*(ULONG)( pBmp->iMax-i ) );
 
-	// Dann müssen die Pointer angepasst werden
+	// Dann mÃ¼ssen die Pointer angepasst werden
 	while( i < pBmp->iMax )	{
 		if( (LONG)pBmp->pSnom[i].Topo.puDaten <= 256ul  &&  pBmp->pSnom[i].Topo.puDaten != NULL ) {
 			pBmp->pSnom[i].Topo.puDaten = (LPWORD)( (LONG)pBmp->pSnom[i].Topo.puDaten-1 );
@@ -319,9 +319,9 @@ BOOLEAN	FreeBmp( LPBMPDATA pBmp, WORD i )
 // 6.8.97
 
 
-/* Testet, ob und was überhaupt verändert werden soll
+/* Testet, ob und was Ã¼berhaupt verÃ¤ndert werden soll
  * Sollte vor pAllocNewSnom aufgerufen werden!
- * Rückgabewert: Die tatsächlich zu ändernden Teile
+ * RÃ¼ckgabewert: Die tatsÃ¤chlich zu Ã¤ndernden Teile
  */
 WORKMODE WhatToDo( LPBMPDATA pBmp, WORKMODE modus )
 {
@@ -342,7 +342,7 @@ WORKMODE WhatToDo( LPBMPDATA pBmp, WORKMODE modus )
 // 28.10.98
 
 
-/* Gibt Pointer auf Bild oder Null zurück */
+/* Gibt Pointer auf Bild oder Null zurÃ¼ck */
 LPBILD GetBildPointer( LPBMPDATA pBmp, WORKMODE modus )
 {
 	if( modus&TOPO ) {
@@ -359,7 +359,7 @@ LPBILD GetBildPointer( LPBMPDATA pBmp, WORKMODE modus )
 // 26.1.99
 
 
-/* Gibt Pointer auf Daten oder Null zurück */
+/* Gibt Pointer auf Daten oder Null zurÃ¼ck */
 LPUWORD	GetDataPointer( LPBMPDATA pBmp, WORKMODE modus )
 {
 	LPUWORD	pu = NULL;
@@ -388,8 +388,8 @@ LPUWORD	GetDataPointer( LPBMPDATA pBmp, WORKMODE modus )
 
 
 /* Bereitet neue Topografie/Error/Luminzensdaten-Bitmap vor
- * Dabei ist zu beachten, dass Werte für den Pointer <= 256
- * Indizes für die Originaldaten sind!
+ * Dabei ist zu beachten, dass Werte fÃ¼r den Pointer <= 256
+ * Indizes fÃ¼r die Originaldaten sind!
  */
 LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus )
 {
@@ -397,7 +397,7 @@ LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus )
 	LONG lLaenge;
 	WORD iAkt = pBmp->iAktuell, i;
 
-	// Was ist überhaupt nötig?
+	// Was ist Ã¼berhaupt nÃ¶tig?
 	modus = WhatToDo( pBmp, modus );
 
 	ASSERT( pBmp != NULL  &&  pBmp->iAktuell >= 0  &&  pBmp->iAktuell < pBmp->iMax  );
@@ -431,7 +431,7 @@ LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus )
 					FehlerRsc( E_MEMORY );
 					return ( NULL );
 				}
-				// Denn 0 enthält die Originaldaten und einen auf *JEDEN* Fall gültigen Pointer
+				// Denn 0 enthÃ¤lt die Originaldaten und einen auf *JEDEN* Fall gÃ¼ltigen Pointer
 				FreeBmp( pBmp, 1 );
 			}
 			iAkt = pBmp->iMax-1;
@@ -455,7 +455,7 @@ LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus )
 		}
 	}
 
-	// Neuen Pointer für Error-Signal anlegen
+	// Neuen Pointer fÃ¼r Error-Signal anlegen
 	// analog wie Topografie
 	if( pBmp->pSnom[iAkt].Error.puDaten ) {
 		if( modus&ERRO ) {
@@ -489,7 +489,7 @@ LPSNOMDATA pAllocNewSnom( LPBMPDATA pBmp, WORKMODE modus )
 	}
 
 	// Neuen Speicher anlegen
-	// Ein Wert von kleiner als 256 heißt, dass die Daten in Record mit dieser Nummer stehen
+	// Ein Wert von kleiner als 256 heiÃŸt, dass die Daten in Record mit dieser Nummer stehen
 	if( pBmp->pSnom[iAkt].Lumi.puDaten ) {
 		if( modus&LUMI ) {
 			while( ( puAlloc = (LPUWORD)pMalloc( lLaenge ) ) == NULL ) {

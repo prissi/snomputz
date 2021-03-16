@@ -142,7 +142,7 @@ BOOL hufmak( LPULONG nfreq, unsigned long nchin, LPULONG ilong, unsigned long *n
 
 
 // Initialisiert die Huffmancodierung
-// für max. maxchr Zeichen (0..maxchr-1) mit der Häudigkeit nfreq[0..maxchr-1]
+// fÃ¼r max. maxchr Zeichen (0..maxchr-1) mit der HÃ¤udigkeit nfreq[0..maxchr-1]
 BOOLEAN	huffinit( ULONG	maxchr, LPULONG nfreq, HUFFCODE *hcode )
 {
 	ULONG largest_index, max_len;
@@ -182,7 +182,7 @@ void huffexit( HUFFCODE *hcode )
 }
 
 
-// Fügt das Zeichen "ich" in den Puffer "*codep" ab der Bitposition "nb" ein
+// FÃ¼gt das Zeichen "ich" in den Puffer "*codep" ab der Bitposition "nb" ein
 // TRUE, solange alles io
 BOOL huffenc( unsigned long ich, LPUCHAR codep, unsigned long *nb, HUFFCODE *hcode )
 {
@@ -209,8 +209,8 @@ BOOL huffenc( unsigned long ich, LPUCHAR codep, unsigned long *nb, HUFFCODE *hco
 }
 
 
-// Dekodiert den Stream der länge "len_code", auf den "*code" zeigt ab dem bit "nb"
-// Rückgabe == hcode->nch  => Ende erreicht.
+// Dekodiert den Stream der lÃ¤nge "len_code", auf den "*code" zeigt ab dem bit "nb"
+// RÃ¼ckgabe == hcode->nch  => Ende erreicht.
 unsigned long huffdec( LPUCHAR code, unsigned long lcode, LPULONG lbitpos, HUFFCODE *hcode )
 {
 	long nc, node, nb = *lbitpos;
@@ -236,7 +236,7 @@ unsigned long huffdec( LPUCHAR code, unsigned long lcode, LPULONG lbitpos, HUFFC
 LONG HuffmanDecodeBlock( LPUWORD pDest, LONG lDestLen, LPUCHAR pSrc, BOOLEAN PackedBytes )
 {
 	HUFFCODE hcode;
-	// Anfängliche Bittiefe lesen
+	// AnfÃ¤ngliche Bittiefe lesen
 	unsigned MaxDaten = *(LPUWORD)pSrc;
 	// Zeiger auf Frequenztabelle
 	LPULONG	plFreqs = (LPULONG)( pSrc+2 );
@@ -452,7 +452,7 @@ int LZWReadByte( LPBYTE pSrc, long lNewSrcLen, int input_code_size )
 long LZWDecodeBlock( LPBYTE pDest, LONG lDestLen, LPBYTE pSrc, LONG lSrcLen )
 {
 	long i, t;
-	// Anfängliche Bittiefe lesen
+	// AnfÃ¤ngliche Bittiefe lesen
 	unsigned nBits;
 
 	nBits = *pSrc++;
@@ -623,10 +623,10 @@ probe:
 nomatch:        // kein Treffer => bisher ausgeben
 		data_len = output( NULL, (code_int)ent, &nbits, init_bits );
 		if( data_len >= dest_len-2 ) {
-			return ( -2 );      // Komprimierte Version ist zu groß für den Buffer!
+			return ( -2 );      // Komprimierte Version ist zu groÃŸ fÃ¼r den Buffer!
 		}
 		if( data_len >= src_len ) {
-			return ( -1 );      // Länge ist größer als die vom Eingangsstring
+			return ( -1 );      // LÃ¤nge ist grÃ¶ÃŸer als die vom Eingangsstring
 		}
 		ent = c;
 		if( free_ent < maxmaxcode ) {

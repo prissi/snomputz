@@ -15,7 +15,7 @@
 #include "ctl3d.h"
 #endif  // USE_CTL3D
 #if !defined( __WIN32__ ) && !defined( _WIN32 )
-#include <shellapi.h>   // für Drag&Drop
+#include <shellapi.h>   // fÃ¼r Drag&Drop
 #include <print.h>
 #include <commctrl.h>
 #else
@@ -69,12 +69,12 @@ LRESULT WINAPI MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 BOOL OpenCreateImage( LPCSTR datei );
 
 
-// Einige Defines, die *nicht* in der RC-Datei benötigt werden!
+// Einige Defines, die *nicht* in der RC-Datei benÃ¶tigt werden!
 #define INIT_MENU_POS	0
-// Bitmapnamen werden an dieses Menü gehängt!
+// Bitmapnamen werden an dieses MenÃ¼ gehÃ¤ngt!
 #define BITMAP_MENU_POS 7
 
-// Identifier für Tool/Statusbar
+// Identifier fÃ¼r Tool/Statusbar
 #define ID_TOOLBAR	17
 #define ID_STATUSBAR 18
 
@@ -130,7 +130,7 @@ char sRecentFiles[4][1024];
 char sIniFileName[] = "Snomputz.ini";
 
 
-// Für "zufällige Clipboardnamen ...
+// FÃ¼r "zufÃ¤llige Clipboardnamen ...
 BYTE ClipBoardNumber = 0;
 
 
@@ -156,7 +156,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 
 	hInst = hInstance;
 	if( hPrevInstance == NULL ) {
-		// Fensterklasse für das Rahmenfenster
+		// Fensterklasse fÃ¼r das Rahmenfenster
 		wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wndclass.lpfnWndProc   = FrameWndProc;
 		wndclass.cbClsExtra    = 0;
@@ -169,7 +169,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		wndclass.lpszClassName = szFrameClass;
 		RegisterClass( &wndclass );
 
-		// Fensterklasse für Bitmap-Dokumentenfesnter
+		// Fensterklasse fÃ¼r Bitmap-Dokumentenfesnter
 		wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
 		wndclass.lpfnWndProc   = BmpWndProc ;
 		wndclass.cbClsExtra    = 0;
@@ -195,7 +195,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		RegisterClass( &wndclass );
 
 #ifdef BIT32
-		// Fensterklasse für das Messfenster
+		// Fensterklasse fÃ¼r das Messfenster
 		wndclass.style         = CS_OWNDC;
 		wndclass.lpfnWndProc   = MessWndProc;
 		wndclass.cbClsExtra    = 0;
@@ -208,7 +208,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		wndclass.lpszClassName = szMessClass;
 		RegisterClass( &wndclass );
 
-		// Fensterklasse für das Messfenster
+		// Fensterklasse fÃ¼r das Messfenster
 		wndclass.style         = CS_OWNDC;
 		wndclass.lpfnWndProc   = MovieWndProc;
 		wndclass.cbClsExtra    = 0;
@@ -221,7 +221,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		wndclass.lpszClassName = szMovieClass;
 		RegisterClass( &wndclass );
 
-		// Fensterklasse für selbstdefiniertes Objekt "Oszilloskop" definieren ..
+		// Fensterklasse fÃ¼r selbstdefiniertes Objekt "Oszilloskop" definieren ..
 		wndclass.style         = CS_HREDRAW | CS_VREDRAW;
 		wndclass.lpfnWndProc   = OsziWndProc;
 		wndclass.cbClsExtra    = 0;
@@ -234,7 +234,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		wndclass.lpszClassName = (LPSTR)"Oszilloskop";
 		RegisterClass( &wndclass );
 
-		// Fensterklasse für Bitmap-Messfenster
+		// Fensterklasse fÃ¼r Bitmap-Messfenster
 		wndclass.style         = CS_HREDRAW | CS_VREDRAW;
 		wndclass.lpfnWndProc   = MessBmpWndProc;
 		wndclass.cbClsExtra    = 0;
@@ -263,7 +263,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		CFont.lpLogFont = &lf;
 		CFont.Flags = CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS | CF_ANSIONLY; // | CF_NOSTYLESEL;
 
-		// Vernünftig Initialisieren
+		// VernÃ¼nftig Initialisieren
 		lf.lfWeight = FW_DONTCARE;
 		lf.lfOutPrecision = OUT_TT_PRECIS;
 		lf.lfClipPrecision = CLIP_STROKE_PRECIS;
@@ -284,10 +284,10 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	Ctl3dAutoSubclass( hInst );
 #endif
 
-	// Zwischenspeicher für schnellere Berechnungen des Redraws
+	// Zwischenspeicher fÃ¼r schnellere Berechnungen des Redraws
 	pColorConvert = pMalloc( 65536ul );
 
-	// die zwei Handles für die Menüs
+	// die zwei Handles fÃ¼r die MenÃ¼s
 	hMenuInit  = LoadMenu( hInst, "MdiMenuInit" );
 	hMenuBmp = LoadMenu( hInst, "MdiMenuBitmap" );
 
@@ -467,11 +467,11 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	}
 #endif
 
-	// Schlüssel gibt es schon?
+	// SchlÃ¼ssel gibt es schon?
 	if( RegOpenKey( HKEY_CLASSES_ROOT, ".hdf", &hRegKey ) == ERROR_SUCCESS ) {
 		LONG i;
 
-		// Soll der aktuelle Schlüssel evt ersetzt werden?
+		// Soll der aktuelle SchlÃ¼ssel evt ersetzt werden?
 		i = 80;
 		RegQueryValue( HKEY_CLASSES_ROOT, ".hdf", (LPSTR)szBuf, &i );
 		i = IDCANCEL;
@@ -517,14 +517,14 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		RegSetValue( hRegKey, NULL, REG_SZ, (LPSTR)szBuf, lstrlen( szBuf ) );
 	}
 
-	// Tabelle mit Abkürzungsbefehlen laden
+	// Tabelle mit AbkÃ¼rzungsbefehlen laden
 	hAccel = LoadAccelerators( hInst, "BitmapAccel" ) ;
 
 	// Rahmenfenster erzeugen
 #ifdef BIT32
-	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz (32 Bit) 1.00ß",
+	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz (32 Bit) 1.00ÃŸ",
 #else
-	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz 1.00ß",
+	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz 1.00ÃŸ",
 #endif
 	                            WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 	                            CW_USEDEFAULT, CW_USEDEFAULT,
@@ -588,14 +588,14 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 			pBmp->pSnom[0].Topo.fSkal = 1.0;
 			pBmp->pSnom[0].Error.fSkal = 1.0;
 			pBmp->pSnom[0].Lumi.fSkal = 1.0;
-			pBmp->hwnd = hwndFrame; // Für Import-Dialog, damit es einen Vater gibt ...
+			pBmp->hwnd = hwndFrame; // FÃ¼r Import-Dialog, damit es einen Vater gibt ...
 			if( !ReadAll( pCmdLine, pBmp ) ) {
 				MemFree( pBmp );
 			}
 			else {
 				MDICREATESTRUCT mdicreate;
 
-				// Defaultskalierung anwählen
+				// Defaultskalierung anwÃ¤hlen
 				mdicreate.szClass = (LPSTR)szBmpClass ;
 				mdicreate.szTitle = pCmdLine;
 				mdicreate.hOwner  = hInst;
@@ -613,7 +613,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	}
 #endif
 
-	// für MDI veränderte Ereignis-Warteschleife
+	// fÃ¼r MDI verÃ¤nderte Ereignis-Warteschleife
 	while( GetMessage( &msg, NULL, 0, 0 ) )	{
 		if( hwndEdit != NULL  &&  msg.hwnd == hwndEdit ) {
 			TranslateMessage( &msg ) ;
@@ -631,7 +631,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 
 	// DSP DLL entladen (fehlt)
 
-	// Aufräumen der momentan nicht eingesetzten Menüs
+	// AufrÃ¤umen der momentan nicht eingesetzten MenÃ¼s
 #if defined( USE_CTL3D )
 	Ctl3dUnregister( hInst );
 #endif
@@ -783,7 +783,7 @@ VOID YieldApp( BOOL Wait )
 	BOOL DoIt = FALSE;
 	MSG mesg;
 
-	// Damit die anderen auch noch etwas tun können
+	// Damit die anderen auch noch etwas tun kÃ¶nnen
 	if( Wait ) {
 		DoIt = GetMessage( &mesg, NULL, 0, 0 );
 	}
@@ -807,7 +807,7 @@ VOID YieldApp( BOOL Wait )
 
 
 /***************************************************************************************/
-// Ändert den Status der Menüeinträge von UNDO/REDO
+// Ã„ndert den Status der MenÃ¼eintrÃ¤ge von UNDO/REDO
 void EnableUndoRedo( BOOL bUndo, BOOL bRedo )
 {
 	HMENU hMenu = GetMenu( hwndFrame );
@@ -859,7 +859,7 @@ void UpdateRecent( LPSTR sFile, LPBMPDATA pBmp )
 	}
 	lstrcpy( (LPSTR)sRecentFiles[0], sFile );
 
-	// Und Menü updaten ...
+	// Und MenÃ¼ updaten ...
 	for( i = 0;  i < 4;  i++ ) {
 		wsprintf( (LPSTR)sBuf, "%d: %s", i+1, (LPSTR)sRecentFiles[i] );
 		ModifyMenu( hMenuInitRecent, IDM_RECENT1+i, MF_STRING|MF_BYCOMMAND, IDM_RECENT1+i, (LPSTR)sBuf );
@@ -909,7 +909,7 @@ LPBMPDATA OpenCreateWindow( LPCSTR datei )
 	pBmp->pSnom[0].Topo.fSkal = 1.0;
 	pBmp->pSnom[0].Error.fSkal = 1.0;
 	pBmp->pSnom[0].Lumi.fSkal = 1.0;
-	pBmp->hwnd = hwndFrame; // Für Import-Dialog, damit es einen Vater gibt ...
+	pBmp->hwnd = hwndFrame; // FÃ¼r Import-Dialog, damit es einen Vater gibt ...
 	if( !ReadAll( datei, pBmp ) ) {
 		MemFree( pBmp );
 		return ( NULL );
@@ -1049,7 +1049,7 @@ void NormalMaus( void )
 // 30.10.98
 
 
-/* Verwaltet das Init-Menü */
+/* Verwaltet das Init-MenÃ¼ */
 long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 {
 	LPBMPDATA pBmp;
@@ -1062,7 +1062,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 			return ( 0 );
 
 		case WM_INITMENU:
-			//  Clipboardstatus evt. ändern
+			//  Clipboardstatus evt. Ã¤ndern
 			if( IsClipboardFormatAvailable( CF_DIB ) ) {
 				EnableMenuItem( hMenuInit, IDM_PASTE, MF_ENABLED );
 				EnableMenuItem( hMenuBmp, IDM_PASTE, MF_ENABLED );
@@ -1121,7 +1121,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					pBmp->pSnom[0].Topo.fSkal = 1.0;
 					pBmp->pSnom[0].Error.fSkal = 1.0;
 					pBmp->pSnom[0].Lumi.fSkal = 1.0;
-					pBmp->hwnd = hwndFrame; // Für Import-Dialog, damit es einen Vater gibt ...
+					pBmp->hwnd = hwndFrame; // FÃ¼r Import-Dialog, damit es einen Vater gibt ...
 					if( !ReadAll( datei, pBmp ) ) {
 						MemFree( pBmp );
 						continue;
@@ -1216,7 +1216,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 #endif
 
 				case IDM_PROFIL:
-					// Was soll bei einer Höhenlinie gespeichert werden?
+					// Was soll bei einer HÃ¶henlinie gespeichert werden?
 					DialogBoxParam( hInst, "ProfilDialog", hwnd, (DLGPROC)ProfilDialog, 0 );
 					break;
 
@@ -1229,7 +1229,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-				// Vergrößen auf Fenstergröße ...
+				// VergrÃ¶ÃŸen auf FenstergrÃ¶ÃŸe ...
 				case IDM_FIT_TO_WINDOW:
 				case IDM_2ZU1:
 				case IDM_1ZU1:
@@ -1247,7 +1247,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					RedrawAll( UPDATE|SLIDER );
 					break;
 
-				case IDM_CLOSE:       // aktives Dokumentenfenster schließen
+				case IDM_CLOSE:       // aktives Dokumentenfenster schlieÃŸen
 					hwndChild = (HWND)SendMessage( hwndClient, WM_MDIGETACTIVE, 0, 0L );
 					if( SendMessage( hwndChild, WM_QUERYENDSESSION, 0, 0L ) ) {
 						SendMessage( hwndClient, WM_MDIDESTROY, (WPARAM)hwndChild, 0L ) ;
@@ -1277,7 +1277,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					SendMessage( hwndClient, WM_MDIICONARRANGE, 0, 0L ) ;
 					return ( 0 );
 
-				case IDM_CLOSEALL:     // Schließen aller Dokumentenfenster
+				case IDM_CLOSEALL:     // SchlieÃŸen aller Dokumentenfenster
 					EnumChildWindows( hwndClient, (FARPROC)CloseEnumProc, 0L ) ;
 					return ( 0 );
 
@@ -1304,7 +1304,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					WinHelp( hwndFrame, szHilfedatei, HELP_INDEX, 0L );
 					break;
 
-				// SNOM-Putz für Doofe ...
+				// SNOM-Putz fÃ¼r Doofe ...
 				case IDM_HILFETUTOR:
 				{
 					WORKMODE OldModus = modus;
@@ -1342,7 +1342,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					mdicreate.lParam  = (LONG)(LPBMPDATA)pBmp;
 					hwndChild = (HWND) SendMessage( hwndClient, WM_MDICREATE, 0, (LPARAM)(LPMDICREATESTRUCT) &mdicreate );
 
-					// Evt. Fehlerdaten rausschmeißen
+					// Evt. Fehlerdaten rausschmeiÃŸen
 					if( pBmp->pSnom[0].Error.Typ != NONE  &&  MessageBox( hwndClient, STR_T_ERROR, STR_HFILE_TUTOR, MB_YESNO ) == IDYES ) {
 						pBmp->Rechts = NONE;
 						RecalcCache( pBmp, TRUE, TRUE );
@@ -1387,7 +1387,7 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 		}
 
 		case WM_QUERYENDSESSION:
-		case WM_CLOSE:                     // alle Dokumentenfenster schließen
+		case WM_CLOSE:                     // alle Dokumentenfenster schlieÃŸen
 			SendMessage( hwnd, WM_COMMAND, IDM_CLOSEALL, 0L ) ;
 			if( NULL != GetWindow( hwndClient, GW_CHILD ) ) {
 				return ( 0 );
@@ -1424,10 +1424,10 @@ BOOL WINAPI CloseEnumProc( HWND hwnd, LONG lParam )
 	if( GetWindow( hwnd, GW_OWNER ) ) {       // Client-Fenster?
 		return ( 1 );              // ja - nicht abbauen!
 	}
-	// Botschaft an das Client-Fenster: Dokument zurück auf Originalgröße
+	// Botschaft an das Client-Fenster: Dokument zurÃ¼ck auf OriginalgrÃ¶ÃŸe
 	SendMessage( GetParent( hwnd ), WM_MDIRESTORE, (WPARAM)hwnd, 0L ) ;
 
-	// Botschaft an das Dokumentenfenster: Schließen OK?
+	// Botschaft an das Dokumentenfenster: SchlieÃŸen OK?
 	if( !SendMessage( hwnd, WM_QUERYENDSESSION, 0, 0L ) ) {
 		return ( 0 );
 	}

@@ -10,7 +10,7 @@
 
 #define WM_RECALC_SLIDER	(WM_USER+17)
 
-//	Maximale Höhe eines "3D-Pixels"
+//	Maximale HÃ¶he eines "3D-Pixels"
 #define		MAX_3D_HOEHE	200.0
 
 // Maximale Anzahl Bilder (muss kleiner 256 sein!)
@@ -23,7 +23,7 @@
 #define	GET_SCROLL_HANDLE(lParam)  ((HANDLE)(lParam))
 #endif
 
-/* Anzahl Spalten in der Matrix für die ScanLine
+/* Anzahl Spalten in der Matrix fÃ¼r die ScanLine
 #define SCANDATENANZAHL	9*/
 
 #endif

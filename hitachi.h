@@ -1,82 +1,82 @@
-/******** ƒvƒƒgƒ^ƒCƒv (plib.lib)	11/17/2000  by S.Heike *******************/
+/******** ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ— (plib.lib)	11/17/2000  by S.Heike *******************/
 
 typedef struct		/* Header for Hitachi-AFM */
 	{
-	unsigned short	id;		/* [000] ƒf[ƒ^¯•Êq(0100h)	data offset	*/
-	short				ai;		/*[002] I Œ»İ’l current preset	*/
-	short				af;		/*[004] F Œ»İ’l force					*/
-	short				am;		/*[006] M Œ»İ’l								*/
-	short				aa;		/*[008] A Œ»İ’l								*/
-	short				dx;		/*[010] X Œ»İ’l offset?				*/
-	short				dy;		/*[012] Y Œ»İ’l								*/
-	short				dz;		/*[014] Z Œ»İ’l								*/
-	short				dv;		/*[016] V Œ»İ’l								*/
-	short				dxc;	/*[018] XcŒ»İ’l								*/
-	short				dyc;	/*[020] YcŒ»İ’l								*/
-	short				dzc;	/*[022] ZcŒ»İ’l								*/
-	short				db;		/*[024] B Œ»İ’l								*/
-	short				si;		/*[026] I İ’è’l init						*/
-	short				sf;		/*[028] F İ’è’l								*/
-	short				sm;		/*[030] M İ’è’l								*/
-	short				sa;		/*[032] A İ’è’l								*/
-	double			ri;		/*[034] I •ª‰ğ”\[A]	resolution		*/
-	double			rf;		/*[042] F •ª‰ğ”\[N]								*/
-	double			rm;		/*[050] M •ª‰ğ”\[Hz]							*/
-	double			ra;		/*[058] A •ª‰ğ”\[-]								*/
-	double			rx;		/*[066] X •ª‰ğ”\[m]	scaling factor */
-	double			ry;		/*[074] Y •ª‰ğ”\[m]								*/
-	double			rz;		/*[082] Z •ª‰ğ”\[m]								*/
-	double			rv;		/*[090] V •ª‰ğ”\[V]								*/
-	double			rxc;	/*[098] Xc•ª‰ğ”\[m]	unit in m			*/
-	double			ryc;	/*[106] Yc•ª‰ğ”\[m]								*/
-	double			rzc;	/*[114] Zc•ª‰ğ”\[m]								*/
-	double			rb;		/*[122] B •ª‰ğ”\[-]								*/
-	unsigned long	vx;		/*[130] X ‘¬“x speed						*/
-	unsigned long	vy;		/*[134] Y ‘¬“x									*/
-	unsigned long	vz;		/*[138] Z ‘¬“x									*/
-	unsigned long	vv;		/*[142] V ‘¬“x									*/
-	unsigned long	vxc;	/*[146] Xc‘¬“x									*/
-	unsigned long	vyc;	/*[150] Yc‘¬“x									*/
-	unsigned long	vzc;	/*[154] Zc‘¬“x									*/
-	unsigned long	vb;		/*[158] B ‘¬“x									*/
-	unsigned short		gi;		/*[162] ƒQƒCƒ“(I) gain					*/
-	unsigned short		gf;		/*[164] ƒQƒCƒ“(F)	 "						*/
-	unsigned short		gm;		/*[166] ƒQƒCƒ“(M)	 "						*/
-	unsigned short		ga;		/*[168] ƒQƒCƒ“(A)	 "						*/
+	unsigned short	id;		/* [000] ãƒ‡ãƒ¼ã‚¿è­˜åˆ¥å­(0100h)	data offset	*/
+	short				ai;		/*[002] I ç¾åœ¨å€¤ current preset	*/
+	short				af;		/*[004] F ç¾åœ¨å€¤ force					*/
+	short				am;		/*[006] M ç¾åœ¨å€¤								*/
+	short				aa;		/*[008] A ç¾åœ¨å€¤								*/
+	short				dx;		/*[010] X ç¾åœ¨å€¤ offset?				*/
+	short				dy;		/*[012] Y ç¾åœ¨å€¤								*/
+	short				dz;		/*[014] Z ç¾åœ¨å€¤								*/
+	short				dv;		/*[016] V ç¾åœ¨å€¤								*/
+	short				dxc;	/*[018] Xcç¾åœ¨å€¤								*/
+	short				dyc;	/*[020] Ycç¾åœ¨å€¤								*/
+	short				dzc;	/*[022] Zcç¾åœ¨å€¤								*/
+	short				db;		/*[024] B ç¾åœ¨å€¤								*/
+	short				si;		/*[026] I è¨­å®šå€¤ init						*/
+	short				sf;		/*[028] F è¨­å®šå€¤								*/
+	short				sm;		/*[030] M è¨­å®šå€¤								*/
+	short				sa;		/*[032] A è¨­å®šå€¤								*/
+	double			ri;		/*[034] I åˆ†è§£èƒ½[A]	resolution		*/
+	double			rf;		/*[042] F åˆ†è§£èƒ½[N]								*/
+	double			rm;		/*[050] M åˆ†è§£èƒ½[Hz]							*/
+	double			ra;		/*[058] A åˆ†è§£èƒ½[-]								*/
+	double			rx;		/*[066] X åˆ†è§£èƒ½[m]	scaling factor */
+	double			ry;		/*[074] Y åˆ†è§£èƒ½[m]								*/
+	double			rz;		/*[082] Z åˆ†è§£èƒ½[m]								*/
+	double			rv;		/*[090] V åˆ†è§£èƒ½[V]								*/
+	double			rxc;	/*[098] Xcåˆ†è§£èƒ½[m]	unit in m			*/
+	double			ryc;	/*[106] Ycåˆ†è§£èƒ½[m]								*/
+	double			rzc;	/*[114] Zcåˆ†è§£èƒ½[m]								*/
+	double			rb;		/*[122] B åˆ†è§£èƒ½[-]								*/
+	unsigned long	vx;		/*[130] X é€Ÿåº¦ speed						*/
+	unsigned long	vy;		/*[134] Y é€Ÿåº¦									*/
+	unsigned long	vz;		/*[138] Z é€Ÿåº¦									*/
+	unsigned long	vv;		/*[142] V é€Ÿåº¦									*/
+	unsigned long	vxc;	/*[146] Xcé€Ÿåº¦									*/
+	unsigned long	vyc;	/*[150] Ycé€Ÿåº¦									*/
+	unsigned long	vzc;	/*[154] Zcé€Ÿåº¦									*/
+	unsigned long	vb;		/*[158] B é€Ÿåº¦									*/
+	unsigned short		gi;		/*[162] ã‚²ã‚¤ãƒ³(I) gain					*/
+	unsigned short		gf;		/*[164] ã‚²ã‚¤ãƒ³(F)	 "						*/
+	unsigned short		gm;		/*[166] ã‚²ã‚¤ãƒ³(M)	 "						*/
+	unsigned short		ga;		/*[168] ã‚²ã‚¤ãƒ³(A)	 "						*/
 
-	unsigned short		dt;		/*[170] ƒf[ƒ^æ“¾ŠJn “ú•t	date (begin of scanning) 	*/
-	unsigned short		tm;		/*[172] ƒf[ƒ^æ“¾ŠJn 	time (begin of scanning)	*/
-	unsigned long	ta;		/*[174] ƒf[ƒ^æ“¾ŠÔ[100us]	duration of scanning */
-	unsigned long	ts;		/*[178] ƒVƒXƒeƒ€[100us]	sytem time?					*/
+	unsigned short		dt;		/*[170] ãƒ‡ãƒ¼ã‚¿å–å¾—é–‹å§‹ æ—¥ä»˜	date (begin of scanning) 	*/
+	unsigned short		tm;		/*[172] ãƒ‡ãƒ¼ã‚¿å–å¾—é–‹å§‹ æ™‚åˆ»	time (begin of scanning)	*/
+	unsigned long	ta;		/*[174] ãƒ‡ãƒ¼ã‚¿å–å¾—æ™‚é–“[100us]	duration of scanning */
+	unsigned long	ts;		/*[178] ã‚·ã‚¹ãƒ†ãƒ æ™‚åˆ»[100us]	sytem time?					*/
 
 	char			s1[8];				/*[182] --------								*/
 
-	unsigned short		nf;		/*[190] ƒtƒŒ[ƒ€” Frame counter */
-	unsigned short		td;		/*[192] ƒf[ƒ^í(bit0-15)		(*1)			*/
-	unsigned short		nx;		/*[194] X •ûŒüƒsƒNƒZƒ‹” number of pixel w	*/
-	unsigned short		ny;		/*[196] Y •ûŒüƒsƒNƒZƒ‹” number of pixel h	*/
-	unsigned short		dp;		/*[198] ƒsƒNƒZƒ‹ŠÔŠu space between pixel??	*/
-	unsigned short		ns;		/*[200] ‘–¸”ÍˆÍ Space between scan lines??	*/
-	short				an;					/*[202] ‘–¸Šp“x[/100degree](-18000 - 17999)	*/
-	unsigned short		ia;		/*[204] ÏZ‰ñ” Time for 1 schanposhort			*/
-	unsigned short		fc;		/*[206] FB§Œä—Ê Feedback				(*1)			*/
+	unsigned short		nf;		/*[190] ãƒ•ãƒ¬ãƒ¼ãƒ æ•° Frame counter */
+	unsigned short		td;		/*[192] ãƒ‡ãƒ¼ã‚¿ç¨®(bit0-15)		(*1)			*/
+	unsigned short		nx;		/*[194] X æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•° number of pixel w	*/
+	unsigned short		ny;		/*[196] Y æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•° number of pixel h	*/
+	unsigned short		dp;		/*[198] ãƒ”ã‚¯ã‚»ãƒ«é–“éš” space between pixel??	*/
+	unsigned short		ns;		/*[200] èµ°æŸ»ç¯„å›² Space between scan lines??	*/
+	short				an;					/*[202] èµ°æŸ»è§’åº¦[/100degree](-18000 - 17999)	*/
+	unsigned short		ia;		/*[204] ç©ç®—å›æ•° Time for 1 schanposhort			*/
+	unsigned short		fc;		/*[206] FBåˆ¶å¾¡é‡ Feedback				(*1)			*/
 
 	char			s2[12];				/*[208] --------								*/
 
-	unsigned short		dm;		/*[220] ‘ª’èŠÔŠu measurement shorterval	*/
-	unsigned short		ty;		/*[222] ƒf[ƒ^í(bit0-15)		(*1)	kind of data (see comment below) */
-	unsigned short		tx;		/*[224] ‰¡²(0-16)				(*1) kind of axis value (see comment below) */
-	long			sd;						/*[226] ‰¡²n“_ origin X	*/
-	unsigned long	nd;				/*[230] ‰¡²“_” number x? */
-	long			dd;						/*[234] ‰¡²ŠÔŠu	x-axis width */
-	unsigned short		ib;		/*[238] ÏZ‰ñ” total number?*/
+	unsigned short		dm;		/*[220] æ¸¬å®šé–“éš” measurement shorterval	*/
+	unsigned short		ty;		/*[222] ãƒ‡ãƒ¼ã‚¿ç¨®(bit0-15)		(*1)	kind of data (see comment below) */
+	unsigned short		tx;		/*[224] æ¨ªè»¸(0-16)				(*1) kind of axis value (see comment below) */
+	long			sd;						/*[226] æ¨ªè»¸å§‹ç‚¹ origin X	*/
+	unsigned long	nd;				/*[230] æ¨ªè»¸ç‚¹æ•° number x? */
+	long			dd;						/*[234] æ¨ªè»¸é–“éš”	x-axis width */
+	unsigned short		ib;		/*[238] ç©ç®—å›æ•° total number?*/
 
 	char			s3[12];	/*[240] --------								*/
 
-	char far*		pn;		/*[252] ‰æ‘œƒtƒ@ƒCƒ‹–¼‚Ö‚Ìƒ|ƒCƒ“ƒ^(ƒf[ƒ^‹¤—L—p) Next Header?*/
+	char far*		pn;		/*[252] ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«åã¸ã®ãƒã‚¤ãƒ³ã‚¿(ãƒ‡ãƒ¼ã‚¿å…±æœ‰ç”¨) Next Header?*/
 	} HitachiSpm;
 
-/* (*1)ƒf[ƒ^í	(00) I  (01) F  (02) M  (03) A  (04) X  (05) Y  (06) Z  (07) V
+/* (*1)ãƒ‡ãƒ¼ã‚¿ç¨®	(00) I  (01) F  (02) M  (03) A  (04) X  (05) Y  (06) Z  (07) V
 				(08) Xc (09) Yc (10) Zc (11) B  (12) Id (13) Fd (14) Md (15) Ad
 				(16) t  (17) NO												*/
 

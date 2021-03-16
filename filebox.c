@@ -10,7 +10,7 @@
 extern HINSTANCE hInst;
 
 
-// H‰ngt neue Extension ran
+// H√§ngt neue Extension ran
 void ChangeExt( LPSTR strDatei, LPSTR strExt )
 {
 	int iLen;
@@ -191,7 +191,7 @@ DWORD CMUFileOpen( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp )
 
 	InvalidateRect( hWnd, NULL, TRUE ); // Repaint to display the new name
 	if( Suc ) {
-		return ( ofnTemp.nFilterIndex );    // Ausgew‰hlte Extension
+		return ( ofnTemp.nFilterIndex );    // Ausgew√§hlte Extension
 	}
 	return ( 0 );
 }
@@ -374,7 +374,7 @@ DWORD CMUFileOpenMultiImg( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR str
 
 	InvalidateRect( hWnd, NULL, TRUE ); // Repaint to display the new name
 	if( Suc ) {
-		return ( ofnTemp.nFilterIndex );    // Ausgew‰hlte Extension
+		return ( ofnTemp.nFilterIndex );    // Ausgew√§hlte Extension
 	}
 	return ( 0 );
 }
@@ -386,7 +386,7 @@ DWORD CMUFileOpenMultiImg( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR str
 BYTE strLastSavePath[256];
 
 /****************************************************************************/
-// Fileselector f‰rs Speichern
+// Fileselector f√§rs Speichern
 /****************************************************************************/
 DWORD CMUFileSave( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp, LPDWORD wFilterIndex )
 {
@@ -480,7 +480,7 @@ DWORD CMUFileSave( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp, LP
 		*wFilterIndex = (BYTE)ofnTemp.nFilterIndex;
 	}
 	if( Suc ) {
-		return ( ofnTemp.nFilterIndex );    // Ausgew‰hlte Extension
+		return ( ofnTemp.nFilterIndex );    // Ausgew√§hlte Extension
 	}
 	return ( FALSE );
 }

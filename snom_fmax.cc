@@ -20,7 +20,7 @@ int CompareXYZ_COORD( const void *a, const void *b )
 
 
 /** the following constants are used to set bits corresponding to pixel types */
-typedef enum {
+enum {
 	MAXIMUM = 1,            // marks local maxima (irrespective of noise tolerance)
 	LISTED = 2,             // marks points currently in the list
 	PROCESSED = 4,          // marks points processed previously

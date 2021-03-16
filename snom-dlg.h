@@ -30,8 +30,8 @@ DWORD WINAPI QDDialog(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 // helper functions
 
-// Sucht Namen aller Bitmaps ... (z.B. für die Mathematik)
+// Sucht Namen aller Bitmaps ... (z.B. fÃ¼r die Mathematik)
 LPBMPDATA MakeHwndName( HWND hwnd );
 
-//**** Callback für das Neuzeichnen der Fenster
+//**** Callback fÃ¼r das Neuzeichnen der Fenster
 BOOL CALLBACK EnumSetComboNames( HWND hwnd, LPARAM lparm );

@@ -22,7 +22,7 @@
 
 /**************************************************************************************
  * Ab hier eine 1-dim FFT auf der Basis der Numerical Recipies
- * DAS könnte der DSP VIEL schneller ... */
+ * DAS kÃ¶nnte der DSP VIEL schneller ... */
 
 
 #define SWAP( a, b ) tempr = ( a ); ( a ) = ( b ); ( b ) = tempr
@@ -132,7 +132,7 @@ BOOLEAN	BildFFTFilter( LPBILD pBild, LONG w, LONG h, LPFLOAT pfFilter, int iSize
 	LPFLOAT	pfData;
 	double zm, mo2;
 	LONG x, y;
-	// und nur für das zurückkopieren ...
+	// und nur fÃ¼r das zurÃ¼ckkopieren ...
 	LONG l, lMin, lMax;
 
 	ASSERT( pBild != NULL  &&  pBild->puDaten != NULL  &&  w <= iSize  &&  pfFilter != NULL );
@@ -213,9 +213,9 @@ BOOLEAN	Autokorrelation( LPFLOAT pfZiel, LPFLOAT pfDaten, int iMaxPts, BOOLEAN U
 	}
 
 
-	/*** Die Autokorrelation ist folgendermaßen definiert:
+	/*** Die Autokorrelation ist folgendermaÃŸen definiert:
 	 *** G(l) := 1/N \sum_{i=1}^{N-l} z_i*z_{l-i}
-	 *** ACHTUNG: Die Einheit ist Länge^2!
+	 *** ACHTUNG: Die Einheit ist LÃ¤nge^2!
 	 *** ACHTUNG: <z_i> := 0, sonst abziehen!
 	 ***/
 
@@ -264,7 +264,7 @@ BOOLEAN	Autokorrelation( LPFLOAT pfZiel, LPFLOAT pfDaten, int iMaxPts, BOOLEAN U
 		}
 	}
 
-	// Start und Ziel waren identisch? => Zurückkopieren
+	// Start und Ziel waren identisch? => ZurÃ¼ckkopieren
 	if( pfTemp == pfDaten )	{
 		//MemMove( pfDaten, pfZiel, sizeof(float)*iMaxPts );
 		for( i = 0;  i < iMaxPts;  i++ ) {
@@ -293,12 +293,12 @@ BOOLEAN	Differential( LPFLOAT pfDaten, int iPunkte )
 			fTemp = ( -11.0*pfDaten[x] + 18.0*pfDaten[x+1]  - 9.0*pfDaten[x+2]  - 2.0*pfDaten[x+3] )/6.0;
 		}
 		else {
-			// ulLastDaten == puDaten[x-1] unverändert
+			// ulLastDaten == puDaten[x-1] unverÃ¤ndert
 			if( x < iPunkte-1 ) {
 				fTemp = ( 2.0*pfDaten[x+1] - fLastDaten - pfDaten[x] )/3.0;
 			}
 		}
-		fLastDaten = pfDaten[x];        // wird nur für x>=w benötigt
+		fLastDaten = pfDaten[x];        // wird nur fÃ¼r x>=w benÃ¶tigt
 		pfDaten[x] = fTemp;
 	}
 	return ( TRUE );
@@ -422,7 +422,7 @@ void CorrelationFunction( HFILE hFile, LPUWORD puDaten, long w, long h, double d
 
 /************************************************************************
  * und ab hier RMS-Berechnung
- *	Berechnet die mittlere Rauhigkeit und die mittlere Höhe im Bild
+ *	Berechnet die mittlere Rauhigkeit und die mittlere HÃ¶he im Bild
  */
 void RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
               double dSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS, LPFLOAT pfQuadrate )
@@ -453,9 +453,9 @@ void RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 		for( j = 0;  j < h;  j++ ) {
 			zMean = 0;
 			for( i = 0;  i < w;  i++ ) {
-				// Für Mittelwert
+				// FÃ¼r Mittelwert
 				zMean += *puPtr++;
-				// Für Standardabweichung
+				// FÃ¼r Standardabweichung
 				fSD += *pF++;
 			}
 			fMean += zMean;
@@ -472,9 +472,9 @@ void RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 			zMean = 0;
 			for( i = 0;  i < w;  i++ ) {
 				k = *puPtr++;
-				// Für Mittelwert
+				// FÃ¼r Mittelwert
 				zMean += k;
-				// Für Standardabweichung
+				// FÃ¼r Standardabweichung
 				fSD += ( k*k );
 			}
 			fMean += zMean;
@@ -498,7 +498,7 @@ void RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 		}
 	}
 
-	// Und die Werte zurück ...
+	// Und die Werte zurÃ¼ck ...
 	*pfMeanH = fMean*pBild->fSkal;
 	d = w*h;
 	d = sqrt( fSD/( d-1.0 ) )*pBild->fSkal;
@@ -519,7 +519,7 @@ int CompareHgtRecordT( const void *a, const void *b )
 
 
 /************************************************************************
- *	Berechnet die mittlere Höhe (häufigster Wert)
+ *	Berechnet die mittlere HÃ¶he (hÃ¤ufigster Wert)
  */
 void MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
                   double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS )
@@ -551,9 +551,9 @@ void MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 	// an now get the mean Median of the most often 5% data
 	for( i = 0, j = ( ( w-x )*( h-y ) )/20;  j >= 0;  i++ ) {
 		long k = max[i].hgt;
-		// Für Mittelwert
+		// FÃ¼r Mittelwert
 		fMean += k;
-		// Für Standardabweichung
+		// FÃ¼r Standardabweichung
 		fSD += ( k*k );
 		j -= max[i].count;
 	}
@@ -567,7 +567,7 @@ void MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 // 18.11.11
 
 
-/****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe auf einer Scanline ****/
+/****	Berechnet die mittlere Rauhigkeit und die mittlere HÃ¶he auf einer Scanline ****/
 void RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m, double fSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS )
 {
 	double fMean = 0.0, fSD = 0.0, fDelta = 0.0;
@@ -579,7 +579,7 @@ void RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m
 		m *= -1.0;
 	}
 	if( m <= 1.0 ) {
-		// m ist jetzt die Steigung der Geraden mit dem gewünschten Winkel
+		// m ist jetzt die Steigung der Geraden mit dem gewÃ¼nschten Winkel
 		// also praktisch der Winkel der Linie
 		if( m < 1e-9 ) {
 			m = 1e9;        // Gerade sollte senkrecht sein ...
@@ -588,8 +588,8 @@ void RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m
 			m = 1.0/m;
 		}
 
-		// Also steigen jetzt die x Werte immer um eins, während y nur bei allen
-		// m Pixeln um eins erhöht wird
+		// Also steigen jetzt die x Werte immer um eins, wÃ¤hrend y nur bei allen
+		// m Pixeln um eins erhÃ¶ht wird
 		zMean = (long)( inc*( x/m ) );
 		y = ( y+zMean+h )%h;
 		fDelta += m*( zMean+1 );
@@ -617,16 +617,16 @@ void RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m
 
 			k = puDaten[w*y];
 			puDaten++;
-			// Für Mittelwert
+			// FÃ¼r Mittelwert
 			zMean += k;
-			// Für Standardabweichung
+			// FÃ¼r Standardabweichung
 			fSD += ( k*k );
 		}
 		fMean = zMean;
 	}
 	else {
-		// Also steigen jetzt die y Werte immer um eine, während x nur bei allen
-		// m Pixeln um eins erhöht wird
+		// Also steigen jetzt die y Werte immer um eine, wÃ¤hrend x nur bei allen
+		// m Pixeln um eins erhÃ¶ht wird
 		zMean = (long)( inc*( y/m ) );
 		x = ( x+zMean+w )%w;
 		fDelta += m*( zMean+1 );
@@ -653,9 +653,9 @@ void RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m
 
 			k = puDaten[x];
 			puDaten += w;
-			// Für Mittelwert
+			// FÃ¼r Mittelwert
 			zMean += k;
-			// Für Standardabweichung
+			// FÃ¼r Standardabweichung
 			fSD += ( k*k );
 		}
 		fMean = zMean;
@@ -681,7 +681,7 @@ BOOLEAN	BildCalcConst( LPBILD pDestBild, LONG w, LONG h, UCHAR cOperand, double 
 	}
 
 	switch( cOperand ) {
-		// außerdem: Z-Skalierung verändern!
+		// auÃŸerdem: Z-Skalierung verÃ¤ndern!
 		case '*':
 			pDestBild->fSkal /= wert;
 			break;
@@ -701,7 +701,7 @@ BOOLEAN	BildCalcConst( LPBILD pDestBild, LONG w, LONG h, UCHAR cOperand, double 
 			break;
 		}
 
-		// Für alle anderen braucht man eh gerundete Werte
+		// FÃ¼r alle anderen braucht man eh gerundete Werte
 		default:
 			uWert = (UWORD)(long)wert;
 	}
@@ -899,9 +899,9 @@ BOOL BildCalcBild( LPBMPDATA pDest, WORKMODE DestMode, WORD cOperand, LPBMPDATA 
 	LONG ww = puWerte->pSnom[puWerte->iAktuell].w, hh = puWerte->pSnom[puWerte->iAktuell].h;
 	LONG i, j;
 
-	ASSERT( ( DestMode&7 ) != 0 ); // Nix ausgewählt!
+	ASSERT( ( DestMode&7 ) != 0 ); // Nix ausgewÃ¤hlt!
 
-	// Gültigen Pointer erstellen
+	// GÃ¼ltigen Pointer erstellen
 	if( DestMode == TOPO ) {
 		puDestData = pDest->pSnom[pDest->iAktuell].Topo.puDaten;
 		pDestBild = &pDest->pSnom[pDest->iAktuell].Topo;
@@ -918,7 +918,7 @@ BOOL BildCalcBild( LPBMPDATA pDest, WORKMODE DestMode, WORD cOperand, LPBMPDATA 
 	if( (LONG)puDestData <= 256  ||  w > ww  ||  h > hh ) {
 		return ( FALSE );   // Sonst geht keine UNDO, bzw. die Werte gehen vorzeitig aus ...!
 	}
-	// Gültigen Pointer erstellen
+	// GÃ¼ltigen Pointer erstellen
 	if( WerteMode == TOPO )	{
 		puWerteData = puWerte->pSnom[puWerte->iAktuell].Topo.puDaten;
 		if( (LONG)puWerteData <= 256 ) {
@@ -1077,9 +1077,9 @@ BOOL BildCalcBild( LPBMPDATA pDest, WORKMODE DestMode, WORD cOperand, LPBMPDATA 
 /**************************************************************************************
  * Ab hier Bildmittelung
  *
- * Mittelt eine Zeile; N ist die gewünschte Anzahl der Mittelwerte, (nur intern)
+ * Mittelt eine Zeile; N ist die gewÃ¼nschte Anzahl der Mittelwerte, (nur intern)
  * d.h. n=3 ergibt 3 Mittel: 0-.333 .333-.666 und .666-1
- * Sind fuer einen Wert nicht genügend Punkte vorhanden,
+ * Sind fuer einen Wert nicht genÃ¼gend Punkte vorhanden,
  * ist das Ergenis 0, sonst Punktezahl
  */
 BOOLEAN	MittelZeile( LPUWORD puZeile, LPUCHAR puMaske, LONG w, LPDOUBLE pfMittel, ULONG n )
@@ -1129,12 +1129,12 @@ BOOLEAN	MittelBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 	}
 
 	puZeile = pBild->puDaten;
-	lMin = 32767l;  // Größte Differenz zum Mittelwert, deshalb mit 0 init.
+	lMin = 32767l;  // GrÃ¶ÃŸte Differenz zum Mittelwert, deshalb mit 0 init.
 	lMax = -32768l;
 	pMaskeLinie = NULL;     // Keine Maske
 
 	for( y = 0; y < h;  y++ ) {
-		// Maske berücktsichtigen
+		// Maske berÃ¼cktsichtigen
 		if( pBmp->pMaske ) {
 			pMaskeLinie = pBmp->pMaske + ( h-y-1 )*pBmp->wMaskeW;
 		}
@@ -1226,7 +1226,7 @@ BOOLEAN	MittelBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 
 
 /* nur intern! */
-// Polynom n-ter Ordnung für MittelFitBild ...
+// Polynom n-ter Ordnung fÃ¼r MittelFitBild ...
 void fpoly( double x, LPDOUBLE pf, int n )
 {
 	int i;
@@ -1239,7 +1239,7 @@ void fpoly( double x, LPDOUBLE pf, int n )
 
 
 /* nur intern */
-// Polynom n-ter Ordnung für MittelFitBild ...
+// Polynom n-ter Ordnung fÃ¼r MittelFitBild ...
 double fPolyWert( double x, LPDOUBLE pf, int n )
 {
 	int i;
@@ -1258,7 +1258,7 @@ BOOLEAN	InterpolateVertikalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, i
 	LONG n, x, y, lWert;
 	WORD wBitMaske;
 	BOOL bThisLine;
-	// für's fitten
+	// fÃ¼r's fitten
 	int HUGE *pX;
 	LPUWORD	pY;
 	LPDOUBLE( pCovar[10] );
@@ -1278,7 +1278,7 @@ BOOLEAN	InterpolateVertikalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, i
 	for( x = 0;  x < w; ) {
 		bThisLine = FALSE;
 		wBitMaske = 0x80>>( x%8 );
-		// Testen, ob etwas zu fitten und die Felder für den Fit füllen
+		// Testen, ob etwas zu fitten und die Felder fÃ¼r den Fit fÃ¼llen
 		for( n = y = 0;  y < h;  y++ ) {
 			if( pBmp->pMaske[( x/8 )+( h-y-1 )*pBmp->wMaskeW]&wBitMaske ) {
 				bThisLine = TRUE;
@@ -1296,7 +1296,7 @@ BOOLEAN	InterpolateVertikalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, i
 			for( y = 0;  y < h;  y++ ) {
 				if( pBmp->pMaske[( x/8 )+( h-y-1 )*pBmp->wMaskeW]&wBitMaske ) {
 					lWert = fPolyWert( y, a, grad );
-					// Überlauf => ignorieren!
+					// Ãœberlauf => ignorieren!
 					if( lWert > 65535 ) {
 						lWert = 65535;
 					}
@@ -1326,7 +1326,7 @@ BOOLEAN	InterpolateHorizontalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h,
 	LONG n, x, y, lWert;
 	WORD wBitMaske;
 	BOOL bThisLine;
-	// für's fitten
+	// fÃ¼r's fitten
 	int HUGE *pX;
 	LPUWORD	pY;
 	LPDOUBLE( pCovar[10] );
@@ -1345,7 +1345,7 @@ BOOLEAN	InterpolateHorizontalBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h,
 
 	for( y = 0;  y < h;  y++ ) {
 		bThisLine = FALSE;
-		// Testen, ob etwas zu fitten und die Felder für den Fit füllen
+		// Testen, ob etwas zu fitten und die Felder fÃ¼r den Fit fÃ¼llen
 		for( n = x = 0;  x < w;  x++ ) {
 			wBitMaske = 0x0080>>( x%8 );
 			if( pBmp->pMaske[( x/8 )+( h-y-1 )*pBmp->wMaskeW]&wBitMaske ) {
@@ -1412,13 +1412,13 @@ static BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int 
 		pCovar[x] = CoMem+10*x;
 	}
 
-	lMin = 32767l;  // Größte Differenz zum MittellWert, deshalb mit 0 init.
+	lMin = 32767l;  // GrÃ¶ÃŸte Differenz zum MittellWert, deshalb mit 0 init.
 	lMax = -32768l;
 	pMaske = NULL;  // Keine Maske
 	pZeile = pBild->puDaten;
 
 	for( y = 0; y < h;  y++ ) {
-		// Maske berücktsichtigen
+		// Maske berÃ¼cktsichtigen
 		if( pBmp->pMaske ) {
 			pMaske = pBmp->pMaske + ( h-y-1 )*pBmp->wMaskeW;
 		}
@@ -1433,7 +1433,7 @@ static BOOLEAN	MittelFitBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int 
 			}
 		}
 
-		// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
+		// Hoffentlich bleib noch etwas von der Zeile zum Fitten Ã¼brig ...
 		// ... Fitten ...
 		if( i == 0  ||  !lfit( pX, pY, i, a, n, pCovar, &chi, fpoly ) )	{
 			MemFree( pX );
@@ -1708,7 +1708,7 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	pMaske = NULL;  // Keine Maske
 
 	for( y = 0; y < h;  y++ ) {
-		// Maske berücktsichtigen
+		// Maske berÃ¼cktsichtigen
 		if( pBmp->pMaske ) {
 			pMaske = pBmp->pMaske + ( h-y-1 )*pBmp->wMaskeW;
 		}
@@ -1727,14 +1727,14 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	}
 
 	for( y = i = 0;  y < h;  y++ ) {
-		if( pAnzahl[y] > 0 ) {  // Gar keine Punkte zum Fitten übrig?
+		if( pAnzahl[y] > 0 ) {  // Gar keine Punkte zum Fitten Ã¼brig?
 			pY[i] = pMittel[y]/pAnzahl[y];  // Y-Wert aller Zeilen
 			pX[i] = y;      // dito. X-Wert
 			i++;
 		}
 	}
 
-	// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
+	// Hoffentlich bleib noch etwas von der Zeile zum Fitten Ã¼brig ...
 	if( i == 0  ||  !lfit( pX, pY, i, y_poly, n, pCovar, &chi, fpoly ) ) {
 		MemFree( pAnzahl );
 		MemFree( pMittel );
@@ -1748,7 +1748,7 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	pMaske = NULL;  // Keine Maske
 
 	for( x = 0; x < w;  x++ ) {
-		// Maske berücktsichtigen
+		// Maske berÃ¼cktsichtigen
 		i = ( 0x0080>>( x%8 ) );
 		if( pBmp->pMaske ) {
 			pMaske = pBmp->pMaske+( x/8 );
@@ -1768,14 +1768,14 @@ BOOLEAN	Fit3DBild( LPBMPDATA pBmp, LPUWORD puDaten, LONG w, LONG h, int n, doubl
 	}
 
 	for( x = i = 0;  x < w;  x++ ) {
-		if( pAnzahl[x] > 0 ) {  // Gar keine Punkte zum Fitten übrig?
+		if( pAnzahl[x] > 0 ) {  // Gar keine Punkte zum Fitten Ã¼brig?
 			pY[i] = pMittel[x]/pAnzahl[x];  // Y-Wert aller Zeilen
 			pX[i] = x;      // dito. X-Wert
 			i++;
 		}
 	}
 
-	// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
+	// Hoffentlich bleib noch etwas von der Zeile zum Fitten Ã¼brig ...
 	if( i == 0  ||  !lfit( pX, pY, i, x_poly, n, pCovar, &chi, fpoly ) ) {
 		MemFree( pAnzahl );
 		MemFree( pMittel );
@@ -1832,7 +1832,7 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		pMaske = NULL;  // Keine Maske
 
 		for( y = 0; y < h;  y++ ) {
-			// Maske berücktsichtigen
+			// Maske berÃ¼cktsichtigen
 			if( pBmp->pMaske ) {
 				pMaske = pBmp->pMaske + ( h-y-1 )*pBmp->wMaskeW;
 			}
@@ -1851,14 +1851,14 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		}
 
 		for( y = i = 0;  y < h;  y++ ) {
-			if( pAnzahl[y] > 0 ) {  // Gar keine Punkte zum Fitten übrig?
+			if( pAnzahl[y] > 0 ) {  // Gar keine Punkte zum Fitten Ã¼brig?
 				pY[i] = pMittel[y]/pAnzahl[y];  // Y-Wert aller Zeilen
 				pX[i] = y;      // dito. X-Wert
 				i++;
 			}
 		}
 
-		// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
+		// Hoffentlich bleib noch etwas von der Zeile zum Fitten Ã¼brig ...
 		if( i == 0  ||  !lfit( pX, pY, i, a, n, pCovar, &chi, fpoly ) )	{
 			MemFree( pAnzahl );
 			MemFree( pMittel );
@@ -1867,7 +1867,7 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 			return ( FALSE );
 		}
 
-		lMin = 32767l;  // Größte Differenz zum MittelWert, deshalb mit 0 init.
+		lMin = 32767l;  // GrÃ¶ÃŸte Differenz zum MittelWert, deshalb mit 0 init.
 		lMax = -32768l;
 
 		// ... Fitten war ok ...
@@ -1886,7 +1886,7 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 				pZeile[x] = (UWORD)lWert;
 			}
 		}
-		// Mitteln, sonst scheitert nächster Fit
+		// Mitteln, sonst scheitert nÃ¤chster Fit
 		if( !BildMinMax( pBild, lMin, lMax, w, h ) ) {
 			MemFree( pAnzahl );
 			MemFree( pMittel );
@@ -1900,7 +1900,7 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 
 		pMaske = NULL;  // Keine Maske
 		for( x = 0; x < w;  x++ ) {
-			// Maske berücktsichtigen
+			// Maske berÃ¼cktsichtigen
 			i = ( 0x0080>>( x%8 ) );
 			if( pBmp->pMaske ) {
 				pMaske = pBmp->pMaske+( x/8 );
@@ -1920,14 +1920,14 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		}
 
 		for( x = i = 0;  x < w;  x++ ) {
-			if( pAnzahl[x] > 0 ) {  // Gar keine Punkte zum Fitten übrig?
+			if( pAnzahl[x] > 0 ) {  // Gar keine Punkte zum Fitten Ã¼brig?
 				pY[i] = pMittel[x]/pAnzahl[x];  // Y-Wert aller Zeilen
 				pX[i] = x;      // dito. X-Wert
 				i++;
 			}
 		}
 
-		// Hoffentlich bleib noch etwas von der Zeile zum Fitten übrig ...
+		// Hoffentlich bleib noch etwas von der Zeile zum Fitten Ã¼brig ...
 		if( i == 0  ||  !lfit( pX, pY, i, a, n, pCovar, &chi, fpoly ) )	{
 			MemFree( pAnzahl );
 			MemFree( pMittel );
@@ -1941,7 +1941,7 @@ BOOLEAN	MittelFit3DBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n, in
 		MemFree( pX );
 		MemFree( pY );
 
-		lMin = 32767l;  // Größte Differenz zum MittelWert, deshalb mit 0 init.
+		lMin = 32767l;  // GrÃ¶ÃŸte Differenz zum MittelWert, deshalb mit 0 init.
 		lMax = -32768l;
 
 		// ... Fitten war ok ...

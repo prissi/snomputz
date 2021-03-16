@@ -34,7 +34,7 @@
  *
  * wie in "portab.h" eigentlich vorgesehen.
  *
- * Ausserdem heissen alle Pointer LPxxx (wegen der Kompatibilität
+ * Ausserdem heissen alle Pointer LPxxx (wegen der KompatibilitÃ¤t
  * zu 16 Bit Windows ...)
  */
 
@@ -68,7 +68,7 @@ typedef enum {FALSE, TRUE} BOOLEAN;
 
 
 /*
- * Die Abkürzungen für ungarische Notation sind
+ * Die AbkÃ¼rzungen fÃ¼r ungarische Notation sind
  *	c : char (immer unsigned, sonst sc)
  *  i : int  (short oder long, nach Implementation)
  *  u : unsigned (default short)

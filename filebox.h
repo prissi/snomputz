@@ -2,7 +2,7 @@
 
 extern UINT	WM_FSEL_HELP;
 
-// Hängt neue Extension ran
+// HÃ¤ngt neue Extension ran
 void	ChangeExt( LPSTR strStr, LPSTR strExt );
 
 // Aus HelpEx: Pfad zur Hilfedatei ermitteln

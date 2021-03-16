@@ -36,7 +36,7 @@
 
 /* if-Anweisung:
  * PROG_BEGIN_BLOCK = TRUE;
- * Stackpointer erhˆhen
+ * Stackpointer erh√∂hen
  *	EXECUTE = je nach if-Anweisung
  *	CONDITION = je nach if-Anweisung
  *	CONT_ON_RETURN = TRUE;	// Nach dem Ende einfach Fortsetzten
@@ -47,14 +47,14 @@
 
 /* while-Anweisung
  * PROG_BEGIN_BLOCK = TRUE;
- * Stackpointer erhˆhen
+ * Stackpointer erh√∂hen
  *	EXECUTE = je nach while-Anweisung
  *	CONDITION = je nach while-Anweisung
  *	CONT_ON_RETURN = entgegengesetz zur while-Anweisung;
  */
 
 /* Wenn "{" und falls BEGIN_BLOCK = FALSE;
- *	Stack erhˆhen
+ *	Stack erh√∂hen
  *	CONDITION = 2; // War gar keine
  *	CONT_ON_RETURN = TRUE;	// Nach dem Ende einfach Fortsetzten
  */
@@ -66,8 +66,8 @@
  */
 
 
-// erzeugt den n‰chsten Variablennamen
-// pVar muss auf eine g¸ltige Struktur zeigen, wenn bReadOnly: Nur Kopie gespeichert
+// erzeugt den n√§chsten Variablennamen
+// pVar muss auf eine g√ºltige Struktur zeigen, wenn bReadOnly: Nur Kopie gespeichert
 // Zeigt danach entweder auf Original oder Kopie
 BOOLEAN	GetVariable( LPPROGPTR pPrg, LPSTR *ppStr, VARIABLEN **pVar, BOOLEAN bReadOnly )
 {
@@ -312,7 +312,7 @@ KeinName:
 	return ( FALSE );
 
 ZuvieleVariablen:
-	// Der Platz f¸r Variablen ging aus ... (Vielleicht sollte man mit Snomputz keine linearen Gleichungssysteme normieren ...)
+	// Der Platz f√ºr Variablen ging aus ... (Vielleicht sollte man mit Snomputz keine linearen Gleichungssysteme normieren ...)
 	FehlerRsc( PROG_VAR_OUT_OF_NAMES );
 	return ( FALSE );
 
@@ -325,7 +325,7 @@ UndefinierteVariable:
 
 PROGRAMMSTATUS DoOperation( VARIABLEN **pVar1, VARIABLEN *pVar2, int iOperation )
 {
-	// Kein Casting nˆtig
+	// Kein Casting n√∂tig
 	if( iOperation == 0 ) {
 		// Zuweisung
 		if( ( *pVar1 )->Typ != NONE  &&  pVar2->Typ != ( *pVar1 )->Typ ) {
@@ -340,7 +340,7 @@ PROGRAMMSTATUS DoOperation( VARIABLEN **pVar1, VARIABLEN *pVar2, int iOperation 
 		goto UnzulaessigerOperator;
 	}
 
-	// Nur aneinanderh‰ngen erlaubt
+	// Nur aneinanderh√§ngen erlaubt
 	if( ( *pVar1 )->Typ == TYP_STRING  &&  iOperation != '+' ) {
 		goto UnzulaessigerOperator;
 	}
@@ -422,7 +422,7 @@ UnzulaessigerOperator:
 // Arbeitet einen Ausdruck solange durch, bis er einen einzigen Wert hat
 // ppStr zeigt danach auf die Stelle, an der abgebrochen wurde
 // Ruft sich evt. selbst auf ..
-// Rechnet immer nur mit zwei Ausdr¸cken, ansonsten: Klammern ...
+// Rechnet immer nur mit zwei Ausdr√ºcken, ansonsten: Klammern ...
 PROGRAMMSTATUS EvaluateExpression( LPPROGPTR pPrg, LPSTR *ppStr, VARIABLEN **pErgebnis, BOOLEAN bKomma )
 {
 	VARIABLEN Var1, Var2;
@@ -460,7 +460,7 @@ ZeilenEnde:
 				if( Var1.Typ == NONE  ||  ( Var2.Typ == NONE  &&  iOperator != NONE ) ) {
 					goto UnerwartetesZeilenende;
 				}
-				// Einfach Zuweisung ausf¸hren
+				// Einfach Zuweisung ausf√ºhren
 				return ( DoOperation( pErgebnis, &Var1, 0 ) );
 
 			// Zahlenkonstanten
@@ -581,7 +581,7 @@ ZeilenEnde:
 				else {
 					ASSERT( "Interner Fehler!" );
 				}
-				*ppStr = c+1;   // Zeichen nach schlieﬂender Klammer
+				*ppStr = c+1;   // Zeichen nach schlie√üender Klammer
 			}
 Auswertung:
 				if( !b ) {
@@ -642,13 +642,13 @@ KlammerFehler:
 	return ( PROG_ABORT );
 
 UnerwartetesZeilenende:
-	// Hier nur bei Fehler: Zeile zu fr¸h zu Ende
+	// Hier nur bei Fehler: Zeile zu fr√ºh zu Ende
 	FehlerRsc( PROG_PARSE_EOL );
 	return ( PROG_ABORT );
 }
 
 
-// F¸hrt eine Programmzeile aus
+// F√ºhrt eine Programmzeile aus
 PROGRAMMSTATUS ParseLine( LPPROGPTR pPrg, LPSTR pStr )
 {
 	VARIABLEN *pVar, InitVar;
@@ -727,7 +727,7 @@ PROGRAMMSTATUS ParseLine( LPPROGPTR pPrg, LPSTR pStr )
 				}
 				pPrg->Stack[pPrg->iStackPtr].lZeilenNummer = pPrg->Stack[pPrg->iStackPtr-1].lZeilenNummer;
 				pPrg->Stack[pPrg->iStackPtr].BEGIN_BLOCK = FALSE;
-				*pStr = 0;      // Also Zeile ausf¸hren
+				*pStr = 0;      // Also Zeile ausf√ºhren
 				break;
 
 			// Block enden lassen
@@ -766,7 +766,7 @@ UnerwarteteEingabe:
 	return ( PROG_ABORT );
 
 UnerwartetesZeilenende:
-	// Hier nur bei Fehler: Zeile zu fr¸h zu Ende
+	// Hier nur bei Fehler: Zeile zu fr√ºh zu Ende
 	FehlerRsc( PROG_PARSE_EOL );
 	return ( FALSE );
 }
@@ -820,7 +820,7 @@ BOOLEAN	RunProgram( LPSTR pPrg )
 	BYTE str[1024];
 	long lLen, i, lZeile = 0;
 
-	// Und initialisieren => Wir kˆnnen mehrere Programme gleichzeitig ausf¸hren
+	// Und initialisieren => Wir k√∂nnen mehrere Programme gleichzeitig ausf√ºhren
 	pProgPtr = pMalloc( sizeof( PROGPTR ) );
 	for( i = 0;  i < PROG_MAX_HANDLES;  i++ ) {
 		pProgPtr->Handles[0].Name[0] = 0;

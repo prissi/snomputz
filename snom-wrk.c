@@ -13,8 +13,8 @@
 /* Zuerst Hilfsfunktionen */
 
 
-// Kümmert sich um Überlauf etc.
-// Wenn die Differenz zu groß (= Überlauf aufgetreten), wird FALSE zurückgeliefert
+// KÃ¼mmert sich um Ãœberlauf etc.
+// Wenn die Differenz zu groÃŸ (= Ãœberlauf aufgetreten), wird FALSE zurÃ¼ckgeliefert
 BOOLEAN	BildMinMax( LPBILD pBild, const LONG lMin, const LONG lMax, const LONG w, const LONG h )
 {
 	BOOLEAN	bKeinUeberlauf = TRUE;
@@ -22,7 +22,7 @@ BOOLEAN	BildMinMax( LPBILD pBild, const LONG lMin, const LONG lMax, const LONG w
 
 	ASSERT(  lMin <= lMax  &&  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256  );
 
-	// vor evt. Überlauf warnen
+	// vor evt. Ãœberlauf warnen
 	if( lMax-lMin >= 65535l ) {
 		CHAR str[256];
 
@@ -37,7 +37,7 @@ BOOLEAN	BildMinMax( LPBILD pBild, const LONG lMin, const LONG lMax, const LONG w
 		pBild->uMaxDaten = (WORD)( lMax-lMin )+1;
 	}
 
-	// Minimum abziehen, wenn nötig
+	// Minimum abziehen, wenn nÃ¶tig
 	if( lMin != 0 )	{
 		for( i = 0;  i < w*h;  i++ ) {
 			pBild->puDaten[i] -= lMin;
@@ -79,7 +79,7 @@ BOOLEAN	BildMax( LPBILD pBild, LONG w, LONG h )
 /* Und nun die "echten" Routinen */
 
 
-/* Berechnet die häufigste Steigung von links nach rechts und zieht diese wieder ab
+/* Berechnet die hÃ¤ufigste Steigung von links nach rechts und zieht diese wieder ab
  * TRUE, wenn erfolgreich
  */
 BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
@@ -92,7 +92,7 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 
 	ASSERT(  lTeiler > 0  &&  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256 );
 
-	// Array für temporäre Daten
+	// Array fÃ¼r temporÃ¤re Daten
 	i = 512;
 	if( w > 512 ) {
 		i = w;
@@ -103,8 +103,8 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 		return ( FALSE );
 	}
 
-	// Zuerst Häufigkeiten der Steigung im Bild bestimmen
-	// Es werden nur "kleine" Steigungn um +- 512 Unterschied pro Pixel berücktsichtigt
+	// Zuerst HÃ¤ufigkeiten der Steigung im Bild bestimmen
+	// Es werden nur "kleine" Steigungn um +- 512 Unterschied pro Pixel berÃ¼cktsichtigt
 	for( y = 0;  y < h;  y++ ) {
 		for( x = 1;  x < w;  x++ ) {
 			lDelta = 256l + ( (LONG)puDaten[x]-(LONG)puDaten[x-1] )/lTeiler;
@@ -114,7 +114,7 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 		}
 	}
 
-	// Und nun häufigste Steigung bestimmen
+	// Und nun hÃ¤ufigste Steigung bestimmen
 	lMaxPos = lMax = 0;
 	for( x = 1;  x < 512;  x++ ) {
 		if( plAnzahl[x] > lMax ) {
@@ -131,7 +131,7 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 	}
 
 	// Nun die Steigung berechnen
-	// m = dm/dmdiv für Ganzkommaarithmetrik
+	// m = dm/dmdiv fÃ¼r Ganzkommaarithmetrik
 	lM = lMax*( lMaxPos-256 ) + plAnzahl[lMaxPos-1]*( lMaxPos-257 ) + plAnzahl[lMaxPos+1]*( lMaxPos-255 );
 	lMDiv = lMax + plAnzahl[lMaxPos-1] + plAnzahl[lMaxPos+1];
 
@@ -168,7 +168,7 @@ BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h )
 // 24.10.98
 
 
-/* Berechnet die häufigste Differenz zweier Zeilen und zieht diese ab
+/* Berechnet die hÃ¤ufigste Differenz zweier Zeilen und zieht diese ab
  * TRUE, wenn erfolgreich
  */
 BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const LONG h )
@@ -185,15 +185,15 @@ BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const 
 
 	ASSERT(  lTeiler > 0  &&  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256 );
 
-	// Array für temporär Daten
+	// Array fÃ¼r temporÃ¤r Daten
 	psDelta = (LPSWORD)pMalloc( sizeof( SWORD )*h );
 	if( psDelta == NULL ) {
 		StatusLineRsc( E_MEMORY );
 		return ( FALSE );
 	}
 
-	// Zuerst Häufigkeiten der Steigung im Bild bestimmen
-	// Es werden nur "kleine" Steigungn um +- 512 Unterschied pro Pixel berücktsichtigt
+	// Zuerst HÃ¤ufigkeiten der Steigung im Bild bestimmen
+	// Es werden nur "kleine" Steigungn um +- 512 Unterschied pro Pixel berÃ¼cktsichtigt
 	puZeile = pBild->puDaten;
 	fYDiff = 0.0;
 	psDelta[0] = 0;
@@ -208,7 +208,7 @@ BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const 
 		puZeileDavor = puZeile;
 		puZeile += w;
 
-		// Differenzen zählen
+		// Differenzen zÃ¤hlen
 		for( x = 0;  x < w;  x++ ) {
 			lDelta = 1024l + ( (LONG)(ULONG)puZeileDavor[x]-(LONG)(ULONG)puZeile[x] )/lTeiler;
 			if( lDelta > 0  &&  lDelta < 2048l ) {
@@ -216,7 +216,7 @@ BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const 
 			}
 		}
 
-		// Und nun häufigste Steigung bestimmen
+		// Und nun hÃ¤ufigste Steigung bestimmen
 		lMaxPos = lMax = 0;
 		for( x = 0;  x < 2048;  x++ ) {
 			if( plAnzahl[x] > lMax ) {
@@ -235,7 +235,7 @@ BOOLEAN	BildSteigungYOld( LPBILD pBild, const LONG lTeiler, const LONG w, const 
 		}
 		else {
 			// Nun die Steigung berechnen
-			// m = dm/dmdiv für Ganzkommaarithmetrik
+			// m = dm/dmdiv fÃ¼r Ganzkommaarithmetrik
 			lM = lMax*( lMaxPos-1024l ) + plAnzahl[lMaxPos-1]*( lMaxPos-1025l ) + plAnzahl[lMaxPos+1]*( lMaxPos-1023l );
 			lMDiv = lMax + plAnzahl[lMaxPos-1] + plAnzahl[lMaxPos+1];
 			fYDiff += (double)( lM*lTeiler )/(double)lMDiv;   // Korrekturwert
@@ -279,7 +279,7 @@ int CompareDIFFS( const void *a, const void *b )
 	return ( (int)( ( *(DIFFS*)b ).count ) - (int)( ( *(DIFFS*)a ).count ) );
 }
 
-/* Berechnet die häufigste Differenz zweier Zeilen und zieht diese ab
+/* Berechnet die hÃ¤ufigste Differenz zweier Zeilen und zieht diese ab
  * TRUE, wenn erfolgreich
  */
 BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG h )
@@ -294,7 +294,7 @@ BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG 
 
 	ASSERT(  w*h > 0   &&  pBild != NULL  &&  (LONG)pBild->puDaten > 256 );
 
-	// Array für temporär Daten
+	// Array fÃ¼r temporÃ¤r Daten
 	psDelta = (LPSWORD)pMalloc( sizeof( psDelta )*h );
 	if( psDelta == NULL ) {
 		StatusLineRsc( E_MEMORY );
@@ -305,8 +305,8 @@ BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG 
 	fYDiff = 0;
 	psDelta[0] = 0;
 
-	// Zuerst Häufigkeiten der Steigung im Bild bestimmen
-	// Es werden nur "kleine" Steigungn um +- DIFF_COUNT/2 Unterschied pro Pixel berücktsichtigt
+	// Zuerst HÃ¤ufigkeiten der Steigung im Bild bestimmen
+	// Es werden nur "kleine" Steigungn um +- DIFF_COUNT/2 Unterschied pro Pixel berÃ¼cktsichtigt
 	for( y = 1;  y < h;  y++ ) {
 		for( i = 0;  i < DIFF_COUNT;  i++ ) {
 			plAnzahl[i].count = 0;
@@ -315,7 +315,7 @@ BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG 
 		puZeileDavor = puZeile;
 		puZeile += w;
 
-		// Differenzen zählen
+		// Differenzen zÃ¤hlen
 		for( x = 0;  x < w;  x++ ) {
 			lDelta = (DIFF_COUNT/2) + ( (LONG)(ULONG)puZeileDavor[x]-(LONG)(ULONG)puZeile[x] );
 			if( lDelta > 0  &&  lDelta < DIFF_COUNT ) {
@@ -516,7 +516,7 @@ void KonturenBerechen( LPUWORD puDaten, LONG w, LONG h, UWORD uDifferenz )
 
 	ASSERT(  w*h > 0   &&  (LONG)puDaten > 256  &&  uDifferenz != 0 );
 
-	// Konturen herausfinden; dabei auf Grenzen nach OBEN und UNTEN zusätzlich achten!
+	// Konturen herausfinden; dabei auf Grenzen nach OBEN und UNTEN zusÃ¤tzlich achten!
 	puDest = (LPUWORD)pMalloc( sizeof( UWORD )*h*w );
 	if( puDest == NULL ) {
 		StatusLineRsc( E_MEMORY );
@@ -579,7 +579,7 @@ BOOLEAN	BildDifferential( LPBILD pBild, LONG w, LONG h )
 	for( y = 0;  y < h;  y++ ) {
 		uLastDaten = 0;
 		for( x = 0;  x < w;  x++ ) {
-			// ulLastDaten == puDaten[x-1] unverändert, bzw == 0 für x=0
+			// ulLastDaten == puDaten[x-1] unverÃ¤ndert, bzw == 0 fÃ¼r x=0
 			if( x < w-3 ) {
 				lTemp = ( 0l - 11l*(LONG)(ULONG)puDaten[x] + 18l*(LONG)(ULONG)puDaten[x+1] - 9l*(LONG)(ULONG)puDaten[x+2] + 2*(LONG)(ULONG)puDaten[x+3] )/6l;
 			}
@@ -592,7 +592,7 @@ BOOLEAN	BildDifferential( LPBILD pBild, LONG w, LONG h )
 			if( lTemp > lMax ) {
 				lMax = lTemp;
 			}
-			uLastDaten = puDaten[x];        // wird nur für x>=w benötigt
+			uLastDaten = puDaten[x];        // wird nur fÃ¼r x>=w benÃ¶tigt
 			puDaten[x] = (UWORD)lTemp;
 		}
 		puDaten += w;
@@ -624,7 +624,7 @@ BOOLEAN	BildIntegral( LPBILD pBild, LONG w, LONG h )
 	}
 
 
-	// Zuerst den häufigsten Wert als Steigung Null setzten
+	// Zuerst den hÃ¤ufigsten Wert als Steigung Null setzten
 	for( x = 0;  x < h*w;  x++ ) {
 		plAnzahl[puDaten[x]]++;
 	}
@@ -689,7 +689,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
 
 				// Zuerst unteres Limit beachten
 				if( ( bLowLim  &&  puDaten[x] <= uLowLim )  &&  puDaten[x-1] > uLowLim ) {
-					// lSpikeY fehlende Punkte ergänzen ...
+					// lSpikeY fehlende Punkte ergÃ¤nzen ...
 					for( i = x+1;  i < y+w  &&  ( lSpikeX == 0  ||  i < x+lSpikeX )  &&  puDaten[i] <= uLowLim;  i++ ) {
 						;
 					}
@@ -710,7 +710,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
 
 				// Dann oberes Limit beachten
 				if( ( bUpLim  &&  puDaten[x] >= uUpLim )  &&  puDaten[x-1] < uUpLim ) {
-					// Maximal 3 fehlenden Punkte ergänzen ...
+					// Maximal 3 fehlenden Punkte ergÃ¤nzen ...
 					for( i = x+1;  i < y+w  &&  ( lSpikeX == 0  ||  i < x+lSpikeX )  &&  puDaten[i] >= uUpLim;  i++ ) {
 						;
 					}
@@ -739,7 +739,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
 
 				// Zuerst unteres Limit beachten
 				if( ( bLowLim  &&  puDaten[x+y] <= uLowLim )  &&  puDaten[x+y-w] > uLowLim ) {
-					// lSpikeY fehlende Punkte ergänzen ...
+					// lSpikeY fehlende Punkte ergÃ¤nzen ...
 					for( i = y+w;  i < w*h  &&  ( lSpikeY == 0  ||  i < y+lSpikeY*w )  &&  puDaten[x+i] <= uLowLim;  i += w ) {
 						;
 					}
@@ -760,7 +760,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
 
 				// Dann oberes Limit beachten
 				if( ( bUpLim  &&  puDaten[x+y] >= uUpLim )  &&  puDaten[x+y-w] < uUpLim ) {
-					// lSpikeY fehlende Punkte ergänzen ...
+					// lSpikeY fehlende Punkte ergÃ¤nzen ...
 					for( i = y+w;  i < w*h  &&  ( lSpikeY == 0  ||  i < y+lSpikeY*w )  &&  puDaten[x+i] >= uUpLim;  i += w ) {
 						;
 					}
@@ -796,7 +796,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
  *	mittleren Wert ersetzt.
  *	So erfindet die Medianmittelung auch keine neuen Werte dazu!
  *
- *	(Bei 25 und mehr Punkten wäre aber ein besserer Suchalgorithmus als nun
+ *	(Bei 25 und mehr Punkten wÃ¤re aber ein besserer Suchalgorithmus als nun
  *	 ausgerechnet ein Bubblesort angesagt ...)
  *
  *	Damit SnomPutz danach nicht absemmelt, muss allerdings der Rand durch
@@ -804,7 +804,7 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
  *	(Bild darf nicht schrumpfen!)
  */
 
-// Hilfsfunktion für Median
+// Hilfsfunktion fÃ¼r Median
 void swap( LPUWORD a, LPUWORD b )
 {
 	UWORD temp = ( *a );
@@ -819,7 +819,7 @@ UWORD Median( LPUWORD puWerte, int iAnzahl )
 	BOOLEAN	bNoChange;
 	int i, j;
 
-	// Für drei Punkte einfach per if/else
+	// FÃ¼r drei Punkte einfach per if/else
 	if( iAnzahl == 3 ) {
 		if( puWerte[0] > puWerte[2] ) {
 			if( puWerte[0] > puWerte[1] ) {
@@ -856,9 +856,9 @@ UWORD Median( LPUWORD puWerte, int iAnzahl )
 			}
 		}
 	}
-	// Für 3 Pkte.
+	// FÃ¼r 3 Pkte.
 
-	// Für x Punkte ein einfacher Vertauschungssort
+	// FÃ¼r x Punkte ein einfacher Vertauschungssort
 	// in Fachkreisen auch Arrg! Bubblesort genannt!
 	for( j = 1;  j < iAnzahl/2+2;  j++ ) {
 		bNoChange = TRUE;
@@ -882,7 +882,7 @@ void BildMedianSpalten( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 {
 	LPUWORD	puSrc;
 	long x, y, i;
-	WORD puWerte[9];                // Maximal über 9 Punkte
+	WORD puWerte[9];                // Maximal Ã¼ber 9 Punkte
 
 	puSrc = puDaten;
 	h -= iAnzahl;
@@ -892,12 +892,12 @@ void BildMedianSpalten( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 				puWerte[i] = puDaten[i*w];
 			}
 			// Da die Werte in der nullten Zeile eh nicht mehr verwertet werden,
-			// werden sie gleich zurückgeschrieben
+			// werden sie gleich zurÃ¼ckgeschrieben
 			*puDaten++ = Median( puWerte, iAnzahl );
 		}
 	}
 
-	// Achtung: Die resultierende Bitmap ist natürlich um "iAnzahl" Zeile niedriger.
+	// Achtung: Die resultierende Bitmap ist natÃ¼rlich um "iAnzahl" Zeile niedriger.
 	puDaten = puSrc;
 	for( i = h+iAnzahl-1;  i > 0;  i-- ) {
 		if( i > h+iAnzahl/2l ) {
@@ -925,7 +925,7 @@ BOOLEAN	BildMedian( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 	LONG x, y, i, j;
 
 	switch( iAnzahl ) {
-		case 1: // l-förmige Verteilung
+		case 1: // l-fÃ¶rmige Verteilung
 			puZeile = puDaten;
 			for( y = 0;  y < h-1;  y++ ) {
 				for( x = 0;  x < w-1;  x++ ) {
@@ -935,14 +935,14 @@ BOOLEAN	BildMedian( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 					*puZeile++ = Median( puWerte, 3 );
 					puDaten++;
 				}
-				*puZeile++ = *puDaten++;        // Letzten Wert doppeln und überspringen
+				*puZeile++ = *puDaten++;        // Letzten Wert doppeln und Ã¼berspringen
 			}
 			// Letzte Zeile doppeln
 			MemMove( puDaten, puDaten-w, w*sizeof( WORD ) );
 			return ( TRUE );
 
 		case 3:
-			// Zwischenspeicher für eine Zeile beschaffen
+			// Zwischenspeicher fÃ¼r eine Zeile beschaffen
 			if( ( puZeile = pMalloc( w*sizeof( WORD ) ) ) == NULL )	{
 				FehlerRsc( E_MEMORY );
 				return ( FALSE );
@@ -957,7 +957,7 @@ BOOLEAN	BildMedian( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 					}
 					puZeile[x+1] = Median( puWerte, 9 );
 				}
-				// Erstes und letztes Element auffüllen
+				// Erstes und letztes Element auffÃ¼llen
 				puZeile[0] = puZeile[1];
 				puZeile[w-1] = puZeile[w-2];
 				// Zeile kopieren
@@ -967,7 +967,7 @@ BOOLEAN	BildMedian( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 			break;
 
 		case 5:
-			// Zwischenspeicher für eine Zeile beschaffen
+			// Zwischenspeicher fÃ¼r eine Zeile beschaffen
 			if( ( puZeile = pMalloc( w*sizeof( WORD ) ) ) == NULL )	{
 				FehlerRsc( E_MEMORY );
 				return ( FALSE );
@@ -990,7 +990,7 @@ BOOLEAN	BildMedian( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl )
 			break;
 	}
 
-	// Achtung: Die resultierende Bitmap ist natürlich um "iAnzahl" Zeile niedriger.
+	// Achtung: Die resultierende Bitmap ist natÃ¼rlich um "iAnzahl" Zeile niedriger.
 	for( i = h-1;  i > 0;  i-- ) {
 		if( i > h-iAnzahl/2l ) {
 			// letzte Zeile wiederholen

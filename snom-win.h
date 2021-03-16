@@ -3,13 +3,13 @@
 // loads an image and create the connected window
 LPBMPDATA OpenCreateWindow( LPCSTR datei );
 
-// Ändert den Status der Menüeinträge von UNDO/REDO
+// Ã„ndert den Status der MenÃ¼eintrÃ¤ge von UNDO/REDO
 void	EnableUndoRedo(BOOL Undo, BOOL Redo);
 
 // String aus Resource
 LPSTR	GetStringRsc( UINT h );
 
-// Hängt neue Datei an die letzten vier Dateien ...
+// HÃ¤ngt neue Datei an die letzten vier Dateien ...
 void	UpdateRecent( LPSTR datei, LPBMPDATA pBmp );
 
 // Statuszeile leeren

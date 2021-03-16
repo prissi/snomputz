@@ -1,4 +1,4 @@
-/* Includes für Programmierung und History */
+/* Includes fÃ¼r Programmierung und History */
 
 #ifndef SNOM_PROGRAMM
 extern WNDPROC	pOldProgEditProc;
@@ -6,14 +6,14 @@ extern HWND			hwndEdit;
 #else
 
 /********************************************************************************************/
-// Alle Typen für Programmierung
+// Alle Typen fÃ¼r Programmierung
 
 #define UNDEF_CONDITION	2
 
 typedef enum { PROG_ABORT=0, PROG_EOF=2, PROG_EXECUTE=1 } PROGRAMMSTATUS;
 typedef enum { TYP_HANDLE=1, TYP_BILD, TYP_ZAHL, TYP_STRING, TYP_PWORD, TYP_PLONG, TYP_PFLOAT, TYP_PDOUBLE } PROG_VARTYP;
 
-// Alles Über Variablen
+// Alles Ãœber Variablen
 typedef struct
 {
 	BYTE					Name[256];	// Name der Variablen
@@ -22,7 +22,7 @@ typedef struct
 		struct 
 		{
 			LPBMPDATA	pBmp;		// Pointer auf Werte
-			WORKMODE	bModus;	// für Handels i.A. TOPO|ERRO|LUMI
+			WORKMODE	bModus;	// fÃ¼r Handels i.A. TOPO|ERRO|LUMI
 		} Bmp;
 		double	fWert;
 		LPSTR		str;
@@ -36,9 +36,9 @@ typedef struct
 	LONG				lZeilenNummer;
 	struct
 	{
-		int	EXECUTE				:1;	// Nächste Zeile wird ausgeführt
+		int	EXECUTE				:1;	// NÃ¤chste Zeile wird ausgefÃ¼hrt
 		int	CONDITION			:2;	// Letzte Bedingung war wahr, falsch, undefiniert
-		int BEGIN_BLOCK		:1;	// nächste "{" wird ignoriert
+		int BEGIN_BLOCK		:1;	// nÃ¤chste "{" wird ignoriert
 		int CONT_ON_RETURN:1; // bei "}" wird die neue Zeilennummer die aktuelle + 1
 	};
 } PROGSTACK;
@@ -48,7 +48,7 @@ typedef struct
 #define PROG_MAX_ZAHLEN		64
 #define PROG_MAX_STRINGS	32
 
-// Und schließlich alles über das Programm
+// Und schlieÃŸlich alles Ã¼ber das Programm
 typedef struct
 {
 	VARIABLEN		Handles[PROG_MAX_HANDLES];

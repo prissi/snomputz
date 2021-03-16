@@ -30,11 +30,11 @@ STRCONST	STR_FOLDER =					"Select folder for file overview";
 STRCONST	STR_NO_FILES =				"No SxM-Files in this folder.";
 STRCONST	STR_FOUND_FILES =			"About %i SxM file(s) in this folder.";
 
-// Hilfestrings für die Dateiauswahl (MUSS mit den Strings in der HLP-Datei übereinstimmen!)
-STRCONST	STR_HFILE_OPEN = "Datei öffnen";
+// Hilfestrings fÃ¼r die Dateiauswahl (MUSS mit den Strings in der HLP-Datei Ã¼bereinstimmen!)
+STRCONST	STR_HFILE_OPEN = "Datei Ã¶ffnen";
 STRCONST	STR_HFILE_SAVE = "Datei speichern als";
 STRCONST	STR_HFILE_EXPORT = "Bild exportieren";
-STRCONST	STR_HFILE_PROFIL = "Höhenprofil";
+STRCONST	STR_HFILE_PROFIL = "HÃ¶henprofil";
 STRCONST	STR_HFILE_HIST = "Histogramm";
 
 // Aus Dsp-mes.c
@@ -50,29 +50,29 @@ STRCONST	STR_TUTOR =						"The SNOM-Putz Tutor will help you to prepare an image
 STRCONST	STR_HFILE_TUTOR =			"SNOM-Putz Tutor";
 STRCONST	STR_T_NO_OPEN =				"The File was not loaded, the Tutor will finish.";
 STRCONST	STR_T_ERROR =					"The File contains an error image. Would you like to exclude it from the screen?";
-STRCONST	STR_T_TURN =					"Should the image be rotated by 90°?\n(Are the Scanline vertical?)";
+STRCONST	STR_T_TURN =					"Should the image be rotated by 90Â°?\n(Are the Scanline vertical?)";
 
 // A hier aus SNOM-DLG.C
 STRCONST	STR_FILE_FRAC =		"Save Fractal Exponent Analysis";
-// Hilfestrings für Dialoge
+// Hilfestrings fÃ¼r Dialoge
 STRCONST	STR_HELP_FARBEN = "Farbzuweisung";
-STRCONST	STR_HELP_VIEW =		"Darstellung ändern";
+STRCONST	STR_HELP_VIEW =		"Darstellung Ã¤ndern";
 STRCONST	STR_HELP_MATH =		"Bildermathematik";
-STRCONST	STR_HELP_MASZE =	"Maße festlegen";
+STRCONST	STR_HELP_MASZE =	"MaÃŸe festlegen";
 STRCONST	STR_HELP_LINES =	"Zeilenmittelung";
 STRCONST	STR_HELP_PLANES =	"3D-Mittelung";
 STRCONST	STR_HELP_FRAC =		"Rauhigkeitsexponenten";
-STRCONST	STR_HELP_SPIKE =	"Ausreißer entfernen";
+STRCONST	STR_HELP_SPIKE =	"AusreiÃŸer entfernen";
 STRCONST	STR_HELP_FFT =		"FFT-Filterung";
 
 // Buttonbeschriftungen
 STRCONST	STR_F_UNIT =		"f / Hz";
 STRCONST	STR_TOPO_UNIT =		"h / nm";
-STRCONST	STR_TOPO_SUNIT =	"h / µm";
+STRCONST	STR_TOPO_SUNIT =	"h / Âµm";
 STRCONST	STR_X_UNIT =			"x / nm";
-STRCONST	STR_X_SUNIT =			"x / µm";
+STRCONST	STR_X_SUNIT =			"x / Âµm";
 STRCONST	STR_Y_UNIT =			"y / nm";
-STRCONST	STR_Y_SUNIT =			"y / µm";
+STRCONST	STR_Y_SUNIT =			"y / Âµm";
 STRCONST	STR_LUMI_UNIT =		"I / mW";
 STRCONST	STR_PROFIL =			"Profile";
 STRCONST	STR_AUTOKORR =		"Autocorrelation";
@@ -109,7 +109,7 @@ STRCONST	STR_FOLDER;
 STRCONST	STR_NO_FILES;
 STRCONST	STR_FOUND_FILES;
 
-// Hilfestrings für die Dateiauswahl (MUSS mit den Strings in der HLP-Datei übereinstimmen!)
+// Hilfestrings fÃ¼r die Dateiauswahl (MUSS mit den Strings in der HLP-Datei Ã¼bereinstimmen!)
 STRCONST	STR_HFILE_OPEN;
 STRCONST	STR_HFILE_SAVE;
 STRCONST	STR_HFILE_EXPORT;
@@ -133,7 +133,7 @@ STRCONST	STR_T_TURN;
 
 // A hier aus SNOM-DLG.C
 STRCONST	STR_FILE_FRAC;
-// Hilfestrings für Dialoge
+// Hilfestrings fÃ¼r Dialoge
 STRCONST	STR_HELP_FARBEN;
 STRCONST	STR_HELP_VIEW;
 STRCONST	STR_HELP_MATH;

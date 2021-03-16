@@ -19,10 +19,10 @@
 typedef struct
 {
 	long		u1;							// Bedeutung der Parameter mit u? sind unbekannt
-	char		cTitle[32];			// Topography o.ä.
-	char		cInstrument[8];	// Benütztes Instument (ist evt. auch nur eine 3 Byte-Kennung)
+	char		cTitle[32];			// Topography o.Ã¤.
+	char		cInstrument[8];	// BenÃ¼tztes Instument (ist evt. auch nur eine 3 Byte-Kennung)
 	short		x_dir, y_dir;		// Scanrichtung (0/ right to left / top to bottom)
-	char		cShowOffset, cNoUnits; // Werden nun einfach für Offsets missbraucht ...
+	char		cShowOffset, cNoUnits; // Werden nun einfach fÃ¼r Offsets missbraucht ...
 	short		iCol, iRow;			// Zeilen und Spalten
 	char		u5[12];
 	float		fW, fH;					// Breite und Hoehe des Bildes
@@ -32,7 +32,7 @@ typedef struct
 	float		fLinePerSec;		// Scangeschwindigkeit
 	float		fSetpoint;
 	char		cSetPointUnit[8];
-	float		fSampleBias,	fTipBias;	// können ebensogut falsch sein; lässt man am besten = 0!
+	float		fSampleBias,	fTipBias;	// kÃ¶nnen ebensogut falsch sein; lÃ¤sst man am besten = 0!
 	float		fZGain;
 	char		cZGainUnit[8];
 	short	iMin, iMax;

@@ -64,12 +64,12 @@ Image header size: 417
 [Head Settings]
 
    Preamp Gain: 1000 mV/nA
-  X Calibration: 1 Å/V
-  Z Calibration: 1 Å/V
+  X Calibration: 1 Ä¹/V
+  Z Calibration: 1 Ä¹/V
 
 [Header end]
 
-	Height Units might be well Å or µm
+	Height Units might be well Ä¹ or Âµm
 
 */
 

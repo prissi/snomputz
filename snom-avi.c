@@ -247,7 +247,7 @@ int WINAPI MovieDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			SendMessage( hComboSrc, CB_RESETCONTENT, 0, 0 );
 			EnumChildWindows( hwndClient, EnumSetComboNames, (LPARAM)MAKELONG( hComboSrc, NULL ) );
 
-			// n�tige Handels holen
+			// nďż˝tige Handels holen
 			h = GetDlgItem( hdlg, MOVIE_BACKGROUND );
 			// Farbeinstellung vorbereiten
 			brush = CreateSolidBrush( CurrentMovie.backgroundColor );
@@ -271,7 +271,7 @@ int WINAPI MovieDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 		}
 
 #else
-		// Makierung f�r die Buttons ...
+		// Makierung fďż˝r die Buttons ...
 		case WM_CTLCOLOR:
 			if( (HWND)lParam == h ) {
 				return ( brush );
@@ -552,7 +552,7 @@ int WINAPI MovieDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 
 /*************************************************************************/
 
-// Identifier für Tool/Statusbar
+// Identifier fĂĽr Tool/Statusbar
 #define ID_MOVIESTATUSBAR 1920
 
 
@@ -560,7 +560,7 @@ int WINAPI MovieDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 LRESULT CALLBACK MovieWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 {
 	extern HWND hModeLess;                                  // handle of current inlay dialog (only used for key strokes)
-	static HWND hwndCreateParent;           // Handle f�r die Erzeugung neuer Fenster ...
+	static HWND hwndCreateParent;           // Handle fďż˝r die Erzeugung neuer Fenster ...
 	static int iYOffset;
 	static BOOL redraw_count = 0;
 

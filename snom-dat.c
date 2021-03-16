@@ -39,11 +39,11 @@
 /*****************************************************************************************
  * Konvertiert einen Datenblock in ein Snombild (Topografie, Fehler oder Lumineszens)
  * Wird zuletzt immer dann aufgerufen, wenn Daten geladen sind.
- * Die Daten werden als erstes Element (pBmp->pSnom[0]) eingefügt
+ * Die Daten werden als erstes Element (pBmp->pSnom[0]) eingefÃ¼gt
  * w beziechnet die Breite einer Zeile in Vielfachen von uBits;
  * dies kann mehr sein, als die Weite w, der Rest wird ignoriert.
  * uBits ist die Breite in Bits 1..16, uAdd ein Offset, der aufaddiert werden soll (meist 0 oder 0x8000)
- * für signed/unsigned.
+ * fÃ¼r signed/unsigned.
  */
 BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iBits, WORKMODE Mode, unsigned short uAdd, BOOLEAN InitRest )
 {
@@ -60,13 +60,13 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 	        || ( Mode == ERRO  &&  pBmp->pSnom[0].Error.puDaten == NULL )
 	        || ( Mode == LUMI  &&  pBmp->pSnom[0].Lumi.puDaten == NULL ) );
 
-	// Ausmaüe initialisieren
+	// AusmaÃ¼e initialisieren
 	pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
 	if( pSnom->w == 0  ||  pSnom->h == 0 ) {
 		pSnom->w = w;
 		pSnom->h = h;
 	}
-	// Kann keine zwei verschiedenen Größen gleichzeitig behandeln
+	// Kann keine zwei verschiedenen GrÃ¶ÃŸen gleichzeitig behandeln
 	if( pSnom->w > w  ||   pSnom->h > h ) {
 		FehlerRsc( E_TOO_SMALL );
 		return ( FALSE );
@@ -698,11 +698,11 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 	/****************************************************************************
 	 *	Das Format ist nur aufgrund von Try and Error entziffert worden!
 	 *	Verwendet vorzeichenlose Intel-Notation.
-	 *	Lünge des Headers immer (?) 512 Bytes
+	 *	LÃ¼nge des Headers immer (?) 512 Bytes
 	 *  Besteht aus mindestens 2 Strings, die immer genau 32 Byte lang sind!
 	 *
 	 *	Es folgt der bis jetzt entzifferte Header: (Kennung: "STiMage" "x.y" (Versionsnummer) + Datum+Uhrzeit)
-	 *	flag flag flag Wort (Breite) Wort (Hühe) Long (Dateilünge) flag
+	 *	flag flag flag Wort (Breite) Wort (HÃ¼he) Long (DateilÃ¼nge) flag
 	 *
 	 *	Dann kommen evt variable Daten:
 	 *	Erst Kennung:
@@ -720,9 +720,9 @@ BOOL ReadRHK( HFILE hFile, LPBMPDATA pBmp )
 	lstrcpy( pSnom->Topo.strTitel, STR_TOPO );      // Immer Topografie
 	pSnom->Topo.Typ = TOPO;
 
-	offset = _llseek( hFile, 0, 2 );        // Dateilünge
+	offset = _llseek( hFile, 0, 2 );        // DateilÃ¼nge
 	_llseek( hFile, 0l, 0 );
-	str[32] = 0;    // Alle Strings 32 Byte lang, werden zur Not mit Leerzeichen aufgefüllt ...
+	str[32] = 0;    // Alle Strings 32 Byte lang, werden zur Not mit Leerzeichen aufgefÃ¼llt ...
 
 	// Erste Zeile: Datum
 	_lread( hFile, (LPVOID)str, 32 );
@@ -848,7 +848,7 @@ BOOL WriteRHK( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 		return ( FALSE );
 	}
 
-	// Zeiger auf gültige Daten holen
+	// Zeiger auf gÃ¼ltige Daten holen
 	if( what&TOPO  &&  pSnom->Topo.puDaten != NULL ) {
 		puDaten = pSnom->Topo.puDaten;
 		if( (LONG)puDaten < 256L ) {    // Indirekt adressiert?
@@ -947,11 +947,11 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 	/****************************************************************************
 	 *	Das Format ist nur aufgrund von Try and Error entziffert worden!
 	 *	Verwendet Intel-Notation.
-	 *	Lünge des Headers immer 830 Bytes
+	 *	LÃ¼nge des Headers immer 830 Bytes
 	 *	Strings in Pascal-Konvention!
 	 *
 	 *	Es folgt der bis jetzt entzifferte Header: (Kennung: A0 00)
-	 *	Wort (Breite) Wort (Hühe)
+	 *	Wort (Breite) Wort (HÃ¼he)
 	 *		???
 	 *	Es folgen Strings bei:
 	 *		9C, EB, 13A, 19C, 29A, 2C3, 2EC, 315
@@ -971,7 +971,7 @@ BOOL ReadECS( HFILE hFile, LPBMPDATA pBmp )
 
 	lstrcpy( pSnom->Topo.strTitel, STR_TOPO );
 	_llseek( hFile, 2l, 0 );
-	//Versuchen wir also unser Glück
+	//Versuchen wir also unser GlÃ¼ck
 	_lread( hFile, (LPVOID)&w, 2 );
 	pSnom->w = w;
 	pBmp->pPsi.iCol = w;
@@ -1077,7 +1077,7 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	lHeaderLen =	_llseek( hParDatei, 0l, 2 );
 	_llseek( hParDatei, 0l, 0 );
 
-	// Header ist Def.-müüig kleiner als 8096
+	// Header ist Def.-mÃ¼Ã¼ig kleiner als 8096
 	pcBuf = (LPBYTE)pMalloc( 8096l );
 	if( pcBuf == NULL ) {
 		_lclose( hParDatei );
@@ -1097,7 +1097,7 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	 *
 	 *	(Kommentarzeilen beginnen mit Semikolon)
 	 *
-	 *	Immer 'Schlüsselwort' Leerzeichen/Tabs :Wert
+	 *	Immer 'SchlÃ¼sselwort' Leerzeichen/Tabs :Wert
 	 * Alle Daten Floats
 	 *
 	 *	Date												 : Datum Uhrzeit
@@ -1106,13 +1106,13 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	 *	Field Y Size in nm           : Groesse gesamt
 	 *	Image Size in X              : Punkte X
 	 *	Image Size in Y              : Punkte Y
-	 *	Increment X                  : Grüüe/Punkte in X
-	 *	Increment Y                  : Grüüe/Punkte in Y
+	 *	Increment X                  : GrÃ¼Ã¼e/Punkte in X
+	 *	Increment Y                  : GrÃ¼Ã¼e/Punkte in Y
 	 *	Scan Angle                   : ...
 	 *	X Offset                     : ...
 	 *	Y Offset                     : ...
 	 *
-	 * (Nach dem folgenden Schlüsselwort kommen die einzelnen Werte in Leerzeilen
+	 * (Nach dem folgenden SchlÃ¼sselwort kommen die einzelnen Werte in Leerzeilen
 	 *	Topografic Channel					 : Z *Or I!*
 	 *					Scanrichtung
 	 *					Minimum (-32768)
@@ -1123,7 +1123,7 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	 *					Einheit (z.B. nm)
 	 *					Name der Messdatendatei
 	 *
-	 * Dann kann man wieder was überspringen bis
+	 * Dann kann man wieder was Ã¼berspringen bis
 	 *
 	 *	Scan Speed                   : 162.780 (Einheit: chinesische Kartoffeln? Nein, nm/s!)
 	 *
@@ -1146,8 +1146,8 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 	iLen = 0;
 	while( iLen++ < lHeaderLen ) {
 		if( *pcC == ';' ) {
-			// Also kein gültiger Befehl!
-			// Alles bis zum Zeilenende überspringen
+			// Also kein gÃ¼ltiger Befehl!
+			// Alles bis zum Zeilenende Ã¼berspringen
 			while( iLen++ < lHeaderLen  &&  *++pcC >= ' ' )
 				;
 			while( iLen++ < lHeaderLen  &&  *++pcC <= 32 )
@@ -1155,7 +1155,7 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 			continue;
 		}
 
-		// Ab hier ist es ein gültiger Befehl ...
+		// Ab hier ist es ein gÃ¼ltiger Befehl ...
 		// in einen String kopieren
 		pcC2 = str;
 		for( i = 0;  i < 1024  &&  iLen++ < lHeaderLen  &&  *pcC != ':'  &&  *pcC >= ' ';  i++ ) {
@@ -1234,9 +1234,9 @@ BOOL ReadOmicron( LPCSTR datei, HFILE hParDatei, LPBMPDATA pBmp )
 				}
 				break;
 
-			//**** Infos des nüchsten zu ladenen Bildes ****
+			//**** Infos des nÃ¼chsten zu ladenen Bildes ****
 			case 'T':
-				// Lünge des Headers
+				// LÃ¼nge des Headers
 				if( strstr( str, "Topographic Channel" ) == str ) {
 					LPUWORD	pPtr;
 					LONG lDiff, lMin;
@@ -1351,7 +1351,7 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 	}
 
 	// Zuerst ermitteln, wieviele Datenfiles es eigentlich zu speichern gibt ...
-	// Zeiger auf gültige Daten holen
+	// Zeiger auf gÃ¼ltige Daten holen
 	if( what&TOPO  &&  pSnom->Topo.puDaten != NULL ) {
 		puTopo = pSnom->Topo.puDaten;
 		if( (LONG)puTopo < 256L ) {     // Indirekt adressiert?
@@ -1397,7 +1397,7 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 	strcat( sHeader, str );
 	sprintf( str, "\\Data length: %li\xD\xA", DEFAULT_DIGITAL_HEADER_LEN );
 	strcat( sHeader, str );
-	// Vorgeplünkel
+	// VorgeplÃ¼nkel
 	strcat( sHeader, "\\*NC Afm list\xD\xA\\Operating mode: Image\xD\xA\\Non-square scan: Yes\xD\xA" );
 	sprintf( str, "\\Scan size: %lg nm\xD\xA", pSnom->fX*pSnom->w );
 	strcat( sHeader, str );
@@ -1421,9 +1421,9 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 	strcat( sHeader, "\\*Microscope list\xD\xA\\Id: SnomPutz\xD\xA\\Linearization mode: Normal\xD\xA" );
 	strcat( sHeader, "\\*Controller list\xD\xA\\In1 max: 10\xD\xA\\In2 max: 10\xD\xA\\Sample max: 6553.6\xD\xA" );
 #endif
-	// Die unterschiedlichen Daten und die Binürdaten schreiben
+	// Die unterschiedlichen Daten und die BinÃ¼rdaten schreiben
 	while( i-- > 0 ) {
-		// Für alle Bilder mehrmals
+		// FÃ¼r alle Bilder mehrmals
 		strcat( sHeader, "\\*NCAFM image list\xD\xA" );
 		sprintf( str, "\\Data offset: %li\xD\xA\\Data length: %li\xD\xA", lOffset, pSnom->w*pSnom->h*2 );
 		strcat( sHeader, str );
@@ -1449,7 +1449,7 @@ BOOL WriteDigital( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei )
 		else {
 			strcat( sHeader, "\\Line direction: Retrace\xD\xA" );
 		}
-		// Bis hierhin für alle Daten gleich
+		// Bis hierhin fÃ¼r alle Daten gleich
 
 		if( puTopo != NULL ) {
 			strcat( sHeader, "\\Image data: Height\xD\xA" );
@@ -1533,18 +1533,18 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	 * Dann folgend die einzelnen Sektionen. Eine Sektion wird mit "\*" eingeleitet.
 	 * Zuerst kommt
 	 *		\*File list
-	 *		\Version: 0x04230203 (sollte wohl größer 4 sein, wird ignoriert)
+	 *		\Version: 0x04230203 (sollte wohl grÃ¶ÃŸer 4 sein, wird ignoriert)
 	 *		\Date: 03:14:05 PM Thu Apr 16 1998 (Datum der Messung)
 	 *		\Start context: OL2	 (???)
-	 *		\Data length: 8192	 Länge des Headers, Aendert sich von Version zu Version!
+	 *		\Data length: 8192	 LÃ¤nge des Headers, Aendert sich von Version zu Version!
 	 *
 	 * Dann mit "\*NC Afm list:" die allgemeinen Einstellungen. Hier sind erst einmal nur
 	 * drei Dinge interessant: (f:float, x:integer, s:string)
 	 * Ab Version 0x044... ist es "\Ciao scan list"
 	 *
 	 *		(folgende finden sich auch wieder unten ...)
-	 *   \Scan size: f s      Scangröße (real) + Einheit (nm oder um=µm)
-	 *   \Aspect ratio: f:f   Größenverhältnis (x zu y oder y zu x?)
+	 *   \Scan size: f s      ScangrÃ¶ÃŸe (real) + Einheit (nm oder um=Âµm)
+	 *   \Aspect ratio: f:f   GrÃ¶ÃŸenverhÃ¤ltnis (x zu y oder y zu x?)
 	 *   \X offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *   \Y offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *
@@ -1564,23 +1564,23 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	 *   \Y offset: f(s)			 X-Offset (s=Einheit (nm!))
 	 *   \Samps/line: x       Anzahl Punkte pro Zeile (alt: Punkte pro Zeile + Zeilen!)
 	 *   \Number of lines: x  Anzahl Zeilen (nur neu)
-	 *   \Aspect ratio: f:f   Größenverhältnis (x zu y oder y zu x?)
-	 *   \Scan size: f s      Scangröße (real) + Einheit (nm oder um/~m=üm)
+	 *   \Aspect ratio: f:f   GrÃ¶ÃŸenverhÃ¤ltnis (x zu y oder y zu x?)
+	 *   \Scan size: f s      ScangrÃ¶ÃŸe (real) + Einheit (nm oder um/~m=Ã¼m)
 	 *												 (V>4.2 \Scan size: f f s)
-	 *   \Z magnifiy image: f nur interne Größe (alt: Skalierung?)
+	 *   \Z magnifiy image: f nur interne GrÃ¶ÃŸe (alt: Skalierung?)
 	 *   \Z sensitivity: f    ???
-	 *   \Z scale: f s (x)    Länge mit Einheit (nur neu)
+	 *   \Z scale: f s (x)    LÃ¤nge mit Einheit (nur neu)
 	 *								 Dabei gilt: fSkal = f/65536.0
 	 *								 (x) gibt die Quantelung der Daten an: Abstand ist Vielfaches von 65536/x
 	 *   \Z scale height:     Weite Z-Skala (nur alt)
 	 *   \Line direction: s   Scanrichtung (Trace oder Retrace)
 	 *   \Frame direction: s  von unten nach oben oder von oben nach unten
-	 *   \Image data: s       möglich sind hier speziell "Height", "Deflection", ... ?
-	 *   \Data Offset: x      Start der Binärdaten
-	 *   \Data length: x      und deren Lünge
+	 *   \Image data: s       mÃ¶glich sind hier speziell "Height", "Deflection", ... ?
+	 *   \Data Offset: x      Start der BinÃ¤rdaten
+	 *   \Data length: x      und deren LÃ¼nge
 	 *
 	 *	Neue Formate: (V4.4 und hoeher)
-	 *   \Scan size: f f s    Scangröße (real) x z Einheit (nm oder ~m=üm)
+	 *   \Scan size: f f s    ScangrÃ¶ÃŸe (real) x z Einheit (nm oder ~m=Ã¼m)
 	 *		\@2:Image Data: S [Height] "Height" Art der Daten und Name
 	 *		\@Z magnify: C [x:Z scale] f x is always 2?
 	 *   \@Z scale: V [Sens. Zscan] (f V/LSB) x V x=65536, f=x/65536.0
@@ -1608,8 +1608,8 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 	pcC = pcBuf;
 	while( iLen++ < MAX_DI_HDLEN ) {
 		if( *pcC != '\\'  &&  *pcC != 0x1A ) {
-			// Also kein gültiger Befehl und nicht Dateiende!
-			// Alles bis zum Zeilenende überspringen
+			// Also kein gÃ¼ltiger Befehl und nicht Dateiende!
+			// Alles bis zum Zeilenende Ã¼berspringen
 			while( iLen++ < MAX_DI_HDLEN  &&  *pcC++ >= ' ' )
 				;
 			while( iLen++ < MAX_DI_HDLEN  &&  *++pcC < 32 )
@@ -1617,7 +1617,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 			continue;
 		}
 
-		// Ab hier ist es ein gültiger Befehl ...
+		// Ab hier ist es ein gÃ¼ltiger Befehl ...
 		// in einen String kopieren
 		str[0] = *pcC++;
 		pcC2 = str+1;
@@ -1659,7 +1659,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						sscanf( str+13, "%li %li", (LPLONG)&( pSnom->w ), (LPLONG)&( pSnom->h ) );
 					}
 				}
-				// Ausmaüe (hoffentlich!)
+				// AusmaÃ¼e (hoffentlich!)
 				else if( strstr( str, "\\Scan size: " ) == str  ||  strstr( str, "\\Scan Size: " ) == str ) {
 					if( lVersion < 0x04400000l  ) {
 						sscanf( str+12, "%lf %s", (LPDOUBLE)&lfX, (LPSTR)str2 );
@@ -1707,7 +1707,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				}
 				break;
 
-			//**** Infos des nächsten zu ladenen Bildes ****
+			//**** Infos des nÃ¤chsten zu ladenen Bildes ****
 			case 'D':
 				// Datum lesen
 				if( strstr( str, "\\Date: " ) == str ) {
@@ -1746,7 +1746,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 				}
 
 			case 'I':
-				// Was für ein Header eigentlich? (Datentyp)
+				// Was fÃ¼r ein Header eigentlich? (Datentyp)
 				if( strstr( str, "\\Image data: " ) == str ) {
 					if( strstr( str+13, "Height" ) ) {
 						Header = TOPO;
@@ -1863,9 +1863,9 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						while( *c1 > ' ' )
 							c1++;
 						c1++;
-						if( *c1 == '~' ) {      // üm?
-							pSnom->Topo.fSkal *= 1000.0;    // nun in üm
-							*c2++ = 'ü';
+						if( *c1 == '~' ) {      // Ã¼m?
+							pSnom->Topo.fSkal *= 1000.0;    // nun in Ã¼m
+							*c2++ = 'Ã¼';
 							*c1++;
 						}
 						while( *c1 > ' ' )
@@ -1881,8 +1881,8 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						pSnom->Error.fSkal = atof( str+10 )/65536.0;      // nun in nm
 						while( *c1 > ' '  &&  *c1 != '(' )
 							c1++;
-						if( *c1 == '~' ) {      // üm?
-							pSnom->Error.fSkal *= 1000.0;   // nun in üm
+						if( *c1 == '~' ) {      // Ã¼m?
+							pSnom->Error.fSkal *= 1000.0;   // nun in Ã¼m
 						}
 						while( *c1 >= ' '  &&  *c1 != '(' )
 							c1++;
@@ -1900,7 +1900,7 @@ BOOL ReadDigital( HFILE hFile, LPBMPDATA pBmp )
 						lModuloSkal = atol( (LPSTR)c1 );
 					}
 				}
-				// Z-Verstürkung alt (hoffentlich!) in 1/100 nm
+				// Z-VerstÃ¼rkung alt (hoffentlich!) in 1/100 nm
 				else if( !lVersion  &&  strstr( str, "\\Z magnify image: " ) == str ) {
 					if( Header == TOPO ) {
 						pSnom->Topo.fSkal = atof( str+18 )/655.36;        // nun in nm
@@ -2178,7 +2178,7 @@ BOOL ReadGwyddion( HFILE hFile, LPBMPDATA pBmp )
 /*	ASCII-Format:
 **	1: "TE" + evt. Kommentar (wird ignoriert)
 **	2: Titel
-**	3: Weite Hühe (mit Leerzeichen)
+**	3: Weite HÃ¼he (mit Leerzeichen)
 **  4 ... n: X-Werte (floats oder integers!)
 **/
 
@@ -2186,7 +2186,7 @@ BOOL ReadGwyddion( HFILE hFile, LPBMPDATA pBmp )
 LONG CopyString( LPBYTE pSrc, LPBYTE pDest, LONG iLen, LPLONG iCountDown )
 {
 	LONG i = 0;
-	// Müll überspringen
+	// MÃ¼ll Ã¼berspringen
 	while( *pSrc < 32  &&  *iCountDown > 0 ) {
 		( *iCountDown )--;
 		i++;
@@ -2243,8 +2243,8 @@ BOOL ReadJena( HFILE hFile, LPBMPDATA pBmp )
 	_lclose( hFile );
 
 	c = pBuf;
-	c += CopyString( c, pStr, 1024, &iLen );        // TE übersprinmgen
-	c += CopyString( c, pStr, 1024, &iLen );        // TE übersprinmgen
+	c += CopyString( c, pStr, 1024, &iLen );        // TE Ã¼bersprinmgen
+	c += CopyString( c, pStr, 1024, &iLen );        // TE Ã¼bersprinmgen
 	strncpy( pSnom->Topo.strTitel, pStr, 31 ),
 	c += CopyString( c, pStr, 32, &iLen );          // Zeile, Spalten
 	sscanf( pStr, "%ld %ld", &lWeite, &lHoehe );
@@ -2304,7 +2304,7 @@ BOOL ReadJena( HFILE hFile, LPBMPDATA pBmp )
 	pSnom->Topo.fZSkal3D = f3DZWinkel;
 	pSnom->Topo.bSpecialZUnit = FALSE;
 	pSnom->Topo.bShowNoZ = FALSE;
-	lstrcpy( pSnom->Topo.strZUnit, "C/nmü" );
+	lstrcpy( pSnom->Topo.strZUnit, "C/nmÃ¼" );
 	BildMax( ( &pSnom->Topo ), lWeite, lHoehe );
 
 	return ( TRUE );
@@ -2349,7 +2349,7 @@ BOOL ReadAscii( HFILE hFile, LPBMPDATA pBmp )
 	_lclose( hFile );
 
 	c = pBuf;
-	c += CopyString( c, pStr, 0x8000, &iLen );      // !ASC übersprinmgen
+	c += CopyString( c, pStr, 0x8000, &iLen );      // !ASC Ã¼bersprinmgen
 	c += CopyString( c, pStr, 0x8000, &iLen );      // Titel
 	strncpy( pSnom->Topo.strTitel, pStr, 31 ),
 	c += CopyString( c, pStr, 32, &iLen );          // Zeile, Spalten
@@ -2409,7 +2409,7 @@ BOOL ReadAscii( HFILE hFile, LPBMPDATA pBmp )
 	pSnom->Topo.fZSkal3D = f3DZWinkel;
 	pSnom->Topo.bSpecialZUnit = FALSE;
 	pSnom->Topo.bShowNoZ = FALSE;
-	lstrcpy( pSnom->Topo.strZUnit, "C/nmü" );
+	lstrcpy( pSnom->Topo.strZUnit, "C/nmÃ¼" );
 	BildMax( ( &pSnom->Topo ), lWeite, lHoehe );
 
 	return ( TRUE );
@@ -2425,7 +2425,7 @@ BOOL ReadAscii( HFILE hFile, LPBMPDATA pBmp )
 BOOL ReadRawSnom( HFILE hFile, BMPDATA huge *pBmp )
 {
 	SNOMDATA huge *pSnom = &( pBmp->pSnom[0] );
-	BYTE sBuf[1024];                                // Puffer für Scanf ...
+	BYTE sBuf[1024];                                // Puffer fÃ¼r Scanf ...
 	BYTE huge *Buf, huge *c;
 	LONG x, y = 0, w = 0, h = 0, topo, lumi, len, i;
 	WORD huge *pTopo, huge *pLumi;
@@ -2553,7 +2553,7 @@ LONG SearchTagRef( DD_TAG HUGE *dd, UWORD tag, UWORD ref )
 // 11.8.97
 
 
-// Findet ein Tag und gibt die Referenznummer zurück
+// Findet ein Tag und gibt die Referenznummer zurÃ¼ck
 LONG SearchTag( DD_TAG HUGE *dd, UWORD tag, LPUWORD ref )
 {
 	UWORD i = 0;
@@ -2588,7 +2588,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 
 	ASSERT( pBmp != NULL );
 
-	// Erst einmal davon ausgehen, dass die Datei nix sinnvolles enthült
+	// Erst einmal davon ausgehen, dass die Datei nix sinnvolles enthÃ¼lt
 	pBmp->pSnom[ 0 ].Topo.puDaten = NULL;
 	pBmp->pSnom[ 0 ].Topo.Typ = NONE;
 	pBmp->pSnom[ 0 ].Error.puDaten = NULL;
@@ -2765,7 +2765,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 #endif
 	_hread( hFile, str, 4l );
 
-	// Zuerst einmal herausfinden, was es für eine Datei ist ...
+	// Zuerst einmal herausfinden, was es fÃ¼r eine Datei ist ...
 	if( str[0] == '!'  &&  str[1] == 'A' ) {
 		// old SNOM ascii ASCII ...
 		bResult = ReadAscii( hFile, pBmp );
@@ -2907,7 +2907,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 	do {
 		i = Big2Little( *(LPUWORD)( pPuffer+lNextTags ) );                        // Anzahl (dh.count)
 		j = LongBig2Little( *(LPLONG)( pPuffer+lNextTags+2 ) );   // naechstes Tag (dh.next)
-		// Selbst gesteckte Grenzen überschritten; geht natürlich eleganter (und viel langsamer ...)
+		// Selbst gesteckte Grenzen Ã¼berschritten; geht natÃ¼rlich eleganter (und viel langsamer ...)
 		if( i+lMaxDD >= 256  ||  lNextTags > 0x8000-sizeof( DD_HEADER ) ) {
 			MemFree( lpDD );
 			MemFree( pPuffer );
@@ -2938,7 +2938,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 	pBmp->Typ = HDF;
 	i = (short)SearchTag( lpDD, DFTAG_SNOMPUTZ, &uRef );
 	if( i >= 0 ) {
-		// Scanparameter für snomputz
+		// Scanparameter fÃ¼r snomputz
 		pBmp->lExtraLen = 0;
 		pBmp->pExtra = pMalloc( sizeof( SNOMPUTZ_SCANDATA ) );
 		if( pBmp->pExtra != NULL ) {
@@ -2970,7 +2970,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 	// Nun sind alle Tags geladen, jetzt heisst es suchen!
 	// Oder vielleicht doch eine switch-Anweisung durchlaufen?
 	i = SearchTag( lpDD, DFTAG_NDG, &uRef );
-	pBmp->pPsi.fW = 0.0;    // Zeigt: Noch keinen gültigen PsiHdr gelesen
+	pBmp->pPsi.fW = 0.0;    // Zeigt: Noch keinen gÃ¼ltigen PsiHdr gelesen
 	do {
 		if( i >= 0 ) {
 			LPUWORD	puWord, puPos;
@@ -2985,13 +2985,13 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 			MemSet( &Bild, 0, sizeof( BILD ) );
 			Bild.fSkal = 1.0;
 
-			// NDG-Tag bearbeiten, d.h. alle Informationen über das Array herausfinden
+			// NDG-Tag bearbeiten, d.h. alle Informationen Ã¼ber das Array herausfinden
 			puWord = (LPUWORD)( pPuffer+lpDD[i].offset );
 			for( j = 0;  j < lpDD[i].len/2;  j += 2 ) {
 				k = SearchTagRef( lpDD, Big2Little( puWord[j] ), Big2Little( puWord[j+1] ) );
 				ASSERT(  k < lMaxDD  );
 				if( k == -1 ) {
-					continue;       // Sollte nicht vorkommen: Kein Tag obwohl eines Angekündigt
+					continue;       // Sollte nicht vorkommen: Kein Tag obwohl eines AngekÃ¼ndigt
 				}
 				puPos = (LPUWORD)( pPuffer+lpDD[k].offset );
 				switch(	Big2Little( puWord[j] ) ) {
@@ -3014,7 +3014,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 					case DFTAG_SDD:
 						if( Big2Little( *puPos ) != 2 )	{
 							// Unbekannte Daten mit mehr als 2 Dimensionen
-							// Künnten mal Spektrale Daten werden ...
+							// KÃ¼nnten mal Spektrale Daten werden ...
 							ThisMode = FALSE;
 							j = lpDD[i].len;
 							break;
@@ -3028,7 +3028,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 						lNtData = LongBig2Little( ReadLong( pPuffer+lpDD[k].offset ) );
 						break;
 
-					case DFTAG_SDU: // Einheiten feststellen:  (um oder üm) bzw. nm für Topo, sonst Lumi
+					case DFTAG_SDU: // Einheiten feststellen:  (um oder Ã¼m) bzw. nm fÃ¼r Topo, sonst Lumi
 						if( lstrcmpi( (LPSTR)puPos, "nm" ) > 0 ) {
 							pBmp->pPsi.fW *= 1000.0;
 						}
@@ -3037,14 +3037,14 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 							pBmp->pPsi.fH *= 1000.0;
 						}
 						(LPSTR)puPos += 3;
-						if( lstrcmpi( (LPSTR)puPos, "nm" ) > 0 ) {                                                                      // nW würe kleiner Null ...
+						if( lstrcmpi( (LPSTR)puPos, "nm" ) > 0 ) {                                                                      // nW wÃ¼re kleiner Null ...
 							Bild.fSkal *= 1000.0;
 						}
 						break;
 
 					case DFTAG_CAL:
 					{                       // Einige Klimmzuege um double von Mototrola nach INTEL zu konvertieren ...
-						// Lohn ist die Skalierung der z-Achse in um (=üm) bwz nm (muss nachskaliert werden!)
+						// Lohn ist die Skalierung der z-Achse in um (=Ã¼m) bwz nm (muss nachskaliert werden!)
 						long hilf[2];
 						ASSERT( sizeof( long )*2 == sizeof( double ) );
 						hilf[1] = LongBig2Little( ReadLong( puPos ) );
@@ -3071,7 +3071,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 						}
 						break;
 
-					case DFTAG_PSIHD:       // Auch Snomputz nutzt den binüren Header
+					case DFTAG_PSIHD:       // Auch Snomputz nutzt den binÃ¼ren Header
 #if LEN_OK
 						MemMove( &( pBmp->pPsi ), puPos, sizeof( PSI_HEADER ) );
 #else
@@ -3125,7 +3125,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 							// Da MS-C ums verrecken nicht packt eben per Hand ...
 							LPUCHAR	pPtr = (LPUCHAR)puPos;
 
-							pPtr += 6;                                                      // puDaten und uMaxDaten überspringen
+							pPtr += 6;                                                      // puDaten und uMaxDaten Ã¼berspringen
 							Bild.Typ = *( (LPUWORD)pPtr )++;
 							MemMove( Bild.strTitel, pPtr, 32 );
 							pPtr += 32;
@@ -3186,7 +3186,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 				} // End Switch
 			}
 
-			// Alle müglichen Tags wurden durchlaufen, jetzt wird geladen!
+			// Alle mÃ¼glichen Tags wurden durchlaufen, jetzt wird geladen!
 			if( ThisMode&( TOPO|ERRO|LUMI ) ) {
 				LONG lBildLen = w*h*sizeof( WORD );
 				LPBYTE pPtr;
@@ -3238,7 +3238,7 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 				_llseek( hFile, lDataStart, 0 );
 				k = _hread( hFile, pPtr, lDatatLen	);
 
-				// wir berücktsichtigen nun auch *GEPACKTE* Dateien
+				// wir berÃ¼cktsichtigen nun auch *GEPACKTE* Dateien
 				if( CompressionType  &&  ( pHilf = pMalloc( lBildLen ) ) != NULL ) {
 					// Daten entpacken
 
@@ -3472,7 +3472,7 @@ WORD CreateBildHDF( LPUCHAR hdf, LPLONG lPosition, DD_TAG HUGE **dd_tags, WORD r
 	dd->len = 36;
 	pLong = (LPLONG)( hdf+lPos );
 	{       // Einige Klimmzuege um double von Mototrola nach INTEL zu konvertieren ...
-		// Lohn ist die Skalierung der z-Achse in um (=üm)
+		// Lohn ist die Skalierung der z-Achse in um (=Ã¼m)
 		long hilf[2];
 		*(double*)hilf = pBild->fSkal;
 		*pLong++ = LongBig2Little( hilf[1] );
@@ -3570,9 +3570,9 @@ WORD CreateBildHDF( LPUCHAR hdf, LPLONG lPosition, DD_TAG HUGE **dd_tags, WORD r
 // 30.11.97
 
 
-// Komprimiert (so müglich) die Daten und gibt die neue Lünge zurück
-// Eingabe: Zeiger auf Ausgangsdaten, Lünge (in Worten!), Flag, ob nach Bytes gewandelt werden soll
-// Ausgabe: Lünge der komprimierten Daten (0=erfolglos)
+// Komprimiert (so mÃ¼glich) die Daten und gibt die neue LÃ¼nge zurÃ¼ck
+// Eingabe: Zeiger auf Ausgangsdaten, LÃ¼nge (in Worten!), Flag, ob nach Bytes gewandelt werden soll
+// Ausgabe: LÃ¼nge der komprimierten Daten (0=erfolglos)
 //					pData zeigt dann entweder auf komprimierte Daten (return>0) oder Ausgangsdaten
 LONG CompressData( LPUWORD *puData, LONG lLenSrc, WORD uMaxDaten, WORD *method )
 {
@@ -3581,10 +3581,10 @@ LONG CompressData( LPUWORD *puData, LONG lLenSrc, WORD uMaxDaten, WORD *method )
 	LONG lNewLen, lLen, i;
 	UWORD nBits = 1;
 
-	// Anzahl Bits für Kodierung feststellen
+	// Anzahl Bits fÃ¼r Kodierung feststellen
 	while( uMaxDaten > ( 1ul<<nBits )  &&  nBits < 16 )
 		nBits++;
-	lLen = ( lLenSrc*nBits+7l )/8l;   // So lang würe es maximal mit nBit-Decoding
+	lLen = ( lLenSrc*nBits+7l )/8l;   // So lang wÃ¼re es maximal mit nBit-Decoding
 	if( ( pHilf = (LPUCHAR)pMalloc( lLen+2 ) ) == NULL ) {
 		return ( 0 );
 	}
@@ -3684,8 +3684,8 @@ LONG CompressData( LPUWORD *puData, LONG lLenSrc, WORD uMaxDaten, WORD *method )
 #endif
 
 	if( ( *method&DELTA ) == 0 ) {
-		// Es lüüt sich noch Platz durch Zusammenschieben gewinnen
-		// Auüerdem steht im Array pHilf noch nix sinvolles ...
+		// Es lÃ¼Ã¼t sich noch Platz durch Zusammenschieben gewinnen
+		// AuÃ¼erdem steht im Array pHilf noch nix sinvolles ...
 		if( nBits&7 ) {
 			// Bits packen
 			LPUCHAR	pPtr = pHilf1;
@@ -3711,7 +3711,7 @@ LONG CompressData( LPUWORD *puData, LONG lLenSrc, WORD uMaxDaten, WORD *method )
 			LPUCHAR	pPtr = pHilf1;
 
 			*pPtr++ = nBits;
-			lLen++;         // Bittiefe berücktsichtigen
+			lLen++;         // Bittiefe berÃ¼cktsichtigen
 			for( i = 0;  i < lLenSrc;  i++ ) {
 				*pPtr++ = (BYTE)pSrc[i];
 			}
@@ -3728,10 +3728,10 @@ LONG CompressData( LPUWORD *puData, LONG lLenSrc, WORD uMaxDaten, WORD *method )
 	// Test LZW-Compression!
 	lNewLen = LZWCompressBlock( INIT_BITS, pHilf, lLen, pHilf1, lLen );
 	if( lNewLen < 0 ) {
-		// Daten wurden lünger ... war wohl nix!
+		// Daten wurden lÃ¼nger ... war wohl nix!
 		MemFree( pHilf );
 		if( nBits == 16  &&  *method == 0 ) {
-			// Lieüen sich nicht packen!
+			// LieÃ¼en sich nicht packen!
 			MemFree( pHilf1 );
 			return ( 0 );
 		}
@@ -3770,7 +3770,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	LPLONG pTopoStart, pErrorStart, pLumiStart;
 	WORD TopoCompress = NONE, ErrorCompress = NONE, LumiCompress = NONE;
 	LPUCHAR	hdf;
-	BOOL neuen_header = FALSE;                      // Zeigt an, dass schon ein gültiger Header geschrieben wurde!
+	BOOL neuen_header = FALSE;                      // Zeigt an, dass schon ein gÃ¼ltiger Header geschrieben wurde!
 
 	OFSTRUCT of;
 	HFILE hFile;
@@ -3800,17 +3800,17 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 		return ( FALSE );
 	}
 
-	// Erst mal Platz für Header schaffen
-	hdf = (LPUCHAR)pMalloc( 0x8000l );      // sollte für jeden Header reichen
+	// Erst mal Platz fÃ¼r Header schaffen
+	hdf = (LPUCHAR)pMalloc( 0x8000l );      // sollte fÃ¼r jeden Header reichen
 	if( hdf == NULL ) {
 		StatusLineRsc( E_MEMORY );
 		return ( FALSE );
 	}
 
-	// Falls Kompression gewünscht, Daten versuchen zu komprimieren
-	// kann natürlich an zuwenig Speicher scheitern ...
+	// Falls Kompression gewÃ¼nscht, Daten versuchen zu komprimieren
+	// kann natÃ¼rlich an zuwenig Speicher scheitern ...
 	if( what&TOPO )	{
-		// Zeiger auf gültige Daten holen
+		// Zeiger auf gÃ¼ltige Daten holen
 		pTopo = pSnom->Topo.puDaten;
 		lTopoLen = pSnom->w*pSnom->h*2l;
 		if( (LONG)pTopo < 256L ) {      // Indirekt adressiert?
@@ -3825,9 +3825,9 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 		}
 	}
 
-	// gleiches für Fehler
+	// gleiches fÃ¼r Fehler
 	if( what&ERRO )	{
-		// Zeiger auf gültige Daten holen
+		// Zeiger auf gÃ¼ltige Daten holen
 		pError = pSnom->Error.puDaten;
 		lErrorLen = pSnom->w*pSnom->h*2l;
 		if( (LONG)pError < 256L ) {     // Indirekt adressiert?
@@ -3844,7 +3844,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 
 	// und Lumineszens
 	if( what&LUMI )	{
-		// Zeiger auf gültige Daten holen
+		// Zeiger auf gÃ¼ltige Daten holen
 		pLumi = pSnom->Lumi.puDaten;
 		lLumiLen = pSnom->w*pSnom->h*2l;
 		if( (LONG)pLumi < 256L ) {      // Indirekt adressiert?
@@ -3858,7 +3858,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 			}
 		}
 	}
-	// Nun haben pTopo, lTopoLen, pError, lErrorLen, pLumi und lLumiLen gültige Werte!
+	// Nun haben pTopo, lTopoLen, pError, lErrorLen, pLumi und lLumiLen gÃ¼ltige Werte!
 
 	// und nun HDF-Header zusammenbauen
 	MemMove( (LPSTR)hdf, (LPSTR)HDFMAGIC, 4 );      // Magic-Number
@@ -3866,11 +3866,11 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	// Aktuelle Position berechnen (plus etwas Toleranz)
 	lPos = MAGICLEN+sizeof( DD_HEADER )*3+40*sizeof( DD_TAG );
 
-	// Header schreiben, zwei Header für zwei Bitmaps
+	// Header schreiben, zwei Header fÃ¼r zwei Bitmaps
 	// (damit werden die Daten vor dem PSI-Programm versteckt ...)
 #if LEN_OK
 	dh = (DD_HEADER HUGE*)( hdf+MAGICLEN );
-	count_pos = &( dh->count );       // Merken für dynamische Berechnung
+	count_pos = &( dh->count );       // Merken fÃ¼r dynamische Berechnung
 	next_pos = &( dh->next );
 	// Tags werden gleich in den Speicher geschrieben ...
 	dd_tags = dd = (DD_TAG HUGE*)( hdf+sizeof( DD_HEADER )+MAGICLEN );
@@ -3941,7 +3941,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	// weglassen PSI_SPEC
 	// weglassen DFTAG_ID
 
-	// Scanparameter für snomputz (if there #7)
+	// Scanparameter fÃ¼r snomputz (if there #7)
 	if( pBmp->Typ == SNOMPUTZ ) {
 		dd->tag = DFTAG_SNOMPUTZ;
 		dd->ref = 1;
@@ -3959,7 +3959,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	dd->offset = lPos;
 	dd->len = 4l;
 	MemMove( hdf+lPos, "\x01\x05\x20\x04", 4l );    // Intel 32 Bit float
-	// Als Long würe es nicht portabel!!!
+	// Als Long wÃ¼re es nicht portabel!!!
 	dd++;
 	tag_nr++;
 	lPos += 4l;
@@ -3985,7 +3985,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	tag_nr++;
 
 	// Kommentar (#10)
-	/* Zuerst evt. Datum einfügen */
+	/* Zuerst evt. Datum einfÃ¼gen */
 	i = lstrlen( pBmp->pKommentar );
 	if( i == 0  ||  strstr( pBmp->pKommentar, "Measured = " ) == NULL ) {
 		if( i < 970 ) {
@@ -4014,13 +4014,13 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 	}
 	dd_tags = dd;
 
-	// Alles in den ersten Header für die Topografie!
+	// Alles in den ersten Header fÃ¼r die Topografie!
 	if( what&TOPO )	{
 		neuen_header = CreateBildHDF( hdf, &lPos, &dd_tags, 2, pBmp, pSnom->w, pSnom->h, &( pSnom->Topo ), &pTopoStart, lTopoLen, TopoCompress );
 		*count_pos = Big2Little( neuen_header+tag_nr );
 	}
 
-	// zweiter Header für Fehlersignal
+	// zweiter Header fÃ¼r Fehlersignal
 	if( what&ERRO )	{
 		if( neuen_header ) {
 			// Neuen (2.) Header (nur wenn schon einer "verbraucht" wurde)
@@ -4059,7 +4059,7 @@ BOOLEAN	WriteHDF( LPBMPDATA pBmp, WORD iAktuell, WORKMODE what, LPSTR szDatei, B
 		*count_pos = Big2Little( neuen_header );
 	}
 
-	// Gleiches für die Lumineszens ausführen
+	// Gleiches fÃ¼r die Lumineszens ausfÃ¼hren
 	if( what&LUMI )	{
 		if( neuen_header ) {
 			// Neuen (2.) Header (nur wenn schon einer "verbraucht" wurde)

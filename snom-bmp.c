@@ -42,7 +42,7 @@
 
 
 /*****************************************************************************************/
-//** "Rückruffunktion" für die individuellen Daten von Bitmap-Dokumentenfenstern
+//** "RÃ¼ckruffunktion" fÃ¼r die individuellen Daten von Bitmap-Dokumentenfenstern
 long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 {
 	extern HMENU hMenuBmpWindow, hMenuInitWindow;
@@ -59,7 +59,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 		{
 			LONG lPtr = ( ( (LPMDICREATESTRUCT)( (LPCREATESTRUCT)lParam )->lpCreateParams )->lParam );
 
-			// Platz für die individuellen Fensterdaten
+			// Platz fÃ¼r die individuellen Fensterdaten
 			SetWindowLong( hwnd, 0, lPtr );
 			if( lPtr != GetWindowLong( hwnd, 0 ) ) {
 				DestroyWindow( hwnd );
@@ -588,7 +588,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						break;
 					}
 
-					// Vom Ende her mitteln (Offset=Speicherlünge ... !)
+					// Vom Ende her mitteln (Offset=SpeicherlÃ¼nge ... !)
 					for( y = 0;  y < h;  y++ ) {
 						char line[128];
 
@@ -666,7 +666,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						break;
 					}
 
-					// Vom Ende her mitteln (Offset=Speicherlünge ... !)
+					// Vom Ende her mitteln (Offset=SpeicherlÃ¼nge ... !)
 					faktor = 255.0/(double)(max-min);
 					for( y = 0;  y < h;  y++ ) {
 						offset -= ww;
@@ -704,7 +704,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 						// Druckerabfrage und so
 						if( PrintDlg( &PDlg ) )	{
-							// Drucke Datei in hüchster Qualitüt
+							// Drucke Datei in hÃ¼chster QualitÃ¼t
 							RECT p_rect;
 							WORD old3DZoom = w3DZoom;
 							double hfaktor, vfaktor;
@@ -722,7 +722,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 								hfaktor = vfaktor;
 							}
 
-							// Ausmaüe Rechteck
+							// AusmaÃ¼e Rechteck
 							p_rect.left = p_rect.top = 0;
 							p_rect.right = (int)( (double)pBmp->pDib->bmiHeader.biWidth*hfaktor+0.5 );
 							p_rect.bottom = (int)( (double)pBmp->pDib->bmiHeader.biHeight*vfaktor+0.5 );
@@ -754,14 +754,14 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					ClearStatusLine();
 					break;
 
-				/**** Menü "Bearbeiten" ****/
+				/**** MenÃ¼ "Bearbeiten" ****/
 				case IDM_UNDO:
 					if( pBmp->iAktuell > 0 ) {
 						StatusLineRsc( I_UNDO );
 						pBmp->iAktuell--;
 						RecalcCache( pBmp, TRUE, TRUE );
 					}
-					// Infozeile und Menü auf Vordermann bringen
+					// Infozeile und MenÃ¼ auf Vordermann bringen
 					InvalidateRect( hwnd, NULL, TRUE );
 					break;
 
@@ -770,7 +770,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						pBmp->iAktuell++;
 						RecalcCache( pBmp, TRUE, TRUE );
 					}
-					// Infozeile und Menü auf vordermann bringen
+					// Infozeile und MenÃ¼ auf vordermann bringen
 					InvalidateRect( hwnd, NULL, TRUE );
 					break;
 
@@ -909,7 +909,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							// For
 						}
 
-						// Schlieülich die Abstandsachse ...
+						// SchlieÃ¼lich die Abstandsachse ...
 						if( wProfilFlags&P_DIST  &&  iPts > 0 )	{
 							if( ( pfDaten[0] = pMalloc( sizeof( float )*iDataPts ) ) == NULL ) {
 								MemFree( puDaten );
@@ -926,7 +926,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 						MemFree( puDaten );
 						lTextLen = 12l*(long)iCol*(long)iDataPts+1024l;
-						// Headerlünge+Bitmaplünge
+						// HeaderlÃ¼nge+BitmaplÃ¼nge
 						hClip = GlobalAlloc( GMEM_MOVEABLE|GMEM_DDESHARE, lTextLen );
 						if( hClip == NULL ) {
 							while( --iCol > 0 )
@@ -934,7 +934,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							FehlerRsc( E_MEMORY );
 							break;
 						}
-						// Speicher füllen
+						// Speicher fÃ¼llen
 						pPtr = GlobalLock( hClip );
 						lTextLen = CopyFloat2Text( pfDaten, iCol, iDataPts, pPtr, lTextLen );
 						while( --iCol > 0 )
@@ -1024,12 +1024,12 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					InvalidateRect( hwnd, NULL, FALSE );
 					break;
 
-				//**** Farben veründern ****
+				//**** Farben verÃ¼ndern ****
 				case IDM_FALSCHFARBEN:
 					DialogBoxParam( hInst, "FarbenDialog", hwnd, (DLGPROC)FarbenDialog, (LPARAM)hwnd );
 					break;
 
-				/**** Menü "Veründern" ****/
+				/**** MenÃ¼ "VerÃ¼ndern" ****/
 
 				//** Bild zeilenweise mitteln **
 				case IDM_ZEILENMITTEL:
@@ -1381,7 +1381,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 						WarteMaus();
 
-						// Weite/Hühe Vertauschen
+						// Weite/HÃ¼he Vertauschen
 						w = pSnom->w ;
 						h = pSnom->h;
 						pSnom->w = h;
@@ -1397,14 +1397,14 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						pSnom->fX = pSnom->fY;
 						pSnom->fY = fTemp;
 
-						// Maske wird gelüscht ...
+						// Maske wird gelÃ¼scht ...
 						if( pBmp->pMaske ) {
 							MemFree( pBmp->pMaske );
 							pBmp->pMaske = NULL;
 							pBmp->wMaskeW = 0;
 						}
 
-						// Um ungültige Pointer zu vermeiden => Scanline auf Null
+						// Um ungÃ¼ltige Pointer zu vermeiden => Scanline auf Null
 						pBmp->bIsScanLine = FALSE;
 						pBmp->lMaxScan = 0;
 						pBmp->rectScan[0].left = pBmp->rectScan[0].right = 0;
@@ -1538,7 +1538,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					CheckMenuItem( hMenuBmp, IDM_SHOW_LUMI, (show & LUMI) ? MF_CHECKED : MF_UNCHECKED );
 					break;
 
-				/**** Menü Analyse ****/
+				/**** MenÃ¼ Analyse ****/
 
 				//**** Mark heights dialog ****
 				case IDM_VOLUME:
@@ -1765,7 +1765,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 						hCurSave = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
 
-						// Defaultskalierung anwühlen
+						// Defaultskalierung anwÃ¼hlen
 						wsprintf( (LPSTR)str, GetStringRsc( STR_ORIENT ), (LPSTR)pBmp->szName );
 						pNeuBmp->pSnom[0].w = 180;
 						pNeuBmp->pSnom[0].h = 180;
@@ -1802,7 +1802,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						 * Winkels in diese Richtungen ...
 						 *
 						 * Der Wert der Winkelbitmap wird also an dieser Stelle (=Winkel x, y)
-						 * um Eins erhüht. Evt. wird, wenn gewünscht, das Ganze danach noch logarithmiert
+						 * um Eins erhÃ¼ht. Evt. wird, wenn gewÃ¼nscht, das Ganze danach noch logarithmiert
 						 */
 						StatusLineRsc( I_WINKEL );
 						for( y = 1;  y < h;  y++ ) {
@@ -2019,7 +2019,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-				// dots manuell zählen
+				// dots manuell zÃ¤hlen
 				case IDM_DOT_MODE:
 					if(  pBmp->bCountDots  ) {
 						pBmp->bCountDots = FALSE;
@@ -2055,7 +2055,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-				// dots automatisch zühlen
+				// dots automatisch zÃ¼hlen
 				case IDM_DOTS_AUTO:
 					DialogBoxParam( hInst, "QDDialog", hwnd, QDDialog, (LPARAM)hwnd );
 					break;
@@ -2184,7 +2184,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-					// dots manuell zählen
+					// dots manuell zÃ¤hlen
 				case IDM_LINE_MODE:
 					if(  pBmp->bCountLines  ) {
 						pBmp->bCountLines = FALSE;
@@ -2320,9 +2320,9 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						if( ( pNewSnom = pAllocNewSnom( pBmp, modus ) ) != NULL ) {
 							pf1 = pMalloc( sizeof( float )*pSnom->w*pSnom->h );
 							pf2 = pMalloc( sizeof( float )*pSnom->w*pSnom->h );
-							/*** Die Autokorrelation ist folgendermaüen definiert:
+							/*** Die Autokorrelation ist folgendermaÃ¼en definiert:
 							 *** G(l,m) := 1/((H-m)*(W-l)) \sum_{j=1}^{H-m} \sum_{i=1}^{W-l} z_{i,j}*z_{i+l,j+m}
-							 *** ACHTUNG: Die Einheit ist Lünge^2!
+							 *** ACHTUNG: Die Einheit ist LÃ¼nge^2!
 							 *** ACHTUNG: <z_i> := 0, sonst abziehen!
 							 ***/
 
@@ -2343,7 +2343,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							for( i = 0;  i < w*h;  i++ ) {
 								fTemp += (double)( pf1[i] = puDaten[i] );
 							}
-							fMittel = fTemp/( w*h );  // mittelwert für Autokorrelation
+							fMittel = fTemp/( w*h );  // mittelwert fÃ¼r Autokorrelation
 							for( i = 0;  i < w*h;  i++ ) {
 								pf1[i] -= fMittel;
 							}
@@ -2416,7 +2416,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						for( i = 0;  i < pSnom->w*pSnom->h;  i++ ) {
 							fTemp += puDaten[i];
 						}
-						fMittel = fTemp/pSnom->w*pSnom->h; // Mittelwert für FFT
+						fMittel = fTemp/pSnom->w*pSnom->h; // Mittelwert fÃ¼r FFT
 
 						// Hilfsmatrix initialisieren
 						pf1 = pMalloc( sizeof( float )*width2*pSnom->h );
@@ -2632,7 +2632,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							pSnom->Lumi.puDaten = NULL;
 						}
 
-						// Defaultskalierung anwühlen
+						// Defaultskalierung anwÃ¼hlen
 						mdicreate.szClass = (LPSTR)szBmpClass ;
 						mdicreate.szTitle = str;
 						mdicreate.hOwner  = hInst;
@@ -2757,7 +2757,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					}
 					break;
 
-				// Ausschlussregion lüschen
+				// Ausschlussregion lÃ¼schen
 				case IDM_LOESCHE_MASKE:
 					if( pBmp->pMaske ) {
 						MemFree( pBmp->pMaske );
@@ -2798,7 +2798,7 @@ FertigMaske:
 				hdc = GetDC( hwnd );
 //				SetWindowOrgEx( hdc, GetScrollPos( hwnd, SB_HORZ ), GetScrollPos( hwnd, SB_VERT ), NULL );
 				if( pBmp->rectMaske.top != pBmp->rectMaske.bottom  &&  pBmp->rectMaske.left != pBmp->rectMaske.right ) {
-					// Falls nötig neuen Speicher beschaffen
+					// Falls nÃ¶tig neuen Speicher beschaffen
 					if( pBmp->pMaske  &&  pBmp->wMaskeW != ( ( pBmp->pSnom[pBmp->iAktuell].w+7u )/8 ) ) {
 						MemFree( pBmp->pMaske );
 						pBmp->pMaske = NULL;
@@ -2827,7 +2827,7 @@ FertigMaske:
 						pBmp->rectMaske.top = pBmp->rectMaske.bottom;
 						pBmp->rectMaske.bottom = y;
 					}
-					// und Rechteck zur Maske hinzufügen
+					// und Rechteck zur Maske hinzufÃ¼gen
 					for( y = pBmp->rectMaske.top;  y < pBmp->rectMaske.bottom;  y++ ) {
 						for( x = pBmp->rectMaske.left;  x < pBmp->rectMaske.right;  x++ ) {
 							pBmp->pMaske[y*pBmp->wMaskeW+( x/8 )] |= 0x80>>( x%8 );
@@ -3062,7 +3062,7 @@ FertigMaske:
 			break;
 
 		// Start Scanlinie markieren
-		// Dazu werden einfach die passenden Strukturen ausgefüllt
+		// Dazu werden einfach die passenden Strukturen ausgefÃ¼llt
 		case WM_LBUTTONDOWN:
 			if( pBmp->bCountDots ||  pBmp->bCountLines==2 ) {
 				POINT pt;
@@ -3209,7 +3209,7 @@ FertigMaske:
 				pt.y = ( HIWORD( lParam ) )/pBmp->fZoom;
 				if( !pBmp->bMarkScanLine ) {
 					if( PointInRect( &pBmp->rectLinks, pt ) ) {
-						// Neue Scanline hinzufügen?
+						// Neue Scanline hinzufÃ¼gen?
 						if( wParam&MK_SHIFT ) {
 							if( pBmp->lMaxScan < 4 ) {
 								pBmp->lMaxScan++;
@@ -3229,7 +3229,7 @@ FertigMaske:
 						SetCapture( hwnd );
 					}
 					else if( PointInRect( &pBmp->rectRechts, pt ) )	{
-						// Neue Scanline hinzufügen?
+						// Neue Scanline hinzufÃ¼gen?
 						if( wParam&MK_SHIFT ) {
 							if( pBmp->lMaxScan < 4 ) {
 								pBmp->lMaxScan++;
@@ -3398,7 +3398,7 @@ FertigMaske:
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_FALSCHFARBEN, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_3DANSICHT, TRUE );
 				SendMessage( hwndToolbar, TB_ENABLEBUTTON, IDM_MASZE, TRUE );
-				// Wahlpunkt mit oder ohne Hükchen?
+				// Wahlpunkt mit oder ohne HÃ¼kchen?
 				EnableUndoRedo( pBmp->iAktuell > 0, pBmp->iAktuell < pBmp->iMax-1 );
 #endif
 				hdc = GetDC( hwnd );
@@ -3408,7 +3408,7 @@ FertigMaske:
 				ReleaseDC( hwnd, hdc );
 			}
 
-			// Eingabefokus wechselt? -> INIT-Menü setzen
+			// Eingabefokus wechselt? -> INIT-MenÃ¼ setzen
 			if( (HWND)wParam == hwnd ) {
 #ifndef BIT32
 				SendMessage( hwndClient, WM_MDISETMENU, 0, MAKELONG( hMenuInit, hMenuInitWindow ) );

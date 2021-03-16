@@ -1,5 +1,5 @@
 /****************************************************************************************
-****	Dialogverwaltung für SNOMPUTZ
+****	Dialogverwaltung fĂĽr SNOMPUTZ
 ****************************************************************************************/
 
 #include <math.h>
@@ -70,7 +70,7 @@ DWORD GetLastErrorBox( HWND hWnd, LPSTR lpTitle )
 
 /*************************************************************************************************/
 
-/* Flächenmittelung-Dialog */
+/* FlĂ¤chenmittelung-Dialog */
 BOOL WINAPI Mittel3DDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	static HWND hwnd;
@@ -278,7 +278,7 @@ BOOL WINAPI StringDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 
 /***************************************************************************************/
 
-/* Was tun bei Überlauf? */
+/* Was tun bei Ăśberlauf? */
 BOOL WINAPI OverrunDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	switch( message ) {
@@ -718,7 +718,7 @@ BOOL WINAPI HandleBrowseDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
 
 /*****************************************************************************************
 ****	Importiert Rohdaten in ein WORD-Feld ... ****
-****	Die nötigen Parameter gibt es aus einer Struktur im Header-File (snom-dlg.h)
+****	Die nĂ¶tigen Parameter gibt es aus einer Struktur im Header-File (snom-dlg.h)
 *****************************************************************************************/
 BOOL WINAPI RohImportDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -849,7 +849,7 @@ BOOL WINAPI RohImportDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPar
 
 
 /***************************************************************************************/
-/****	Ab hier alles für die Farben ...              ****/
+/****	Ab hier alles fĂĽr die Farben ...              ****/
 
 CHOOSECOLOR cc;
 DWORD cColors[16];
@@ -881,7 +881,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			if( pBmp == NULL ) {
 				EndDialog( hdlg, wParam != IDOK );
 			}
-			// Die Daten werden Online verändert!
+			// Die Daten werden Online verĂ¤ndert!
 			if( ( pSnom = pAllocNewSnom( pBmp, 0 ) ) == NULL ) {
 				StatusLineRsc( E_MEMORY );
 				EndDialog( hdlg, FALSE );
@@ -904,7 +904,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				RecalcCache( pBmp, TRUE, FALSE );
 			}
 
-			// nötige Handels holen (ich liebe Windows, ich würde auch Gates 2x erschiessen, um sicher zu gehen ...
+			// nĂ¶tige Handels holen (ich liebe Windows, ich wĂĽrde auch Gates 2x erschiessen, um sicher zu gehen ...
 			h[0] = GetDlgItem( hdlg, FARB_SHOW1 );
 			h[1] = GetDlgItem( hdlg, FARB_SHOW2 );
 			h[2] = GetDlgItem( hdlg, FARB_SHOW3 );
@@ -1291,7 +1291,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 					break;
 
 				case IDCANCEL:
-					// Neue Bitmap wieder löschen
+					// Neue Bitmap wieder lĂ¶schen
 					pBmp->iAktuell--;
 					pBmp->iMax--;
 					RecalcCache( pBmp, TRUE, TRUE );
@@ -1360,7 +1360,7 @@ int WINAPI Ansicht3DDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPara
 			}
 			CheckDlgButton( hdlg, ANSICHT_PLOTPOS, PlotsUnten );
 
-			// Die Boxen zur Ansicht füllen
+			// Die Boxen zur Ansicht fĂĽllen
 			SendDlgItemMessage( hdlg, ANSICHT_DATEN, CB_RESETCONTENT, 0, 0 );
 			SendDlgItemMessage( hdlg, ANSICHT_DATEN, CB_ADDSTRING, 0, (LPARAM)STR_PROFIL );
 			SendDlgItemMessage( hdlg, ANSICHT_DATEN, CB_ADDSTRING, 0, (LPARAM)STR_AUTOKORR );
@@ -1413,7 +1413,7 @@ int WINAPI Ansicht3DDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPara
 				}
 			}
 
-			// nötige Handels holen
+			// nĂ¶tige Handels holen
 			h[0] = GetDlgItem( hdlg, ANSICHT_SHOW1 );
 			h[1] = GetDlgItem( hdlg, ANSICHT_SHOW2 );
 			h[2] = GetDlgItem( hdlg, ANSICHT_SHOW3 );
@@ -1448,7 +1448,7 @@ int WINAPI Ansicht3DDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lPara
 		}
 
 #else
-		// Makierung für die Buttons ...
+		// Makierung fĂĽr die Buttons ...
 		case WM_CTLCOLOR:
 			for( i = 0; i < 4; i++ ) {
 				if( (HWND)lParam == h[i] ) {
@@ -1594,7 +1594,7 @@ Redraw3D:
 /***************************************************************************************/
 
 
-// Sucht Namen aller Bitmaps ... (z.B. für die Mathematik)
+// Sucht Namen aller Bitmaps ... (z.B. fĂĽr die Mathematik)
 LPBMPDATA MakeHwndName( HWND hwnd )
 {
 	LPBMPDATA pBmp;
@@ -1608,7 +1608,7 @@ LPBMPDATA MakeHwndName( HWND hwnd )
 }
 
 
-//**** Callback für das Neuzeichnen der Fenster
+//**** Callback fĂĽr das Neuzeichnen der Fenster
 BOOL CALLBACK EnumSetComboNames( HWND hwnd, LPARAM lparm )
 {
 	LPBMPDATA pBmp;
@@ -1693,7 +1693,7 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			hwnd = (HWND)lParam;
 			pSrc = (LPBMPDATA)GetWindowLong( hwnd, 0 );
 			if( pSrc == NULL ) {
-				return ( FALSE );   // Das war kein gültiger Pointer ...
+				return ( FALSE );   // Das war kein gĂĽltiger Pointer ...
 			}
 			// ComboBoxen initialisieren
 			hComboSrc = GetDlgItem( hdlg, MATHE_QUELLE );
@@ -1782,9 +1782,9 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 					}
 					overflow = IsDlgButtonChecked( hdlg, MATHE_OVERFLOW );
 
-					// Alle möglichen Fehler abfangen
+					// Alle mĂ¶glichen Fehler abfangen
 					if( op == 0 ) {
-						// Keinen gültigen Operator ausgewählt
+						// Keinen gĂĽltigen Operator ausgewĂ¤hlt
 						goto MatheFehler;
 					}
 					if( fest  &&  wert == 0.0  &&  op == MATHE_GETEILT ) {
@@ -1792,11 +1792,11 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 						goto MatheFehler;
 					}
 					if( !fest  &&  ( pSrc == NULL || pSrcTyp == 0 ) ) {
-						// Keine gültigen 2. Operanden ausgewählt!
+						// Keine gĂĽltigen 2. Operanden ausgewĂ¤hlt!
 						goto MatheFehler;
 					}
 					if( pDest == NULL  ||  pDestTyp == NONE  ||  ( pSnom = pAllocNewSnom( pDest, pDestTyp ) ) == NULL ) {
-						// Keine gültigen Zieldaten ausgewählt!
+						// Keine gĂĽltigen Zieldaten ausgewĂ¤hlt!
 						goto MatheFehler;
 					}
 					if( fest ) {
@@ -1808,7 +1808,7 @@ BOOL WINAPI MatheDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 
 					RecalcCache( pDest, TRUE, TRUE );
 					InvalidateRect( hwnd, NULL, TRUE );
-// Hier bei schweren Fehlern bei Dialog ausfüllen
+// Hier bei schweren Fehlern bei Dialog ausfĂĽllen
 MatheFehler:
 					InvalidateRect( DestHwnd, NULL, TRUE );
 					EndDialog( hdlg, TRUE );
@@ -1856,7 +1856,7 @@ BOOL WINAPI UnitDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			else {
 				char txt[1024]; // Largest for Windows ...
 
-				// Sonderbehandlung für z-Skalierung ...
+				// Sonderbehandlung fĂĽr z-Skalierung ...
 				SetDlgItemText( hdlg, HUB_Z_UNIT, pBmp->pSnom[pBmp->iAktuell].Topo.strZUnit );
 				SetDlgItemText( hdlg, HUB_LUMI_UNIT, pBmp->pSnom[pBmp->iAktuell].Lumi.strZUnit );
 				SetDlgItemText( hdlg, HUB_Z, gcvt( pBmp->pSnom[pBmp->iAktuell].Topo.fSkal, 8, str ) );
@@ -2159,7 +2159,7 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						if( lWinkel >= 180 ) {
 							lWinkel -= 180;
 						}
-						// Fehler bei 90� abfangen
+						// Fehler bei 90ďż˝ abfangen
 						if( lWinkel == 90 ) {
 							dm = 30000.0;
 						}
@@ -2246,7 +2246,7 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						Is2D = FALSE;
 					}
 					else {
-						// Flächenmittelung
+						// FlĂ¤chenmittelung
 						double dMean, dRMS, dAnzahl, dTempMean, dTempRMS, fSkal, fX;
 						LPFLOAT	pQuadrate;
 						BYTE str[128];
@@ -2273,7 +2273,7 @@ BOOL WINAPI FractalDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 						}
 						MemMove( pDaten, pBmp->pSnom[iAkt].Topo.puDaten, w*h*sizeof( UWORD ) );
 						pQuadrate = (LPFLOAT)pMalloc( sizeof( float )*w*h );
-						if( pQuadrate != NULL )	{ // Ein float-Array mit den Quadraten f�r die RMS-Berechnung bereitstellen
+						if( pQuadrate != NULL )	{ // Ein float-Array mit den Quadraten fďż˝r die RMS-Berechnung bereitstellen
 							unsigned long k;
 
 							for( x = 0;  x < w*h;  x++ ) {
@@ -2398,7 +2398,7 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				nm.code = TCN_SELCHANGE;
 				SendMessage( hdlg, WM_NOTIFY, 0, (LPARAM)&nm );
 			}
-			// Is überhaupt was zu tun? (Sollte immer wahr sein!)
+			// Is ĂĽberhaupt was zu tun? (Sollte immer wahr sein!)
 			if( SpikeModus == NONE ) {
 				EndDialog( hdlg, TRUE );
 			}
@@ -2681,13 +2681,13 @@ BOOL WINAPI GrossDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 						pSnom->w = NeuW;
 						pSnom->h = NeuH;
 
-						// Um ungültige Pointer zu vermeiden => Scanline auf Null
+						// Um ungĂĽltige Pointer zu vermeiden => Scanline auf Null
 						pBmp->bIsScanLine = FALSE;
 						pBmp->lMaxScan = 0;
 						pBmp->rectScan[0].left = pBmp->rectScan[0].right = 0;
 						pBmp->rectScan[0].top =	pBmp->rectScan[0].bottom = 0;
 
-						// Maske wird gelöscht ...
+						// Maske wird gelĂ¶scht ...
 						if( pBmp->pMaske ) {
 							MemFree( pBmp->pMaske );
 							pBmp->pMaske = NULL;
@@ -2751,7 +2751,7 @@ BOOL WINAPI TutorDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 
-/* Verwaltet Höhenprofildialog: Was speichern? */
+/* Verwaltet HĂ¶henprofildialog: Was speichern? */
 BOOL WINAPI ProfilDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	switch( message ) {
@@ -2822,7 +2822,7 @@ BOOL WINAPI ProfilDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam 
 
 /***************************************************************************************/
 
-// berechnet die Filtercurve für die FFT-Filterung ...
+// berechnet die Filtercurve fĂĽr die FFT-Filterung ...
 void CalcFFTResponse( float *pf, int iAnzahl, int iLowF, int iLowW, int iHighF, int iHighW )
 {
 	int i, j;
@@ -2897,7 +2897,7 @@ int WINAPI FFTDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			lW = pBmp->pSnom[pBmp->iAktuell].w;
 			while( iSize < lW )
 				iSize *= 2;
-			fFSpan = pBmp->pSnom[0].w*pBmp->pPsi.fLinePerSec;       // Obere Grenzfrequenz *2.0, da hin +r�ck, /2.0, da FFT nur bis halbe Frequenz ...
+			fFSpan = pBmp->pSnom[0].w*pBmp->pPsi.fLinePerSec;       // Obere Grenzfrequenz *2.0, da hin +rďż˝ck, /2.0, da FFT nur bis halbe Frequenz ...
 			if( fFSpan == 0 ) {
 				fFSpan = lW;
 			}
@@ -3006,7 +3006,7 @@ int WINAPI FFTDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				{
 					LPSNOMDATA pSnom;
 
-					// Filterarry fPts ist gefüllt, ansonsten einfach:
+					// Filterarry fPts ist gefĂĽllt, ansonsten einfach:
 					// SendMessage( hdlg, WM_PAINT, 0, 0 );
 					// FFT-Filterung
 					if( ( pSnom = pAllocNewSnom( pBmp, modus ) ) == NULL ) {
@@ -3162,7 +3162,7 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			else {
 				sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*GetScrollPos( hfStart, SB_CTL ), pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 				SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-				sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+				sprintf( result_str, "Count %i  density %.3e/cmÂ˛", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 				SetDlgItemText( hdlg, QD_RESULT, result_str );
 			}
 			return ( TRUE );
@@ -3263,7 +3263,7 @@ RecalcDot:
 			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter, maxradius );
 			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-			sprintf( result_str, "Count %i  density %.3e/cm²", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+			sprintf( result_str, "Count %i  density %.3e/cmÂ˛", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 			SetDlgItemText( hdlg, QD_RESULT, result_str );
 			pBmp->bCountDots = ( pBmp->dot_number > 0 );
 #ifdef BIT32

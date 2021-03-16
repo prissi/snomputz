@@ -4,11 +4,11 @@
 
 /* Konvertiert einen Datenblock in ein Snombild (Topografie, Fehler oder Lumineszens)
  * Wird zuletzt immer dann aufgerufen, wenn Daten geladen sind.
- * Die Daten werden als erstes Element (pBmp->pSnom[0]) eingefügt
+ * Die Daten werden als erstes Element (pBmp->pSnom[0]) eingefÃ¼gt
  * ww beziechnet die Breite einer Zeile in Bytes; dies kann mehr sein, als die Weite w, der Rest
  * wird ignoriert.
  * uBits ist die Breite in Bits 1..16, uAdd ein Offset, der aufaddiert werden soll (meist 0 oder 0x8000)
- * für signed/unsigned.
+ * fÃ¼r signed/unsigned.
  */
 BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int uBits, WORKMODE Mode, UWORD uAdd, BOOLEAN InitRest );
 // 26.7.97

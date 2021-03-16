@@ -30,7 +30,7 @@ typedef enum { TOPO=1, ERRO=2, LUMI=4, TRACK_ALL=256 } WORKMODE;
 typedef UWORD WORKMODE;
 #endif
 
-// Sonst stimmt die Größe der Strukturen nicht mehr ...
+// Sonst stimmt die GrÃ¶ÃŸe der Strukturen nicht mehr ...
 #define FLAG UWORD
 
 
@@ -43,13 +43,13 @@ typedef UWORD WORKMODE;
 // Struktur, die (fast) alle relevanten Daten zur Darstellung hat
 typedef struct
 {
-	LPUWORD		puDaten;					// Daten, Wert <=256 Pointer auf letzte geänderte Daten
-	UWORD			uMaxDaten;				// größter Datenwert (Kleinster==0)
+	LPUWORD		puDaten;					// Daten, Wert <=256 Pointer auf letzte geÃ¤nderte Daten
+	UWORD			uMaxDaten;				// grÃ¶ÃŸter Datenwert (Kleinster==0)
 	WORKMODE	Typ;							// Datentyp, NONE=ungenutzt
 	CHAR			strTitel[128];
 	double		fSkal;						// Skalierungsfaktor
 	UWORD			uKontur;
-	UWORD			uKonturToleranz;	// Für "Höhenlinien"
+	UWORD			uKonturToleranz;	// FÃ¼r "HÃ¶henlinien"
 	UWORD			uModulo;
 	FLAG 	bNoLUT;			// Use Look up table
 	FLAG 	bPseudo3D;
@@ -76,19 +76,19 @@ typedef struct
 	float	fPid, fInt, fDiff;	// PID-Parameter
 	long	lFreq, lZyklus;			// Geschwindigkeit
 	long		iSoll;							// Sollwert
-	double	fW, fH;						// Größe des Scan (in nm)
+	double	fW, fH;						// GrÃ¶ÃŸe des Scan (in nm)
 	double	fX, fY;						// Offset (in nm)
 	double	fRot;							// Drehwinkel (zur Zeit imm Null)
 	short		iWPts, iHPts, iVersatz;	// Punkte in X-Richtung, Y-Rtg, Versatz
-	short		iModus, iRichtung;	// Modus (TOOP,ERRO,LUMI) und Richtung (1=Vor, 2=Zurück, 3=Beide)
+	short		iModus, iRichtung;	// Modus (TOOP,ERRO,LUMI) und Richtung (1=Vor, 2=ZurÃ¼ck, 3=Beide)
 	double	fPiezoX, fPiezoY, fPiezoZ;
 	short		bFlags;						// exponentiell, invert, ...
 } SNOMPUTZ_SCANDATA;
 
-// Struktur, die bei jeder Änderung neu angelegt wird
+// Struktur, die bei jeder Ã„nderung neu angelegt wird
 typedef struct
 {
-	LONG		w, h;				 					// Breite und Höhe der Bitmap
+	LONG		w, h;				 					// Breite und HÃ¶he der Bitmap
 	double	fX, fY, fXOff, fYOff;	// Skalierung
 	BILD		Topo, Error, Lumi;
 } SNOMDATA;
@@ -120,26 +120,26 @@ typedef struct
 
 	int			iAktuell;		// Aktueller Datensatz
 	int			iSaved;			// Wurde zuletzt als Nummer iSaved gespeichert
-	int			iMax;				// Maximale Anzahl an Datensätzen
+	int			iMax;				// Maximale Anzahl an DatensÃ¤tzen
 	BOOLEAN		IsDirty;		// Cache muss neu berechnet werden
 
 	WORD		wMaskeW;		// Weite der Maske in Bytes ...
 	LPBYTE	pMaske;			// NULL oder Pointer auf die aktuelle Maske
-											// gesetzte Bits in der Maske werden bei Mittelung oder Glättung nicht berücktsichtigt (außer bei Max/Min)
+											// gesetzte Bits in der Maske werden bei Mittelung oder GlÃ¤ttung nicht berÃ¼cktsichtigt (auÃŸer bei Max/Min)
 
 	LPBITMAPINFO	pDib;	// Die letzten Farben
 	LPUCHAR		pCacheBits;	// Die letzte Darstellung gecacht
 
 	WORKMODE  Links, Rechts;						// Darstellung links (bzw. rechts)
-	RECT			rectLinks, rectRechts;						// Ausmaße der BILDER in den Rechtecken
+	RECT			rectLinks, rectRechts;						// AusmaÃŸe der BILDER in den Rechtecken
 	
-	BOOL		bIsScanLine;	// TRUE, wenn tatsächlich eine Scanline existiert
+	BOOL		bIsScanLine;	// TRUE, wenn tatsÃ¤chlich eine Scanline existiert
 	int			lMaxScan;
 	double	fScanBorder[4];
 	BOOL		bPlotUnten;		// FALSE, wenn Scanlinie rechts daneben, sonst darunter
 	RECT		rectScan[MAX_SCANLINE];	// Scanlinekoordinaten (Es gibt maximal vier Scanlines gleichzeitig!)
 
-	RECT		rectFenster;	// Ausmaße des gesamten Fensters (Bilder+Scanlines+Text)
+	RECT		rectFenster;	// AusmaÃŸe des gesamten Fensters (Bilder+Scanlines+Text)
 	RECT		rectPlot;			// Plotkoordinaten (in BITMAPKOORDINATEN!)
 
 	BYTE		bCountLines;	// 1, if countin, 2 if removing
@@ -171,8 +171,8 @@ typedef struct
 	PSI_HEADER	pPsi;		// PSI-HDF-Header
 	EXTRADATA	Typ;			// Typ der importiereten Datei und der Extradaten (Topografie hat Vorrang!)
 	LPUCHAR		pExtra;		// Entweder Pointer auf Ascii-Header oder HDF-Header
-	LONG 		lExtraLen;	// Länge der Extradaten auf die pExtra zeigt
-	double		fZoom;		// Zoomfaktor (ist nur bei Bild=Fenstergroß wichtig)
+	LONG 		lExtraLen;	// LÃ¤nge der Extradaten auf die pExtra zeigt
+	double		fZoom;		// Zoomfaktor (ist nur bei Bild=FenstergroÃŸ wichtig)
 }
 BMPDATA;
 
@@ -189,7 +189,7 @@ typedef BMPDATA *	LPBMPDATA;
 #endif
 
 
-// Für die Ermittelung einer Scanline
+// FÃ¼r die Ermittelung einer Scanline
 typedef struct
 {
 	LPDOUBLE  pPtr;

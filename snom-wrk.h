@@ -3,8 +3,8 @@
 **************************************************************************************/
 
 
-// K¸mmert sich um ‹berlauf etc.
-// Wenn die Differenz zu groﬂ (= ‹berlauf aufgetreten), wird FALSE zur¸ckgeliefert
+// K√ºmmert sich um √úberlauf etc.
+// Wenn die Differenz zu gro√ü (= √úberlauf aufgetreten), wird FALSE zur√ºckgeliefert
 BOOLEAN	BildMinMax( LPBILD pBild, const LONG lMin, const LONG lMax, const LONG w, const LONG h );
 // 24.10.98
 
@@ -13,14 +13,14 @@ BOOLEAN	BildMinMax( LPBILD pBild, const LONG lMin, const LONG lMax, const LONG w
 BOOLEAN	BildMax( LPBILD pBild, LONG w, LONG h );
 // 26.11.97
 
-/* Berechnet die h‰ufigste Steigung von links nach rechts und zieht diese wieder ab
+/* Berechnet die h√§ufigste Steigung von links nach rechts und zieht diese wieder ab
  * TRUE, wenn erfolgreich
  */
 BOOLEAN	BildSteigungX( LPBILD pBild, LONG lTeiler, const LONG w, const LONG h );
 // 24.10.98
 
 
-/* Berechnet die h‰ufigste Differenz zweier Zeilen und zeiht diese ab
+/* Berechnet die h√§ufigste Differenz zweier Zeilen und zeiht diese ab
  * TRUE, wenn erfolgreich
  */
 BOOLEAN	BildSteigungY( LPBILD pBild, const LONG lTeiler, const LONG w, const LONG h );

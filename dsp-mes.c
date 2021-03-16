@@ -51,7 +51,7 @@ static BOOL bForeverScan = FALSE;
 
 int maxZScannerBetrag = 32000;
 /*********************************************************************************************
-**** Fär Oszi-Kontrol
+**** FĂ¤r Oszi-Kontrol
 *********************************************************************************************/
 
 
@@ -175,7 +175,7 @@ LONG WINAPI OsziWndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
 
 
 /*********************************************************************************************
-**** Fär DSP Kommunikation
+**** FĂ¤r DSP Kommunikation
 *********************************************************************************************/
 
 
@@ -209,7 +209,7 @@ int( FAR WINAPI * WriteMailbox ) ( long a, long b, long wert );
 int( FAR WINAPI * WriteMailboxTerminate ) ( long a, long b, long wert, int sizeflag );
 
 
-/* Lädt die DLL, Initialisiert die DLL, lädt das Programm ... */
+/* LĂ¤dt die DLL, Initialisiert die DLL, lĂ¤dt das Programm ... */
 int DSPInitProgramm( HWND hParent, int iTarget, LPSTR strDLL, LPSTR strDSPProgramm )
 {
 	FARPROC func;
@@ -252,7 +252,7 @@ int DSPInitProgramm( HWND hParent, int iTarget, LPSTR strDLL, LPSTR strDSPProgra
 		return ( -1 );
 	}
 
-	// und nun ausfähren
+	// und nun ausfĂ¤hren
 	(FARPROC)func = GetProcAddress( hDSP_DLL, start_app );
 	( *func )( iTarget );
 	(FARPROC)func = GetProcAddress( hDSP_DLL, target_cardinfo );
@@ -288,7 +288,7 @@ void send_block( long *p, long len )
 }
 
 
-/* Da alles per Timer-Interupt läuft, hier GLOBALE Variablen */
+/* Da alles per Timer-Interupt lĂ¤uft, hier GLOBALE Variablen */
 typedef enum { QUERY_DSP = 1, START_DSP, END_DSP, START_PID, END_PID, TUNNEL_VOLTAGE, TAKE_SPS, START_SCAN, END_SCAN, INVERT_PIEZO, EXPONENTIALLY } DSP_COMMAND;
 
 #define MAX_DSP_QUEUE 16
@@ -298,16 +298,16 @@ volatile DSP_COMMAND DspCommand[MAX_DSP_QUEUE];
 volatile LONG DspParameter[MAX_DSP_QUEUE];
 volatile LONG iDspCommands = 0;
 
-// Der letzte Räckgabewert ...
+// Der letzte RĂ¤ckgabewert ...
 volatile LONG lDspLastResult;
 volatile LONG lDspData[2048];
 volatile BOOL bDspHasSpektrum;
 
-// Ungleich Null, wenn der Prozess läuft
+// Ungleich Null, wenn der Prozess lĂ¤uft
 HANDLE DspThreadHandle, hDspSemaphore;
 DWORD DspThreadHandleID = 0;
 
-// über diese Funktion läuft alle Kommunikation mit dem DSP!
+// ĂĽber diese Funktion lĂ¤uft alle Kommunikation mit dem DSP!
 DWORD WINAPI DspThread( LPVOID param )
 {
 	HANDLE hDspCommandStack;
@@ -330,7 +330,7 @@ DWORD WINAPI DspThread( LPVOID param )
 	iDspCommands = 0;
 	hDspCommandStack = CreateSemaphore( NULL, 1, 1, DSP_CMD_SEMAPHORE );
 
-	// Und nun fär immer die Hauptschleife ausfähren ...
+	// Und nun fĂ¤r immer die Hauptschleife ausfĂ¤hren ...
 	while( DspThreadHandle != NULL ) {
 		Sleep( 1 );
 #ifdef	TEST_WITHOUT_DSP
@@ -418,11 +418,11 @@ DWORD WINAPI DspThread( LPVOID param )
 			continue;
 		}
 
-		/* Kommando lokal speichern und aus der Queue läschen */
+		/* Kommando lokal speichern und aus der Queue lĂ¤schen */
 		iAktDspCommand = iDspCommands-1;
 		pParam = (LONG*)DspParameter[iAktDspCommand];
 
-		/* Kommando ausfähren */
+		/* Kommando ausfĂ¤hren */
 		switch( DspCommand[iAktDspCommand]&0x00FF )
 #ifdef	TEST_WITHOUT_DSP
 		{
@@ -512,7 +512,7 @@ DWORD WINAPI DspThread( LPVOID param )
 				lPos = 0;
 				lDspLastResult = ( *ReadMailbox )( 0, 0 );
 				bReadScan = TRUE;
-				/* ACHTUNG: pData1, pData2, lScanW, und lScanH MäSSEN gesetzt werden! */
+				/* ACHTUNG: pData1, pData2, lScanW, und lScanH MĂ¤SSEN gesetzt werden! */
 				break;
 		}
 #endif
@@ -532,7 +532,7 @@ DWORD WINAPI DspThread( LPVOID param )
 
 
 /***********************************************************************************
- ****	Die eigentliche Kommunikation erfolgt äber diese Routinen
+ ****	Die eigentliche Kommunikation erfolgt Ă¤ber diese Routinen
  ************************************************************************************/
 
 /* Beendet Regelung */
@@ -568,7 +568,7 @@ long DspQueryValue( LONG lModus )
 		ReleaseSemaphore( hDspSemaphore, 1, NULL );
 	}
 
-	/* Warten auf Ausfährung (ODER eine Sekunde warten) */
+	/* Warten auf AusfĂ¤hrung (ODER eine Sekunde warten) */
 	do {
 		Sleep( 1 );
 		// Kann ich auf den Kommando-Stack zugreifen?
@@ -705,11 +705,11 @@ void DspScan( HWND hwndScan, UWORD *pData1, UWORD *pData2, SCANPAR *pSCAN )
    lf 3 1	// 50 Hz
 
    aqn			// Autophase
-   sen 27	// 1 äA..2fA(1)
+   sen 27	// 1 Ă¤A..2fA(1)
    of %li	// Oszillatorfrequenz in mHz
  */
 
-// Fär seriellen Port
+// FĂ¤r seriellen Port
 
 HANDLE hComm = INVALID_HANDLE_VALUE;
 DCB ComDCB;
@@ -824,7 +824,7 @@ DWORD WINAPI MotorThread( LPVOID lp )
 	while( mc->PulseCount < mc->AnzPulse  &&  mc->MotorStatus != MOTOR_IDLE ) {
 		fTime += fDeltaTime;
 
-		//Ausgabebyte fär LPT je nach Fahrrichtung setzen
+		//Ausgabebyte fĂ¤r LPT je nach Fahrrichtung setzen
 		if( mc->MotorStatus == MOTOR_IWD ) {
 			OutByte = 0x03;
 		}
@@ -832,7 +832,7 @@ DWORD WINAPI MotorThread( LPVOID lp )
 			OutByte = 0x0C;
 		}
 
-		//Während Low-Phase des Tastzyklus Ausgabebyte nullen
+		//WĂ¤hrend Low-Phase des Tastzyklus Ausgabebyte nullen
 		if( mc->CycleCount >= mc->TastOn ) {
 			OutByte = 0x00;
 		}
@@ -840,10 +840,10 @@ DWORD WINAPI MotorThread( LPVOID lp )
 		//Ausgabebyte an LPT senden, ACHTUNG: _outp funktioniert vermutlich NICHT unter Windows NT
 		_outp( (unsigned short)mc->PortAdr, OutByte );
 
-		//Interne Zähler inkrementieren
+		//Interne ZĂ¤hler inkrementieren
 		mc->CycleCount++;
 
-		//Nach abgelaufenem Tastzyklus Cyclecount zuräcksetzen
+		//Nach abgelaufenem Tastzyklus Cyclecount zurĂ¤cksetzen
 		if( mc->CycleCount > mc->TastOn+mc->TastOff ) {
 			mc->CycleCount = 0;
 			mc->PulseCount++;
@@ -875,7 +875,7 @@ LRESULT CALLBACK MessApproachDialog( HWND hDlg, UINT message, WPARAM wParam, LPA
 	extern HWND hModeLess;
 	static HWND hCombo, hW, hH, hwndScan;
 	static UINT idTimer;
-	static UINT uUnbenannt = 0, invert1 = 0, expo = 0;              /* Zähler fär Bildnummer */
+	static UINT uUnbenannt = 0, invert1 = 0, expo = 0;              /* ZĂ¤hler fĂ¤r Bildnummer */
 	static double fSkal = 1000.0;           /* Default: mum */
 	static long pl;
 	static DWORD MotorThreadHandleID;
@@ -917,7 +917,7 @@ LRESULT CALLBACK MessApproachDialog( HWND hDlg, UINT message, WPARAM wParam, LPA
 			SendMessage( h, CB_SETCURSEL, j, 0 );
 			SetFocus( h );
 
-			// Sinvolle Werte fär Motor von Approach
+			// Sinvolle Werte fĂ¤r Motor von Approach
 			Snom_MotorControl.PortAdr = 0;
 			switch( j ) {
 				case 1:
@@ -964,7 +964,7 @@ LRESULT CALLBACK MessApproachDialog( HWND hDlg, UINT message, WPARAM wParam, LPA
 			OsziNum[0] = OsziNum[2] = 127;
 			OsziNum[1] = OsziNum[3] = 0;
 
-			/* Und nun Daten einfägen */
+			/* Und nun Daten einfĂ¤gen */
 			iTopo = (signed short)HIWORD( lData );
 			if( iTopo < OsziMin[0] ) {
 				OsziMin[0] = iTopo;
@@ -1024,7 +1024,7 @@ LRESULT CALLBACK MessApproachDialog( HWND hDlg, UINT message, WPARAM wParam, LPA
 		case WM_COMMAND:
 			switch( LOWORD( wParam ) ) {
 				case MESS_APPROACH_PORT:
-					// Port äffnen und initialisieren
+					// Port Ă¤ffnen und initialisieren
 					h = GetDlgItem( hDlg, MESS_APPROACH_PORT );
 #ifdef BIT32
 					if( HIWORD( wParam ) == CBN_SELCHANGE )
@@ -1188,7 +1188,7 @@ LRESULT CALLBACK MessPIDDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 
 			CheckDlgButton( hDlg, MESS_SCAN_FOREVER, bForeverScan );
 
-			// Sinvolle Werte fär Motor von Approach
+			// Sinvolle Werte fĂ¤r Motor von Approach
 			Snom_MotorControl.MotorStatus = MOTOR_IDLE;
 			Snom_MotorControl.PortAdr = 0x378;        // LPT1
 			Snom_MotorControl.AnzPulse = 1;
@@ -1213,7 +1213,7 @@ LRESULT CALLBACK MessPIDDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			OsziNum[0] = OsziNum[2] = 127;
 			strcpy( OsziStr[0], "Topography" );
 			strcpy( OsziStr[2], "Error" );
-			/* Und nun Daten einfägen */
+			/* Und nun Daten einfĂ¤gen */
 			iTopo = (signed short)HIWORD( lData );
 			wsprintf( str, "%i", ( iTopo+maxZScannerBetrag )*100/( 2*maxZScannerBetrag ) );
 			SetDlgItemText( hDlg, MESS_PROZENT, str );
@@ -1266,10 +1266,10 @@ LRESULT CALLBACK MessPIDDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 				}
 			}
 
-			//Bei aktivem Coarse Approach mit voll ausgefahrenem Piezo äberpräfen
+			//Bei aktivem Coarse Approach mit voll ausgefahrenem Piezo Ă¤berprĂ¤fen
 			//ob Kontakt hergestellt wurde
 			if( CoarseApproachActive == 1 && FineApproachActive == 0 ) {
-				//Bei Signaländerung Motogeschwindigkeit auf 1 Puls ä 1ms verlangsamen
+				//Bei SignalĂ¤nderung Motogeschwindigkeit auf 1 Puls Ă¤ 1ms verlangsamen
 				if( iTopo < maxZScannerBetrag-5 ) {
 					int wertx = iTopo_alt-iTopo;
 					iTopo_alt = iTopo;
@@ -1323,7 +1323,7 @@ LRESULT CALLBACK MessPIDDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			 ***	Start eines Bildes bzw. der Regelung schon ausgelesen und
 			 ***	in den entsprechenden Strukturen gespeichert.
 			 ***	Also muss nur noch die Piezo-Kalibration gelesen werden;
-			 ***	die restlichen, evt. geänderten (aber ungetesteten) Werte
+			 ***	die restlichen, evt. geĂ¤nderten (aber ungetesteten) Werte
 			 ***	vergisst diese Routine!
 			 ***/
 			GetDlgItemText( hDlg, MESS_PIEZO_X, str, 256 );
@@ -1332,7 +1332,7 @@ LRESULT CALLBACK MessPIDDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			fPiezoSkalY = atof( str )*fSkal/65536.0;  // Hoehe pro Pixel
 			GetDlgItemText( hDlg, MESS_PIEZO_Z, str, 256 );
 			fPiezoSkalZ = atof( str )*fSkal/65536.0;  // Z pro Pixel
-			// Aufräumen
+			// AufrĂ¤umen
 			KillTimer( hDlg, 15 );
 			idTimer = 0;
 			OsziNum[0] = OsziNum[2] = 0;
@@ -1397,7 +1397,7 @@ mess_bildwerte_eintragen:
 					MotorThread( &Snom_MotorControl );
 					break;
 
-				// langsam Zuräck
+				// langsam ZurĂ¤ck
 				case MESS_APPROACH_RETRACT:
 					Snom_MotorControl.MotorStatus = MOTOR_IWD;
 					Snom_MotorControl.AnzPulse = 1;
@@ -1523,7 +1523,7 @@ mess_bildwerte_eintragen:
 						break;
 					}
 
-					//** Alles fär eine Messung vorbereiten **
+					//** Alles fĂ¤r eine Messung vorbereiten **
 					//** Zuerst: Werte auslesen: **
 					if( hwndScan ) {
 						HWND h = hwndScan;
@@ -1531,7 +1531,7 @@ mess_bildwerte_eintragen:
 						DestroyWindow( h );
 					}
 
-					// Erst mal Testen, ob äberhaupt brauchbare Werte da sind ...
+					// Erst mal Testen, ob Ă¤berhaupt brauchbare Werte da sind ...
 					Scan.iXPts = GetDlgItemInt( hDlg, MESS_SCAN_XPTS, NULL, FALSE );
 					Scan.iYPts = GetDlgItemInt( hDlg, MESS_SCAN_YPTS, NULL, FALSE );
 					if( Scan.iXPts == 0  ||  Scan.iYPts == 0 ) {
@@ -1548,10 +1548,10 @@ mess_bildwerte_eintragen:
 					GetDlgItemText( hDlg, MESS_SCAN_FREQ, str, 256 );
 					Scan.lFreq = (long)( atof( str ) );     // Punkte pro Regelung
 					Scan.lWinkel = 0; // keine Drehung
-					Scan.iDir = ( LINKS2RECHTS ); // Hin & Zuräck
+					Scan.iDir = ( LINKS2RECHTS ); // Hin & ZurĂ¤ck
 					Scan.iOffset = (short signed)GetDlgItemInt( hDlg, MESS_SCAN_VERSATZ, NULL, TRUE );
 
-					// Fär alles weitere brauchen wir die Piezo-Eichung ...
+					// FĂ¤r alles weitere brauchen wir die Piezo-Eichung ...
 					GetDlgItemText( hDlg, MESS_PIEZO_X, str, 256 );
 					fPiezoSkalX = atof( str )*fSkal/65536.0; // Weite pro Pixel
 					GetDlgItemText( hDlg, MESS_PIEZO_Y, str, 256 );
@@ -1559,14 +1559,14 @@ mess_bildwerte_eintragen:
 					GetDlgItemText( hDlg, MESS_PIEZO_Z, str, 256 );
 					fPiezoSkalZ = atof( str )*fSkal/65536.0; // Z pro Pixel
 
-					// Und nun die Ausmaäe berechnen
+					// Und nun die AusmaĂ¤e berechnen
 					GetDlgItemText( hDlg, MESS_WEITE, str, 256 );
-					Scan.iW = atof( str )*fSkal/fPiezoSkalX; // Gewänschte Weite/Gesamtweite mal Pixelzahl = Pixelzahl
+					Scan.iW = atof( str )*fSkal/fPiezoSkalX; // GewĂ¤nschte Weite/Gesamtweite mal Pixelzahl = Pixelzahl
 					if( Scan.iW > 65535l ) {
 						Scan.iW = 65535l;
 					}
 					GetDlgItemText( hDlg, MESS_HOEHE, str, 256 );
-					Scan.iH = atof( str )*fSkal/fPiezoSkalY; // Gewänschte Hoehe/Gesamtweite mal Pixelzahl = Pixelzahl
+					Scan.iH = atof( str )*fSkal/fPiezoSkalY; // GewĂ¤nschte Hoehe/Gesamtweite mal Pixelzahl = Pixelzahl
 					if( Scan.iH > 65535l ) {
 						Scan.iH = 65535l;
 					}
@@ -1586,7 +1586,7 @@ mess_bildwerte_eintragen:
 					else if( Scan.iYOff < -32767 ) {
 						Scan.iYOff = -32767;
 					}
-					// Und nun die evt. veränderten Werte wieder setzen:
+					// Und nun die evt. verĂ¤nderten Werte wieder setzen:
 					if( fSkal == 1000.0 ) {
 						SendMessage( hDlg, WM_COMMAND, HUB_MKM, BM_SETCHECK );
 					}
@@ -1626,10 +1626,10 @@ mess_bildwerte_eintragen:
 					CheckDlgButton( hDlg, MESS_SCAN_FOREVER, bForeverScan );
 					break;
 
-				//Grobannäherung
+				//GrobannĂ¤herung
 				case MESS_PID_COARSEAPPROACH:
 					if( CoarseApproachActive == 0 && FineApproachActive == 0 ) {
-						//Zunächst ausfahren des Piezos wie bei MESS_PID_SEND
+						//ZunĂ¤chst ausfahren des Piezos wie bei MESS_PID_SEND
 						GetDlgItemText( hDlg, MESS_PID_FREQ, str, 256 );
 						PID.lFreq = (long)( atof( str )*1000.0 );
 						GetDlgItemText( hDlg, MESS_PID_SOLL, str, 256 );
@@ -1643,7 +1643,7 @@ mess_bildwerte_eintragen:
 						DspPID( hDlg, &PID );
 						//Button deaktivieren
 						SetDlgItemText( hDlg, MESS_PID_COARSEAPPROACH, "Stop!" );
-						//Flag so setzen, dass der Windows-Timer zunächst das Ausfahren des Piezos abwartet
+						//Flag so setzen, dass der Windows-Timer zunĂ¤chst das Ausfahren des Piezos abwartet
 						FineApproachActive = 1;
 						iIst_alt = iError1;
 					}
@@ -1663,7 +1663,7 @@ mess_bildwerte_eintragen:
 
 
 /*************************************************************************/
-// Fenster fär Darstellung der Messwerte
+// Fenster fĂ¤r Darstellung der Messwerte
 // Werte"bitmap"
 BYTE pBmpSkala[256] = {
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -1773,7 +1773,7 @@ LRESULT CALLBACK MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			pBmp->pSnom[0].Lumi.puDaten = NULL;
 			pMess->pBmp = pBmp;
 
-			/* Schlieälich noch die Bitmap vorbereiten */
+			/* SchlieĂ¤lich noch die Bitmap vorbereiten */
 			pMess->lBmpWidth = ( ( Scan.iXPts+3 )/4 )*4;
 			pMess->lBmpYOff = pMess->lBmpWidth*Scan.iYPts;
 			pBmpHdr = (LPBITMAPINFO)pMalloc( sizeof( BITMAPINFOHEADER )+sizeof( RGBQUAD )*256+sizeof( BYTE )*Scan.iXPts*Scan.iYPts );
@@ -1784,7 +1784,7 @@ LRESULT CALLBACK MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			pBmpHdr->bmiHeader.biBitCount = 8;
 			pBmpHdr->bmiHeader.biCompression = BI_RGB;
 			pBmpHdr->bmiHeader.biSizeImage = pMess->lBmpYOff;
-			// Farben fär Daten und Skala sind gleich!
+			// Farben fĂ¤r Daten und Skala sind gleich!
 			for( i = 0;  i < 256;  i++ ) {
 				pBmpHdr->bmiColors[i].rgbRed = (BYTE)255-i;
 				pBmpHdr->bmiColors[i].rgbGreen = (BYTE)255-i;
@@ -1907,7 +1907,7 @@ LRESULT CALLBACK MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					sprintf( str, STR_MITTEL_ZEIT, (long)( ( pf[0]+pf[1] )/2.0+0.5 ), i/60, i%60 );
 					SendMessage( hwndMessInfo, SB_SETTEXT, 0, (LPARAM)str );
 
-					/* Die erste fänf Zeilen wird automatisch neu skaliert! */
+					/* Die erste fĂ¤nf Zeilen wird automatisch neu skaliert! */
 					if( pMess->lYOff < 5 ) {
 						pMess->lBmpMin = pMess->lTopoMin;
 						pMess->lBmpMax = pMess->lTopoMax;
@@ -1924,7 +1924,7 @@ LRESULT CALLBACK MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 						               DIB_RGB_COLORS, SRCCOPY );
 						ReleaseDC( hwnd, hdc );
 					}
-					// evt. Speichern und sichern ausläsen?
+					// evt. Speichern und sichern auslĂ¤sen?
 					if( pMess->lYOff >= pMess->iHPts ) {
 						DestroyWindow( hwnd );
 					}
@@ -1999,7 +1999,7 @@ LRESULT CALLBACK MessBmpWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			bMesseNichtJetzt = FALSE;
 			if( pMess->lYOff >= pMess->iHPts  &&                             // Vorheriger Abbruch -> Stopp!
 			    bForeverScan ) {
-				// Sonst einfach nächstes Bild
+				// Sonst einfach nĂ¤chstes Bild
 				PostMessage( pMess->hwndPID, WM_COMMAND, MESS_SCAN_SEND, 0 );
 			}
 			MemFree( pMess );
@@ -2170,7 +2170,7 @@ LRESULT CALLBACK MessSeriellDialog( HWND hDlg, UINT message, WPARAM wParam, LPAR
 					break;
 
 				case MESS_SER_PORT:
-					// Port äffnen und initialisieren
+					// Port Ă¤ffnen und initialisieren
 					h = GetDlgItem( hDlg, MESS_SER_PORT );
 #ifdef BIT32
 					if( HIWORD( wParam ) == CBN_SELCHANGE )
@@ -2447,7 +2447,7 @@ LRESULT CALLBACK MessFreqDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 /*************************************************************************/
 
-// Identifier fär Tool/Statusbar
+// Identifier fĂ¤r Tool/Statusbar
 #define ID_MESSBAR	19
 #define ID_MESSSTATUSBAR 20
 
@@ -2475,7 +2475,7 @@ TBBUTTON pScanbarButtons[] = {
 // Routine, die die einzelnen Unterroutinen aufruft
 LRESULT CALLBACK MessWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 {
-	static HWND hwndCreateParent;           // Handle fär die Erzeugung neuer Fenster ...
+	static HWND hwndCreateParent;           // Handle fĂ¤r die Erzeugung neuer Fenster ...
 	static int iYOffset;
 
 	switch( message ) {

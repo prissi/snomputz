@@ -248,7 +248,7 @@ BOOLEAN	WriteDib( LPSTR szFileName, LPBITMAPINFO lpDib, LPBYTE lpDaten )
 /***************************************************************************/
 /* Ab hier nur Neuzeichen ... */
 
-//**** Callback f�r das Neuzeichnen der Fenster
+//**** Callback fďż˝r das Neuzeichnen der Fenster
 BOOL CALLBACK EnumRedrawAll( HWND hwnd, LPARAM flags )
 {
 	LPBMPDATA pBmp = (LPBMPDATA)GetWindowLong( hwnd, 0l );
@@ -262,7 +262,7 @@ BOOL CALLBACK EnumRedrawAll( HWND hwnd, LPARAM flags )
 
 		if( pBmp->bIsScanLine )	{
 			pBmp->bPlotUnten = PlotsUnten;
-			// Platz f�r Scanline dazurechnen
+			// Platz fďż˝r Scanline dazurechnen
 			pBmp->rectFenster.right = 64+pBmp->rectPlot.right;      // Rechts Platz lassen
 			if( pBmp->bPlotUnten ) {
 				if( pBmp->rectLinks.top > 0 ) {
@@ -302,7 +302,7 @@ BOOL RedrawAll( WORD flags )
 #define		SKALA	1
 
 #define	MIN_SCALE	1e-10   // Darunter waren es bestimmt sinnlose Eingabewerte
-#define	MAX_SCALE	1e10    // oder auch hier�ber
+#define	MAX_SCALE	1e10    // oder auch hierďż˝ber
 
 #define MAX_TABLE	4
 double table[MAX_TABLE] = { 1.0, 2.0, 2.5, 5.0 };
@@ -362,7 +362,7 @@ double CalcIncrement( int min, int max, double len )
 // 18.8.97
 
 
-// Berechnet die Anzahl signifikanter Stellen nach dem Komma f�r Achsenskalierung
+// Berechnet die Anzahl signifikanter Stellen nach dem Komma fďż˝r Achsenskalierung
 int CalcDigits( double inc )
 {
 	int digit = 0;
@@ -385,12 +385,12 @@ int CalcDigits( double inc )
 // 29.11.98
 
 
-// Berechnet Ausma�e einer Bitmap mit Legende, 3D ...
+// Berechnet Ausmaďż˝e einer Bitmap mit Legende, 3D ...
 void CalcDibSize( HDC hdc, LONG cxDib, LONG cyDib, LPRECT pCoord, BOOL Show3D, BOOL ShowScanline )
 {
 	LONG x = 0, y = 0, temp;
 
-	// Ausma�e der 3D-Bitmap berechnen, ansonsten ist Hoehe und Breite cxDib/cyDib
+	// Ausmaďż˝e der 3D-Bitmap berechnen, ansonsten ist Hoehe und Breite cxDib/cyDib
 	if( Show3D ) {
 		temp = cxDib*( 1.0-f3DXYWinkel )+cyDib*f3DXYWinkel + 2;
 		cyDib = ( cxDib*f3DXYWinkel+cyDib*( 1.0-f3DXYWinkel ) )*f3DZWinkel + MAX_3D_HOEHE*f3DZSkal*( 1.0-f3DZWinkel );
@@ -410,7 +410,7 @@ void CalcDibSize( HDC hdc, LONG cxDib, LONG cyDib, LPRECT pCoord, BOOL Show3D, B
 // Malt eine 3D Ansicht in den Hintergrund
 //	pDest: Ziel (ab Position xoff,yoff) hat die Ausmasse ww, hh
 //	pSrc: Quelle, dw Breit, dh Hoch
-//	Farben kleiner min oder gr��er max werden abgeschnitten
+//	Farben kleiner min oder grďż˝ďż˝er max werden abgeschnitten
 //	Ansonsten mit Faktor ColorFaktor multipliziert und StartColor aufaddiert ...
 void Draw3D( LPUCHAR pBits, LONG xoff, LONG yoff, LONG ww, LONG hh,
              LPUWORD pSrc, LONG dw, LONG dh,
@@ -418,7 +418,7 @@ void Draw3D( LPUCHAR pBits, LONG xoff, LONG yoff, LONG ww, LONG hh,
 {
 	// 3D-Bitmap erstellen
 	long xw = 1024l*pBild->fXYWinkel3D, yw = 1024l*( 1.0-pBild->fXYWinkel3D );
-	// Z-Weite nur mal 256, da sonst evt. �berlaufprobleme!
+	// Z-Weite nur mal 256, da sonst evt. ďż˝berlaufprobleme!
 	long zw = 256l*pBild->fZSkal3D*( 1.0-pBild->fZWinkel3D )*MAX_3D_HOEHE;
 	long angle = 1024l*pBild->fZWinkel3D;
 	long lColorFactor = 1024l/fColorFaktor;
@@ -515,7 +515,7 @@ void Draw3D( LPUCHAR pBits, LONG xoff, LONG yoff, LONG ww, LONG hh,
 // Ende Draw3D
 // April 97
 // "Schnelle Integeroutinen": 28.12.97
-// Berechnet die neue Bitmapfarben (nur f�r Recalc-Cache)
+// Berechnet die neue Bitmapfarben (nur fďż˝r Recalc-Cache)
 WORD FarbenSetzen( LPBITMAPINFO pCacheDib, LPBILD pBild, LONG startcol, LONG max, double maxcol, BOOL StartEnde )
 {
 	LONG startoffset, endoffset, endcol;
@@ -572,11 +572,11 @@ WORD FarbenSetzen( LPBITMAPINFO pCacheDib, LPBILD pBild, LONG startcol, LONG max
 // 22.11.97
 
 
-// Skala f�r 3D-Bitmap malen
+// Skala fďż˝r 3D-Bitmap malen
 void Draw3DSkala( HDC hDC, WORD x_or, WORD y_or, LPBMPDATA pBmp, LPSNOMDATA pSnom, LPBILD pBild, WORD max )
 {
 	// Zuerst 3D-Skalierung; ist mit Abstand schwieriger
-	// Nur ein paar Abk�rzungen ...
+	// Nur ein paar Abkďż˝rzungen ...
 	double xw, yw, zw, angle;
 	long fh;
 	double inc, wert, offset;
@@ -868,10 +868,10 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	WORD startcol, endcol;
 	WORD maxlinks = 0, maxrechts = 0;
 	int iAkt = pBmp->iAktuell;
-	char str[16];           // f�r Zahlen
+	char str[16];           // fďż˝r Zahlen
 
 
-	// Zuerst Pointer f�r rechte und linke Seite holen
+	// Zuerst Pointer fďż˝r rechte und linke Seite holen
 	pSnom = &( pBmp->pSnom[iAkt] );
 	pLinks = NULL;
 	switch( pBmp->Links ) {
@@ -909,14 +909,14 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	}
 	// Nichts zu tun?
 	if( pLinks == NULL  &&  pRechts == NULL ) {
-		// Nur die �berschrift
+		// Nur die ďż˝berschrift
 		return ( TRUE );
 	}
 
 	hDC = GetDC( NULL );
 	// Farben "gerecht" verteilen; wenn Bitmap 1 32000 und Bitmap 2 nur 15 hat, Farben im gleichen
-	// Verh�ltnis zuweisen; Minimum sind 15 Farben!
-	// Dabei wird (noch?) nicht gecheckt, ob evt. Farben doppelt genutzt werden k�nnten
+	// Verhďż˝ltnis zuweisen; Minimum sind 15 Farben!
+	// Dabei wird (noch?) nicht gecheckt, ob evt. Farben doppelt genutzt werden kďż˝nnten
 	if( pLinks ) {
 		if( pLinks->bModuloKonturen ) {
 			maxlinks = pLinks->uModulo+1;
@@ -1044,7 +1044,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		pBmp->rectRechts.bottom = pBmp->rectRechts.top + xywh.bottom;
 		w += xywh.right+20+skala_w*2;
 	}
-	DeleteObject( SelectObject( hDC, GetStockObject( SYSTEM_FONT ) ) );     // Zeichensatz wieder l�schen
+	DeleteObject( SelectObject( hDC, GetStockObject( SYSTEM_FONT ) ) );     // Zeichensatz wieder lďż˝schen
 
 	pCacheDib->bmiHeader.biWidth = w;
 	pCacheDib->bmiHeader.biHeight = h;
@@ -1110,7 +1110,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		return ( FALSE );
 	}
 
-	// Text und Grafik f�r Skalierung werden eingef�gt
+	// Text und Grafik fďż˝r Skalierung werden eingefďż˝gt
 	// (geht nur vor den Daten ..., Windows sei Dank!)
 	// Ansonsten werden die Farben kastriert!
 	{
@@ -1118,7 +1118,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 		LPBITMAPINFO pTextDib;
 		LONG i;
 
-		// Zuerst das Vorgepl�nkel, anlegen von Memory-DC, usw.
+		// Zuerst das Vorgeplďż˝nkel, anlegen von Memory-DC, usw.
 		pTextDib = (LPBITMAPINFO)pMalloc( sizeof( BITMAPINFOHEADER )+256*sizeof( RGBQUAD ) );
 		for( i = 0;  i < 256;  i++ ) {
 			( (LPWORD)( pTextDib->bmiColors ) )[i] = i;
@@ -1150,12 +1150,12 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			DeleteObject( SelectObject( hDC2, CreateFontIndirect( &lf ) ) );
 			GetTextExtentPoint( hDC2, "0", 1, &size );
 
-			// Achsenskalierung, getrennt f�r 3D und Normal
+			// Achsenskalierung, getrennt fďż˝r 3D und Normal
 			if( pLinks->bPseudo3D ) {
 				Draw3DSkala( hDC2, pBmp->rectLinks.left, pBmp->rectLinks.top, pBmp, pSnom, pLinks, pLinks->uMaxDaten );
 			}
 			else {
-				//****	2D-Skalierung (ist zum Gl�ck einfacher ...)
+				//****	2D-Skalierung (ist zum Glďż˝ck einfacher ...)
 				// Skalierung x-Achse
 				DrawHorizontalAxis( hDC2, pBmp->rectLinks.left, pBmp->rectLinks.top+h_corrected, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
 				// Skalierung z-Achse
@@ -1180,12 +1180,12 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			DeleteObject( SelectObject( hDC2, CreateFontIndirect( &lf ) ) );
 			GetTextExtentPoint( hDC2, "0", 1, &size );
 
-			// Achsenskalierung, getrennt f�r 3D und Normal
+			// Achsenskalierung, getrennt fďż˝r 3D und Normal
 			if( pRechts->bPseudo3D ) {
 				Draw3DSkala( hDC2, pBmp->rectRechts.left, pBmp->rectRechts.top, pBmp, pSnom, pRechts, pRechts->uMaxDaten );
 			}
 			else {
-				//****	2D-Skalierung (ist zum Gl�ck einfacher ...)
+				//****	2D-Skalierung (ist zum Glďż˝ck einfacher ...)
 				// Skalierung x-Achse
 				DrawHorizontalAxis( hDC2, pBmp->rectRechts.left, pBmp->rectRechts.top+h_corrected, pSnom->w, 3, 5, pSnom->w*pSnom->fX, pBmp->pPsi.cShowOffset*pSnom->fXOff, STR_X_UNIT, STR_X_SUNIT );
 				// Skalierung z-Achse
@@ -1200,11 +1200,11 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			}
 		}
 
-		// und nun die m�hsam gewonnen Daten wieder in ein Bild wandeln ...
+		// und nun die mďż˝hsam gewonnen Daten wieder in ein Bild wandeln ...
 		SelectObject( hDC2, hOld );
 		GetDIBits( hDC2, hBitmap, 0, (WORD)( pCacheDib->bmiHeader.biHeight ), pBits, (BITMAPINFO far*)pTextDib, DIB_PAL_COLORS );
 		DeleteObject( hBitmap );
-		// Zeichensatz wieder l�schen
+		// Zeichensatz wieder lďż˝schen
 		DeleteObject( SelectObject( hDC2, hOldPen ) );
 		DeleteObject( SelectObject( hDC2, GetStockObject( SYSTEM_FONT ) ) );
 		DeleteDC( hDC2 );
@@ -1309,7 +1309,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 							pDest[x] = 3;   // Diagonale Maske
 						}
 #ifdef SIMPLE_CONTOUR
-						else if( pLinks->bKonturen  &&  pSrc[x]%pLinks->uKontur <= pLinks->uKonturToleranz ) {  // so einfach w�ren Konturen einzuf�gen
+						else if( pLinks->bKonturen  &&  pSrc[x]%pLinks->uKontur <= pLinks->uKonturToleranz ) {  // so einfach wďż˝ren Konturen einzufďż˝gen
 							pDest[x] = 4;
 						}
 #endif
@@ -1395,9 +1395,9 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 			pDest = pBits+pBmp->rectRechts.left+( h-pBmp->rectRechts.top-h_corrected )*ww;
 
 			if( !pRechts->bShowNoZ ) {
-				// f�r die Legende den Graustreifen ...
+				// fďż˝r die Legende den Graustreifen ...
 				for( y = 0;  y < h_corrected;  y++ ) {
-					// -1 bei y, da die Bitmap nur bis h_corrected-1 l�uft (for y<h!)
+					// -1 bei y, da die Bitmap nur bis h_corrected-1 lďż˝uft (for y<h!)
 					for( x = 0;	 x < 8;	   x++ ) {
 						if( ( !DontEmulContrast )|pRechts->bPseudo3D ) {
 							pDest[x-skala_w-24+( h_corrected-y-1 )*ww] = (BYTE)( startcol+pRechts->fStart*( endcol-startcol )/100.0 +( y*( endcol-startcol ) )*( pRechts->fEnde-pRechts->fStart )/100.0/h_corrected );
@@ -1562,10 +1562,10 @@ int Draw2DAxisDC( HDC hDC, LPBILD pBild, LPBITMAPINFO pDib, RECT xywh )
 	}
 	SetDibPaletteColors( pDib, (COLORREF HUGE*)( pBild->Farben ), pBild, 0, endcol, 0, endcol );
 	if( !pBild->bShowNoZ ) {
-		// f�r die Legende den Graustreifen ...
+		// für die Legende den Graustreifen ...
 		for( y = 0;  y < endcol;  y++ )	{
 #if 0   // Emulating contrast make only sense when altering bitmap palette!
-			// -1 bei y, da die Bitmap nur bis pSnom->h-1 l�uft (for y<h!)
+			// -1 bei y, da die Bitmap nur bis pSnom->h-1 lďż˝uft (for y<h!)
 			// EmulContrast Resize only color
 			if( !DontEmulContrast )	{
 				if( y <= pBild->fStart*endcol/100.0 ) {
@@ -1775,7 +1775,7 @@ BOOL DrawInDC( HDC hDC, LPBMPDATA pBmp, BOOL UsedOwnPixel, BOOL bIgnoreRect, dou
 	pDib->bmiHeader.biClrUsed =
 	        pDib->bmiHeader.biClrImportant = 0;
 
-	// Zuerst Pointer f�r rechte und linke Seite holen
+	// Zuerst Pointer fďż˝r rechte und linke Seite holen
 	pSnom = &( pBmp->pSnom[iAkt] );
 	pLinks = NULL;
 	switch( pBmp->Links ) {
@@ -2108,7 +2108,7 @@ void DrawScanLine( HDC hdc, LPBMPDATA pBmp, double fZoom )
 
 
 /***************************************************************************************/
-// Kopiert die H�henwerte
+// Kopiert die Hďż˝henwerte
 
 /****	Kopiert die Daten einer Querschnittslinie nach puDest ****/
 /**** Das sind maximal (w^2+h^2)^.5+1 Punkte ****/
@@ -2143,7 +2143,7 @@ int BildGetLine( LPUWORD puDest, LPUWORD puDaten, LPRECT pRect, LONG w, LONG h, 
 	}
 
 	if( pRect->top == pRect->bottom ) {
-		// X ist Z�hlvariable
+		// X ist Zďż˝hlvariable
 		if( pRect->left > pRect->right ) {
 			delta = -1;
 		}
@@ -2166,7 +2166,7 @@ int BildGetLine( LPUWORD puDest, LPUWORD puDaten, LPRECT pRect, LONG w, LONG h, 
 
 	m =  (double)( pRect->left-pRect->right )/ (double)( pRect->top-pRect->bottom );
 	if( fabs( m ) < 1.0 ) {
-		// Y ist Z�hlvariable
+		// Y ist Zďż˝hlvariable
 		if( pRect->top > pRect->bottom ) {
 			delta = -1;
 		}
@@ -2187,7 +2187,7 @@ int BildGetLine( LPUWORD puDest, LPUWORD puDaten, LPRECT pRect, LONG w, LONG h, 
 		return ( iAnzahl );
 	}
 	else {
-		// X ist Z�hlvariable
+		// X ist Zďż˝hlvariable
 		if( pRect->left > pRect->right ) {
 			delta = -1;
 		}
@@ -2337,7 +2337,7 @@ void ScanLinePlot( HDC hdc, LPBMPDATA pBmp, LPBILD pBild, double fZoom, PROFILFL
 	SetROP2( hdc, R2_COPYPEN );
 	SetBkMode( hdc, TRANSPARENT );
 
-	// Ausma�e feststellen
+	// Ausmaďż˝e feststellen
 	x = (int)( pBmp->rectPlot.left/fZoom );
 	y = (int)( pBmp->rectPlot.top/fZoom );
 	w = (int)( ( pBmp->rectPlot.right-pBmp->rectPlot.left )/fZoom );
@@ -2457,9 +2457,9 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 	// Damit immer alle gleich
 	pBmp->bPlotUnten = PlotsUnten;
 
-	// Erst mal inititalisieren f�r den Fall: Keine Scanline
+	// Erst mal inititalisieren fďż˝r den Fall: Keine Scanline
 	pBmp->bIsScanLine = FALSE;
-	// Ausma�e Fenster berechnen
+	// Ausmaďż˝e Fenster berechnen
 
 //	pBmp->rectFenster.right = pBmp->pDib->bmiHeader.biWidth;
 //	pBmp->rectFenster.bottom = pBmp->pDib->bmiHeader.biHeight;
@@ -2486,7 +2486,7 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		if( j == 0 ) {
 			return; // Nichts zu zeichnen
 		}
-		// Array mit ausreichender Gr��e (die auch noch Potenz von 2 sein soll) belegen
+		// Array mit ausreichender Größe (die auch noch Potenz von 2 sein soll) belegen
 		i = (int)sqrt( pSnom->w*pSnom->w+pSnom->h*pSnom->h )+20;
 		while( i > iSize )
 			iSize <<= 1;
@@ -2499,7 +2499,7 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 		}
 	}
 
-	// Platz f�r Scanline dazurechnen
+	// Platz fďż˝r Scanline dazurechnen
 	pBmp->rectFenster.right = 64+pBmp->rectPlot.right;      // Rechts Platz lassen
 	if( pBmp->bPlotUnten ) {
 		if( pBmp->rectLinks.top > 0 ) {
@@ -2514,7 +2514,7 @@ void DrawScanLinePlot( HDC hdc, LPBMPDATA pBmp, double fScale, BOOLEAN bWhiteOut
 	i = lf.lfHeight;
 	j = SetMapMode( hdc, MM_TEXT ); // to calculate correctly the size
 	lf.lfHeight /= fScale;
-	hOld = SelectObject( hdc, CreateFontIndirect( &lf ) );  // F�r alle Rechnungen
+	hOld = SelectObject( hdc, CreateFontIndirect( &lf ) );  // Fďż˝r alle Rechnungen
 	SetMapMode( hdc, j );
 	lf.lfHeight = i;
 

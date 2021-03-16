@@ -1,4 +1,4 @@
-// Routinen und #defines für SNOM_WRK.C
+// Routinen und #defines fÃ¼r SNOM_WRK.C
 
 //#include <wingdi.h>
 #include <windows.h>
@@ -25,7 +25,7 @@ void	CopyDibToDC( HDC hDC, LPBITMAPINFO pDib, LPBYTE pDest, RECT xywh );
 // Ende Draw3D
 // April 97
 // "Schnelle Integeroutinen": 28.12.97
-// Berechnet die neue Bitmapfarben (nur für Recalc-Cache)
+// Berechnet die neue Bitmapfarben (nur fÃ¼r Recalc-Cache)
 WORD	FarbenSetzen( LPBITMAPINFO pCacheDib, LPBILD pBild, LONG startcol, LONG max, double maxcol, BOOL StartEnde );
 
 // Ermittelt Offset der Daten vom Start
@@ -42,7 +42,7 @@ BOOL	SetDibPaletteColors( LPBITMAPINFO pDib, COLORREF HUGE *Farbe, LPBILD pBild,
 double	CalcIncrement( int min, int max, double len );
 // 18.8.97
 
-// Berechnet Ausmaße einer Bitmap mit Legende, 3D ...
+// Berechnet AusmaÃŸe einer Bitmap mit Legende, 3D ...
 void	CalcDibSize( HDC hdc, LONG cxDib, LONG cyDib, LPRECT pCoord, BOOL Show3D, BOOL ShowScanline );
 
 // Zeichnet eine Bitmap neu

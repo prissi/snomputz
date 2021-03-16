@@ -42,10 +42,10 @@ BOOL	Show3D = FALSE, PlotsUnten=FALSE;
 double	fPiezoSkalX, fPiezoSkalY, fPiezoSkalZ, fIntens;
 WORD	wZoomFaktor=1;
 
-// Startparameter für 3D-Ansicht: 45°, 45° 1:1, Draft-Modus
+// Startparameter fÃ¼r 3D-Ansicht: 45Â°, 45Â° 1:1, Draft-Modus
 float	f3DXYWinkel, f3DZWinkel, f3DZSkal;
 WORD	w3DZoom;	// 2=Draft
-// Startfarben: Schwarz Weiß Orange
+// Startfarben: Schwarz WeiÃŸ Orange
 COLORREF	cVorn, cHinten, cMarkierungLinks, cMarkierungRechts;
 
 // Was bearbeiten?
@@ -55,12 +55,12 @@ WORKMODE	show=LUMI|ERRO|TOPO;
 // Berechnungs-Cache
 LPUCHAR	pColorConvert=NULL;
 
-// Alles für die Höhenlinien ...
+// Alles fÃ¼r die HÃ¶henlinien ...
 WORKMODE		wProfilMode=TOPO|ERRO|LUMI;
 PROFILFLAGS	wProfilFlags=P_DIST|P_X|P_Y|P_Z|P_AUTOKORRELATION;
 PROFILFLAGS	wProfilShowFlags=P_DIST|P_Z;
 
-// Für "Unbenannt"-Bilder
+// FÃ¼r "Unbenannt"-Bilder
 WORD	uUnbenannt=0;
 
 #else																																																		 // Aus SNOM-WRK.C
@@ -95,7 +95,7 @@ extern double	fPiezoSkalX, fPiezoSkalY, fPiezoSkalZ, fIntens;
 //extern double	fSkalX, fSkalY, fSkalZ, fIntens;
 extern WORD		wZoomFaktor;
 
-// Parameter für 3D-Ansicht: 45°, 45° 1:1
+// Parameter fÃ¼r 3D-Ansicht: 45Â°, 45Â° 1:1
 extern WORD		w3DZoom;
 extern BOOL		Show3D, PlotsUnten;
 extern float	f3DXYWinkel, f3DZWinkel, f3DZSkal;
@@ -107,12 +107,12 @@ extern WORKMODE	modus, show;
 // Berechnungs-Cache
 extern LPUCHAR pColorConvert;
 
-// Alles für die Höhenlinien ...
+// Alles fÃ¼r die HÃ¶henlinien ...
 extern WORKMODE		wProfilMode;
 extern PROFILFLAGS	wProfilFlags;
 extern PROFILFLAGS	wProfilShowFlags;
 
-// Für "Unbenannt"-Bilder
+// FÃ¼r "Unbenannt"-Bilder
 extern WORD	uUnbenannt;
 
 

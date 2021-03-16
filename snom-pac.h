@@ -35,13 +35,13 @@ typedef struct {
 
 
 // Initialisiert die Huffmancodierung
-// für max. maxchr Zeichen (0..maxchr-1) mit der Häudigkeit nfreq[0..maxchr-1]
+// fÃ¼r max. maxchr Zeichen (0..maxchr-1) mit der HÃ¤udigkeit nfreq[0..maxchr-1]
 BOOLEAN	huffinit( ULONG	maxchr, LPULONG nfreq, HUFFCODE *hcode );
 
 // Gibt Speicher von hcode wieder frei
 void	huffexit( HUFFCODE *hcode );
 
-// Fügt das Zeichen "ich" in den Puffer "*codep" ab der Bitposition "nb" ein
+// FÃ¼gt das Zeichen "ich" in den Puffer "*codep" ab der Bitposition "nb" ein
 // TRUE, solange alles io
 BOOL huffenc(unsigned long ich, LPUCHAR codep, unsigned long *nb, HUFFCODE *hcode);
 

@@ -21,17 +21,17 @@ BOOLEAN	Autokorrelation( LPFLOAT pfZiel, LPFLOAT pfDaten, int iMaxPts, BOOLEAN U
 BOOLEAN	Differential( LPFLOAT pfDaten, int iPunkte );
 // 10.11.98
 
-// Correlation function (berechnet Korrelationslänge)
+// Correlation function (berechnet KorrelationslÃ¤nge)
 void	CorrelationFunction( HFILE hFile, LPUWORD puDaten, LONG w, LONG h, double dSkal );
 
-/****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe im Bild ****/
+/****	Berechnet die mittlere Rauhigkeit und die mittlere HÃ¶he im Bild ****/
 void	RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS, LPFLOAT pfQuadrate );
 // 18.2.98
 
 void	MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS );
 // 18.11.11
 
-/****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe auf einer Scanline ****/
+/****	Berechnet die mittlere Rauhigkeit und die mittlere HÃ¶he auf einer Scanline ****/
 void	RMSLine( LPUWORD puDaten, LONG x, LONG y, LONG w, LONG h, LONG ww, double m, double fSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS );
 // 18.2.98
 
@@ -43,7 +43,7 @@ BOOLEAN	BildCalcConst( LPBILD pDestBild, LONG w, LONG h, UCHAR cOperand, double 
 BOOL	BildCalcBild( LPBMPDATA pDest, WORKMODE DestMode, WORD cOperand, LPBMPDATA puWerte, WORKMODE WerteMode, BOOL bOverflow );
 // 9.6.97, 9.8.98
 
-// Bestimmt die Mittelwerte in einer Zeile (für MittelBild und den Ausgleich beim Messen)
+// Bestimmt die Mittelwerte in einer Zeile (fÃ¼r MittelBild und den Ausgleich beim Messen)
 BOOLEAN	MittelZeile( LPUWORD puZeile, LPUCHAR puMaske, LONG w, LPDOUBLE pfMittel, ULONG n );
 // 26.11.97, 31.7.98
 
