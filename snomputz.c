@@ -522,9 +522,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 
 	// Rahmenfenster erzeugen
 #ifdef BIT32
-	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz (32 Bit) 1.00ß",
+	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz",
 #else
-	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz 1.00ß",
+	hwndFrame = CreateWindowEx( WS_EX_ACCEPTFILES, szFrameClass, "SNOM-Putz",
 #endif
 	                            WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 	                            CW_USEDEFAULT, CW_USEDEFAULT,

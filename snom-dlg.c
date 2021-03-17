@@ -3162,7 +3162,7 @@ DWORD WINAPI QDDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 			else {
 				sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*GetScrollPos( hfStart, SB_CTL ), pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 				SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-				sprintf( result_str, "Count %i  density %.3e/cmÂ˛", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+				sprintf( result_str, "Count %i  density %.3e cm^-2", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 				SetDlgItemText( hdlg, QD_RESULT, result_str );
 			}
 			return ( TRUE );
@@ -3263,7 +3263,7 @@ RecalcDot:
 			CalcDotRadius( pData, pSnom->w, pSnom->h, pBmp->dot_mean_level, DOT_AVERAGE, pBmp->dot_number, pBmp->dot_histogramm, pBmp->dot_quantisation, bCenter, maxradius );
 			sprintf( unit_str, "%lf.4 %s", pSnom->Topo.fSkal*pBmp->dot_radius, pSnom->Topo.strZUnit ? pSnom->Topo.strZUnit : "nm" );
 			SetDlgItemText( hdlg, QD_EDIT_TOLERANCE, unit_str );
-			sprintf( result_str, "Count %i  density %.3e/cmÂ˛", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
+			sprintf( result_str, "Count %i  density %.3e cm^-2.", pBmp->dot_number, (double)pBmp->dot_number*1e14/( pSnom->fX*pSnom->w*pSnom->fY*pSnom->h ) );
 			SetDlgItemText( hdlg, QD_RESULT, result_str );
 			pBmp->bCountDots = ( pBmp->dot_number > 0 );
 #ifdef BIT32
