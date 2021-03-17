@@ -582,10 +582,15 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 		FehlerRsc(E_MEMORY);
 		return (FALSE);
 	}
-	i = _hread(hFile, fData, lDataLen);
-	assert(i == lDataLen);
 
+	i = _hread(hFile, fData, lDataLen);
 	_lclose(hFile);
+
+	if (i < lDataLen) {
+		return FALSE;
+		MemFree(fData);
+	}
+
 
 	lDataLen /= 4;
 
