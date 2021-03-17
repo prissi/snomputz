@@ -569,10 +569,6 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 			pSnom->h = pcBuf[i + 22] + pcBuf[i + 23] * 256u;
 			pSnom->w = pcBuf[i + 24] + pcBuf[i + 25] * 256u;
 			lDataLen = pcBuf[i + 26] + pcBuf[i + 27] * 0x100u + pcBuf[i + 28] * 0x10000ul + pcBuf[i + 29] * 0x1000000ul;
-			assert(lDataLen == pSnom->w * pSnom->h * 4);
-		}
-		if (memcmp(p, "YDECIMATION", 12) == 0) {
-			assert(lDataLen == pSnom->w * pSnom->h * 4);
 		}
 	}
 
