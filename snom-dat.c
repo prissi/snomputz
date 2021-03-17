@@ -529,6 +529,137 @@ BOOL ReadSDF(HFILE hFile, LPBMPDATA pBmp)
 // Finish read SDF
 
 
+/*************************************** MMD-Format ***************************************
+ * reverse engineered
+ */
+
+#define MAX_MMD_HDLEN (0xBEC)
+
+BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
+{
+	LPUWORD puData, puZeile;
+	LONG i, iMax = 0, iMin = 65536;
+	LONG x, y;
+
+	LPSNOMDATA pSnom = &(pBmp->pSnom[0]);
+	BYTE pcBuf[MAX_MMD_HDLEN];
+	CHAR str[1024], str2[16];
+	long iLen = 0, lDataLen;
+	WORKMODE Header = 0;
+	double dWx, dWy, dWz;
+	float* fData, last_good_value, fmin, fmax;
+	double fX, fY, fZ, fIllegal;
+
+	// defaults
+	_llseek(hFile, 0l, 0);
+	_hread(hFile, pcBuf, MAX_MMD_HDLEN);
+
+	lstrcpy(pSnom->Topo.strTitel, STR_TOPO);
+	lstrcpy(pSnom->Error.strTitel, STR_ERROR);
+	lstrcpy(pSnom->Lumi.strTitel, STR_LUMI);
+
+	for (int j=i = 0; i < MAX_MMD_HDLEN; i+=0x1E, j++) {
+		char* p = pcBuf + i;
+		if (memcmp(p, "DATA", 5)==0) {
+			/* the data field has the following entries
+			* at i+22 hieght
+			* at i+24 Width
+			* at i+26 length of data (long)
+			*/
+			pSnom->h = pcBuf[i + 22] + pcBuf[i + 23] * 256u;
+			pSnom->w = pcBuf[i + 24] + pcBuf[i + 25] * 256u;
+			lDataLen = pcBuf[i + 26] + pcBuf[i + 27] * 0x100u + pcBuf[i + 28] * 0x10000ul + pcBuf[i + 29] * 0x1000000ul;
+			assert(lDataLen == pSnom->w * pSnom->h * 4);
+		}
+		if (memcmp(p, "YDECIMATION", 12) == 0) {
+			assert(lDataLen == pSnom->w * pSnom->h * 4);
+		}
+	}
+
+	fY = *(float*)(pcBuf + 0xAAA);
+	fX = *(float*)(pcBuf + 0xAAE);
+	fIllegal = *(float*)(pcBuf + 0xAC6);
+	sscanf(pcBuf + 0xA5A, "%lf %s", &fZ, str);
+
+	fData = (float*)pMalloc(lDataLen);
+	if (pcBuf == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
+	}
+	i = _hread(hFile, fData, lDataLen);
+	assert(i == lDataLen);
+
+	_lclose(hFile);
+
+	lDataLen /= 4;
+
+	// there might be outliers
+	last_good_value = 10.0;
+	fmin = 1e38;
+	fmax = 1e-38;
+	for (i = 0; i < lDataLen; i++) {
+		if (fData[i] == fIllegal) {
+			fData[i] = last_good_value;
+		}
+		else {
+			last_good_value = fData[i];
+			if (fData[i] > fmax) {
+				fmax = fData[i];
+			}
+			else if (fData[i] < fmin) {
+				fmin = fData[i];
+			}
+		}
+	}
+
+	puData = (LPUWORD)pMalloc(pSnom->w * pSnom->h * sizeof(WORD));
+	if (puData == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
+	}
+
+	// Eh 16-Bit Daten? Dann einfach kopieren
+	puZeile = puData;
+	iMax = 45000;
+	iMin = 0;
+	for (long i = 0; i < lDataLen; i++) {
+		puData[i] = (WORD)(45000.0 * (fData[i] - fmin) / (fmax - fmin));
+	}
+
+	pBmp->pPsi.fRot = 0.0;
+	pSnom->Topo.puDaten = puData;
+	pSnom->Topo.Typ = TOPO;
+	pSnom->Topo.uMaxDaten = 45001u;
+	// Evt. initialisieren
+	pSnom->Topo.bPseudo3D = FALSE;
+	pSnom->Topo.bModuloKonturen = FALSE;
+	pSnom->Topo.bKonturen = FALSE;
+	pSnom->Topo.Farben[0] = 0x0l;
+	pSnom->Topo.Farben[1] = 0x00004080ul;
+	pSnom->Topo.Farben[2] = 0x00FFFFFFul;
+	pSnom->Topo.bNoLUT = TRUE;
+	pSnom->Topo.fStart = 0.0;
+	pSnom->Topo.fEnde = 100.0;
+	pBmp->Links = TOPO;
+	pSnom->Topo.fXYWinkel3D = f3DXYWinkel;
+	pSnom->Topo.fZWinkel3D = f3DZWinkel;
+	pSnom->Topo.fZSkal3D = f3DZWinkel;
+	pSnom->Topo.bSpecialZUnit = FALSE;
+	pSnom->Topo.bShowNoZ = FALSE;
+	lstrcpy(pSnom->Topo.strZUnit, STR_TOPO_UNIT);
+	pSnom->Topo.iNumColors = 0;
+	pSnom->Topo.fSkal = fZ / (double)pSnom->Topo.uMaxDaten;
+	pSnom->fX = fX * 1000.0;
+	pSnom->fY = fY * 1000.0;
+
+	MemFree(fData);
+	return (TRUE);
+}
+
+
+// Finish read SDF
+
+
 //*************************************** Hitachi-Format ***************************************
 
 // Format description see "Hitachi.h"
@@ -2776,6 +2907,13 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 	if (strncmp(str,"bBCR",4)==0) {
 		// Total energy data from Jena ...
 		bResult = ReadSDF(hFile, pBmp);
+		NormalMaus();
+		return (bResult);
+	}
+
+	if (strncmp(str, "DIRE", 4) == 0) {
+		// Total energy data from Jena ...
+		bResult = ReadMMD(hFile, pBmp);
 		NormalMaus();
 		return (bResult);
 	}
