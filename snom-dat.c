@@ -574,8 +574,8 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 
 	fY = *(float*)(pcBuf + 0xAAA);
 	fX = *(float*)(pcBuf + 0xAAE);
+	fZ = *(float*)(pcBuf + 0xAB2);
 	fIllegal = *(float*)(pcBuf + 0xAC6);
-	sscanf(pcBuf + 0xA5A, "%lf %s", &fZ, str);
 
 	fData = (float*)pMalloc(lDataLen);
 	if (pcBuf == NULL) {
@@ -630,7 +630,7 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 	pBmp->pPsi.fRot = 0.0;
 	pSnom->Topo.puDaten = puData;
 	pSnom->Topo.Typ = TOPO;
-	pSnom->Topo.uMaxDaten = 45001u;
+	pSnom->Topo.uMaxDaten = 50001u;
 	// Evt. initialisieren
 	pSnom->Topo.bPseudo3D = FALSE;
 	pSnom->Topo.bModuloKonturen = FALSE;
@@ -649,7 +649,7 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 	pSnom->Topo.bShowNoZ = FALSE;
 	lstrcpy(pSnom->Topo.strZUnit, STR_TOPO_UNIT);
 	pSnom->Topo.iNumColors = 0;
-	pSnom->Topo.fSkal = fZ / (double)pSnom->Topo.uMaxDaten;
+	pSnom->Topo.fSkal = fZ*(fmax-fmin)*1000.0 / 50000.0;
 	pSnom->fX = fX * 1000.0;
 	pSnom->fY = fY * 1000.0;
 
