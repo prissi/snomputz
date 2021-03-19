@@ -549,6 +549,9 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 	double dWx, dWy, dWz;
 	float* fData, last_good_value, fmin, fmax;
 	double fX, fY, fZ, fIllegal;
+	BOOL bHasMask = FALSE;
+	DWORD iMaskW;
+	BYTE *pMaske;
 
 	// defaults
 	_llseek(hFile, 0l, 0);
@@ -580,6 +583,7 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 	fData = (float*)pMalloc(lDataLen);
 	if (pcBuf == NULL) {
 		FehlerRsc(E_MEMORY);
+		_lclose(hFile);
 		return (FALSE);
 	}
 
@@ -591,16 +595,27 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 		MemFree(fData);
 	}
 
-
 	lDataLen /= 4;
+	iMaskW = (pSnom->w + 7) & 0xFFF8u;
+	pMaske = (BYTE *)pMalloc(iMaskW*pSnom->h);
+	if (pMaske == NULL) {
+		MemFree(fData);
+		FehlerRsc(E_MEMORY);
+		_lclose(hFile);
+		return (FALSE);
+	}
+	memset(pMaske, 0, iMaskW * pSnom->h);
 
 	// there might be outliers
-	last_good_value = 10.0;
+	last_good_value = 0.0;
 	fmin = 1e38;
 	fmax = 1e-38;
 	for (i = 0; i < lDataLen; i++) {
 		if (fData[i] == fIllegal) {
 			fData[i] = last_good_value;
+			// add to maske
+			pMaske[(pSnom->h-(i / pSnom->w)-1) * iMaskW + ((i % pSnom->w) >> 3)] |= 1 << ((i % pSnom->w) & 0x07);
+			bHasMask = TRUE;
 		}
 		else {
 			last_good_value = fData[i];
@@ -615,6 +630,8 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 
 	puData = (LPUWORD)pMalloc(pSnom->w * pSnom->h * sizeof(WORD));
 	if (puData == NULL) {
+		MemFree(fData);
+		MemFree(pMaske);
 		FehlerRsc(E_MEMORY);
 		return (FALSE);
 	}
@@ -652,6 +669,15 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 	pSnom->Topo.fSkal = fZ*(fmax-fmin)*1000.0 / 50000.0;
 	pSnom->fX = fX * 1000.0;
 	pSnom->fY = fY * 1000.0;
+
+	if (bHasMask) {
+		pBmp->pMaske = pMaske;
+		pBmp->wMaskeW = iMaskW;
+	}
+	else {
+		pBmp->pMaske = NULL;
+		MemFree(pMaske);
+	}
 
 	MemFree(fData);
 	return (TRUE);
