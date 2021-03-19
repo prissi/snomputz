@@ -465,8 +465,6 @@ BOOL ReadSDF(HFILE hFile, LPBMPDATA pBmp)
 
 	_lclose(hFile);
 
-	sscanf(pcBuf, "%lf %s", &fZ, str);
-
 	// there might be outliers
 	last_good_value = 10.0;
 	fmin = 1e38;
@@ -519,7 +517,7 @@ BOOL ReadSDF(HFILE hFile, LPBMPDATA pBmp)
 	pSnom->Topo.bShowNoZ = FALSE;
 	lstrcpy(pSnom->Topo.strZUnit, STR_TOPO_UNIT);
 	pSnom->Topo.iNumColors = 0;
-	pSnom->Topo.fSkal = fZ / (double)pSnom->Topo.uMaxDaten;
+	pSnom->Topo.fSkal = 1000.0*(fmax-fmin) / (double)pSnom->Topo.uMaxDaten;
 
 	MemFree(fData);
 	return (TRUE);
@@ -684,7 +682,7 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 }
 
 
-// Finish read SDF
+// Finish read MMD
 
 
 //*************************************** Hitachi-Format ***************************************
