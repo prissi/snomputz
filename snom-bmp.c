@@ -503,7 +503,6 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							GlobalUnlock( hClip );
 							OpenClipboard( hwnd );
 							EmptyClipboard();
-							SetClipboardData( CF_DIB, hClip );
 
 							hDC = GetDC( hwnd );
 							// in Metafile 20000 is 20 cm
@@ -532,6 +531,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							lstrcpy( desc, "Snomputz" );
 							lstrcpy( desc+9, pBmp->szName+pBmp->wKurzname );
 							hDC2 = CreateEnhMetaFile( hDC, sMetaName, NULL, desc );
+							SetWindowExtEx(hDC2, xywh.bottom, xywh.right, NULL);
+							SetWindowOrgEx(hDC2, 0, 0, NULL );
 							ReleaseDC( hwnd, hDC );
 							// Finally draw!
 //							lf.lfHeight *= (int)fZoom;
@@ -544,6 +545,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							hEn = CloseEnhMetaFile( hDC2 );
 							// Copy Handle to Clipboard
 							SetClipboardData( CF_ENHMETAFILE, CopyEnhMetaFile( hEn, NULL ) );
+
+//							SetClipboardData(CF_DIB, hClip);
 							CloseClipboard();
 							DeleteEnhMetaFile( hEn );
 							DeleteFile( sMetaName );

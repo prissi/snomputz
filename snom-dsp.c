@@ -1851,7 +1851,7 @@ BOOL DrawInDC( HDC hDC, LPBMPDATA pBmp, BOOL UsedOwnPixel, BOOL bIgnoreRect, dou
 		pSnom = &( pBmp->pSnom[iAkt] ); // MSVC braucht diese Zeile! Compilerfehler!!!
 #endif
 		xywh->right = pSnom->w*fZoom;
-		xywh->bottom = pSnom->h*fZoom;
+		xywh->bottom = pSnom->h*fZoom*(pSnom->fY/pSnom->fX);
 		DPtoLP( hDC, (LPPOINT)xywh, 2 );
 	}
 	iOldLeft = xywh->left*fZoom;

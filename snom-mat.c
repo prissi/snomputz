@@ -191,6 +191,61 @@ BOOLEAN	BildFFTFilter( LPBILD pBild, LONG w, LONG h, LPFLOAT pfFilter, int iSize
 // 9.2.99
 
 
+#if 0
+// bilateral filer from https://www.cnblogs.com/wangguchangqing/p/6416401.html?tdsourcetag=s_pcqq_aiomsg
+
+void myBilateralFilter(const Mat& src, Mat& dst, int ksize, double space_sigma, double color_sigma)
+{
+	int channels = src.channels();
+	CV_Assert(channels == 1 || channels == 3);
+	double space_coeff = -0.5 / (space_sigma * space_sigma);
+	double color_coeff = -0.5 / (color_sigma * color_sigma);
+	int radius = ksize / 2;
+	Mat temp;
+	copyMakeBorder(src, temp, radius, radius, radius, radius, BorderTypes::BORDER_REFLECT);
+	vector<double> _color_weight(channels * 256); // 存放差值的平方
+	vector<double> _space_weight(ksize * ksize); // 空间模板系数
+	vector<int> _space_ofs(ksize * ksize); // 模板窗口的坐标
+	double* color_weight = &_color_weight[0];
+	double* space_weight = &_space_weight[0];
+	int* space_ofs = &_space_ofs[0];
+	for (int i = 0; i < channels * 256; i++)
+		color_weight[i] = exp(i * i * color_coeff);
+	// 生成空间模板
+	int maxk = 0;
+	for (int i = -radius; i <= radius; i++)
+	{
+		for (int j = -radius; j <= radius; j++)
+		{
+			double r = sqrt(i * i + j * j);
+			if (r > radius)
+				continue;
+			space_weight[maxk] = exp(r * r * space_coeff); // 存放模板系数
+			space_ofs[maxk++] = i * temp.step + j * channels; // 存放模板的位置，和模板系数相对应
+		}
+	}
+	// 滤波过程
+	for (int i = 0; i < src.rows; i++)
+	{
+		const uchar* sptr = temp.data + (i + radius) * temp.step + radius * channels;
+		uchar* dptr = dst.data + i * dst.step;
+		for (int j = 0; j < src.cols; j++)
+		{
+			double sum = 0, wsum = 0;
+			int val0 = sptr[j]; // 模板中心位置的像素
+			for (int k = 0; k < maxk; k++)
+			{
+				int val = sptr[j + space_ofs[k]];
+				double w = space_weight[k] * color_weight[abs(val - val0)]; // 模板系数 = 空间系数 * 灰度值系数
+				sum += val * w;
+				wsum += w;
+			}
+			dptr[j] = (uchar)cvRound(sum / wsum);
+		}
+	}
+}
+#endif
+
 /**************************************************************************************
  * Autokorrelation (Autokovarianz) berechnen
  */
