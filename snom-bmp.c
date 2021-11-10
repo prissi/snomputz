@@ -3449,7 +3449,8 @@ FertigMaske:
 				SendMessage( GetParent( hwnd ), WM_MDIRESTORE, (WPARAM)hwnd, 0L );
 			}
 			lstrcpy( (LPSTR)datei, (LPSTR)pBmp->szName );
-			if( pBmp->iAktuell != pBmp->iSaved ) {
+			BOOLEAN alt_cntrl_shift_state = GetKeyState(VK_SHIFT) != 0 && GetKeyState(VK_CONTROL) != 0 && GetKeyState(VK_MENU) != 0;
+			if(  pBmp->iAktuell != pBmp->iSaved  &&  !alt_cntrl_shift_state  ) {
 				wsprintf( str, GetStringRsc( I_SAVE_FILE ), (LPSTR)datei );
 				wButton = MessageBox( hwndFrame, str, STR_SAVE_FILE, MB_ICONQUESTION|MB_YESNOCANCEL );
 				if( wButton == IDCANCEL ) {
