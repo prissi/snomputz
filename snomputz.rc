@@ -331,7 +331,7 @@ ABOUTDIALOG DIALOG DISCARDABLE  64, 86, 219, 105
 STYLE DS_NOIDLEMSG | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_DLGFRAME
 FONT 10, "MS Sans Serif"
 BEGIN
-    CTEXT           "Program to work with SPM images\nVersion 1.1ß\n25.1.2011\n©1997-2011 Markus Pristovsek\nprissi@physik.tu-berlin.de",
+    CTEXT           "Program to work with SPM images\nVersion 1.1ß\n22.3.2023\n©1997-2023 Markus Pristovsek\npristovsek@imass.nagoya-u.ac.jp",
                     -1,41,7,160,53
     LTEXT           "LOGO_3P",-1,8,7,20,50
     ICON            "SNOMIcon",-1,46,28,16,16
