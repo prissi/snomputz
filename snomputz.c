@@ -387,8 +387,10 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 
 	// evt. Registry Updaten
 	if( GetProfileString( "Extensions", "hdf", "", (LPSTR)szBuf, 80 ) == 0  ||  strstr( szBuf, "SNOMPUTZ" ) == NULL ) {
-		lstrcpy( (LPSTR)szBuf+GetModuleFileName( hInst, szBuf, 80 ), " ^.hdf" );
-		WriteProfileString( "Extensions", "hdf", (LPSTR)szBuf );
+		lstrcpy((LPSTR)szBuf + GetModuleFileName(hInst, szBuf, 80), " ^.hdf");
+		WriteProfileString("Extensions", "hdf", (LPSTR)szBuf);
+		lstrcpy((LPSTR)szBuf + GetModuleFileName(hInst, szBuf, 80), " ^.xqd");
+		WriteProfileString("Extensions", "xqd", (LPSTR)szBuf);
 	}
 #else
 	// Zuletzt benutzt Dateien eintragen ...
@@ -487,6 +489,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 			RegSetValue( HKEY_CLASSES_ROOT, ".hdf", REG_SZ, "SPM.Image", 9 );
 			RegCreateKey( HKEY_CLASSES_ROOT, ".hdz", &hRegKey );
 			RegSetValue( HKEY_CLASSES_ROOT, ".hdz", REG_SZ, "SPM.Image", 9 );
+			RegCreateKey(HKEY_CLASSES_ROOT, ".xqd", &hRegKey);
+			RegSetValue(HKEY_CLASSES_ROOT, ".xdq", REG_SZ, "SPM.Image", 9);
 			RegCreateKey( HKEY_CLASSES_ROOT, "SPM.Image", &hRegKey );
 			RegSetValue( hRegKey, NULL, REG_SZ, (LPSTR)"HDF SPM Data", lstrlen( "HDF SPM Data" ) );
 			RegCreateKey( HKEY_CLASSES_ROOT, "SPM.Image\\DefaultIcon", &hRegKey );
@@ -505,8 +509,10 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	else {
 		RegCreateKey( HKEY_CLASSES_ROOT, ".hdz", &hRegKey );
 		RegSetValue( HKEY_CLASSES_ROOT, ".hdz", REG_SZ, "SPM.Image", 9 );
-		RegCreateKey( HKEY_CLASSES_ROOT, ".hdf", &hRegKey );
-		RegSetValue( HKEY_CLASSES_ROOT, ".hdf", REG_SZ, "SPM.Image", 9 );
+		RegCreateKey(HKEY_CLASSES_ROOT, ".hdf", &hRegKey);
+		RegSetValue(HKEY_CLASSES_ROOT, ".hdf", REG_SZ, "SPM.Image", 9);
+		RegCreateKey(HKEY_CLASSES_ROOT, ".xqd", &hRegKey);
+		RegSetValue(HKEY_CLASSES_ROOT, ".xdq", REG_SZ, "SPM.Image", 9);
 		RegCreateKey( HKEY_CLASSES_ROOT, "SPM.Image", &hRegKey );
 		RegSetValue( hRegKey, NULL, REG_SZ, (LPSTR)"HDF SPM Data", lstrlen( "HDF SPM Data" ) );
 		RegCreateKey( HKEY_CLASSES_ROOT, "SPM.Image\\DefaultIcon", &hRegKey );
@@ -570,15 +576,29 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		// Datei laden
 		LPBMPDATA pBmp;
 		BOOLEAN	bFinish;                // Letzter String?
-		LPSTR c;
+		UCHAR buffer[_MAX_PATH];
+		LPSTR c, c_start = pCmdLine;
 
 		do {
-			// Dateien durch Leerzeichen getrennt
-			c = pCmdLine;
-			while( *c != ' '   &&  *c != 0 )
-				c++;
+			LPSTR b = buffer;
+			// seperates by either quotes or spaces
+			BOOLEAN	parse_quotations = *c_start=='\"';
+			c = c_start + 1;
+			if (parse_quotations) {
+				c_start++;
+				while (*c != '\"' && *c != 0)
+					*b++ = *c++;
+				if(*c=='\"') {
+					// skip last quote
+					c++;
+				}
+			}
+			else {
+				while (*c != ' ' && *c != 0)
+					*b++ = *c++;
+			}
+			*b = 0;
 			bFinish = *c == 0;
-			*c = 0;
 
 			// Beim ersten Mal wird's schon nicht schiefgehen ...
 			pBmp = (LPBMPDATA )pMalloc( sizeof( BMPDATA ) );
@@ -589,7 +609,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 			pBmp->pSnom[0].Error.fSkal = 1.0;
 			pBmp->pSnom[0].Lumi.fSkal = 1.0;
 			pBmp->hwnd = hwndFrame; // Für Import-Dialog, damit es einen Vater gibt ...
-			if( !ReadAll( pCmdLine, pBmp ) ) {
+			if( !ReadAll(buffer, pBmp ) ) {
 				MemFree( pBmp );
 			}
 			else {
@@ -608,7 +628,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 				UpdateRecent( pCmdLine, pBmp );
 				SendMessage( hwndClient, WM_MDICREATE, 0, (long) (LPMDICREATESTRUCT) &mdicreate ) ;
 			}
-			lstrcpy( pCmdLine, c+1 );
+			c_start = c++;
 		} while( !bFinish );
 	}
 #endif
