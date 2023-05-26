@@ -870,6 +870,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	int iAkt = pBmp->iAktuell;
 	char str[16];           // fďż˝r Zahlen
 
+	BOOL recalc_rms = FALSE;
 
 	// Zuerst Pointer fďż˝r rechte und linke Seite holen
 	pSnom = &( pBmp->pSnom[iAkt] );
@@ -877,6 +878,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 	switch( pBmp->Links ) {
 		case TOPO:
 			pLinks = &( pBmp->pSnom[iAkt].Topo );
+			recalc_rms = TRUE;
 			break;
 
 		case ERRO:
@@ -1228,6 +1230,7 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 
 		// Evt. sind die Daten nur ein Pointer
 		if( (LONG)Daten <= 256l ) {
+			recalc_rms = FALSE;
 			switch( pLinks->Typ ) {
 				case TOPO:
 					Daten = pBmp->pSnom[(LONG)Daten-1].Topo.puDaten;
@@ -1241,6 +1244,11 @@ BOOL RecalcCache( LPBMPDATA pBmp, BOOL Bitmaps, BOOL DontEmulContrast )
 					Daten = pBmp->pSnom[(LONG)Daten-1].Lumi.puDaten;
 					break;
 			}
+		}
+
+		if (recalc_rms) {
+			double dMEan;
+			RMSArea(Daten, pSnom->w, 0, 0, pSnom->w, pSnom->h, pBmp->pSnom[iAkt].Topo.fSkal, &dMEan, &pBmp->fRMS, 0L);
 		}
 
 		endcol = startcol + ( (double)maxlinks*maxlinkscol+0.5 );

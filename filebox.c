@@ -84,7 +84,7 @@ BYTE strLastOpenPath[256];
 // Fileselctor aus "cmdlg.ide" von Borland
 DWORD CMUFileOpen( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp )
 {
-	BYTE strTempName[256];
+	BYTE strTempName[1024];
 	OPENFILENAME ofnTemp;
 	DWORD Errval; // Error value
 	BOOL Suc = FALSE;
@@ -149,7 +149,7 @@ DWORD CMUFileOpen( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp )
 	ofnTemp.nMaxCustFilter = 0;
 	ofnTemp.nFilterIndex = 1;
 	ofnTemp.lpstrFile = (LPSTR)strTempName;  // Stores the result in this variable
-	ofnTemp.nMaxFile = 256; // Soviel sollte es schon sein!
+	ofnTemp.nMaxFile = 1024; // Soviel sollte es schon sein!
 	ofnTemp.lpstrFileTitle = NULL;
 	ofnTemp.nMaxFileTitle = 0;
 	ofnTemp.lpstrInitialDir = strLastOpenPath;
@@ -170,6 +170,7 @@ DWORD CMUFileOpen( HWND hWnd, LPCSTR strTitel, LPSTR strName, LPCSTR strTemp )
  */
 	if( ( Suc = GetOpenFileName( &ofnTemp ) ) != TRUE ) {
 		Errval = CommDlgExtendedError();
+
 		if( Errval != 0 ) { // 0 value means user selected Cancel
 			wsprintf( buf, Errstr, Errval );
 			MessageBox( hWnd, buf, NULL, MB_OK|MB_ICONSTOP );

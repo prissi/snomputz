@@ -72,6 +72,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 			pBmp->fZoom = 1.0;
 			pBmp->bPlotUnten = PlotsUnten;
 			pBmp->dot_histogramm = NULL;
+			pBmp->fRMS = 0.0;
 			GetWindowText( hwnd, pBmp->szName, 256 );
 			pBmp->wKurzname = lstrlen( (LPSTR)pBmp->szName );
 			while( pBmp->wKurzname > 0 ) {
@@ -3002,7 +3003,7 @@ FertigMaske:
 					WORD x = pt.x-pBmp->rectLinks.left;
 					WORD y = (pt.y-pBmp->rectLinks.top)/fYzoom;
 					if( x < pSnom->w  &&  y < pSnom->h  &&  pData != 0l  &&  pBild != 0l ) {
-						sprintf( (LPSTR)str, "x(%i)=%.2f nm  y(%i)=%.2f nm  z=%.2f %s", (int)x, (double)x*pSnom->fX, (int)y, (double)y*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pData[x+( y*pSnom->w )]*pBild->fSkal, pBild->strZUnit );
+						sprintf( (LPSTR)str, "RMS=%.3g nm, x(%i)=%.4g nm  y(%i)=%.4g nm  z=%.4g %s", pBmp->fRMS, (int)x, (double)x*pSnom->fX, (int)y, (double)y*pSnom->fY, /*pData[x+(y*pSnom->w)],*/ pData[x+( y*pSnom->w )]*pBild->fSkal, pBild->strZUnit );
 					}
 				}
 				if( PointInRect( &pBmp->rectRechts, pt ) ) {

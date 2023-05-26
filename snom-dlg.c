@@ -1206,6 +1206,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 				case FARB_LOAD_LUT:
 				{       //Loading new LUT
 					TCHAR datei[MAX_PATH];
+					datei[0] = 0;
 					if( CMUFileOpen( hwnd, STR_OPEN_FILE, datei, STR_FILE_LUT ) ) {
 						HFILE hFile;
 						int i;

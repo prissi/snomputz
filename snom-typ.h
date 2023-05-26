@@ -173,6 +173,7 @@ typedef struct
 	LPUCHAR		pExtra;		// Entweder Pointer auf Ascii-Header oder HDF-Header
 	LONG 		lExtraLen;	// Länge der Extradaten auf die pExtra zeigt
 	double		fZoom;		// Zoomfaktor (ist nur bei Bild=Fenstergroß wichtig)
+	double		fRMS;
 }
 BMPDATA;
 
