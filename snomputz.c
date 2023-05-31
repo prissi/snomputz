@@ -11,11 +11,13 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commdlg.h>
+#include <shlobj_core.h>   // für Drag&Drop
 #if defined( USE_CTL3D )
 #include "ctl3d.h"
 #endif  // USE_CTL3D
 #if !defined( __WIN32__ ) && !defined( _WIN32 )
 #include <shellapi.h>   // für Drag&Drop
+#include <shlobj_core.h>   // für Drag&Drop
 #include <print.h>
 #include <commctrl.h>
 #else
@@ -149,6 +151,25 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	extern CHAR strDspDllPath[1024];
 	extern CHAR strDspPrgPath[1024];
 	//INITCOMMONCONTROLSEX	ie={sizeof(ie),ICC_WIN95_CLASSES};
+
+	// file to load
+	if (*pCmdLine != 0) {
+		HWND hOther = FindWindow(szFrameClass, "SNOM-Putz");
+		if(hOther) {
+			HGLOBAL hdrop = GlobalAlloc(GHND, sizeof(DROPFILES) + lstrlen(pCmdLine) + 2);
+			DROPFILES* df = (DROPFILES*)(GlobalLock(hdrop));
+			df->pFiles = sizeof(DROPFILES);
+			lstrcpy((char*)(df + 1), pCmdLine);
+			GlobalUnlock(hdrop);
+			if (!PostMessage(hOther, WM_DROPFILES, (WPARAM)hdrop, 0)) {
+				GlobalFree(hdrop);
+			}
+			return 0;	// use it in other handle
+		}
+	}
+
+
+
 
 #ifdef _TWO_DIGIT_EXPONENT
 	_set_output_format( _TWO_DIGIT_EXPONENT );
@@ -617,7 +638,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 
 				// Defaultskalierung anwählen
 				mdicreate.szClass = (LPSTR)szBmpClass ;
-				mdicreate.szTitle = pCmdLine;
+				mdicreate.szTitle = buffer;
 				mdicreate.hOwner  = hInst;
 				mdicreate.x       = CW_USEDEFAULT;
 				mdicreate.y       = CW_USEDEFAULT;
@@ -625,7 +646,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 				mdicreate.cy      = CW_USEDEFAULT;
 				mdicreate.style   = WS_CHILD|WS_BORDER;
 				mdicreate.lParam  = (LONG)(LPBMPDATA)pBmp;
-				UpdateRecent( pCmdLine, pBmp );
+				UpdateRecent(buffer, pBmp );
 				SendMessage( hwndClient, WM_MDICREATE, 0, (long) (LPMDICREATESTRUCT) &mdicreate ) ;
 			}
 			c_start = c++;
@@ -1128,13 +1149,19 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 		case WM_DROPFILES:
 		{
-			BYTE datei[256];
+			CHAR datei[1024];
 			WORD i, max;
 
-			max = DragQueryFile( (HDROP)wParam, (WPARAM)-1, datei, 256 );
+			max = DragQueryFile( (HDROP)wParam, (WPARAM)-1, datei, 1024 );
 			for( i = 0;  i < max;  i++ ) {
 				if( ( pBmp = (LPBMPDATA)pMalloc( sizeof( BMPDATA ) ) ) != NULL ) {
-					DragQueryFile( (HDROP)wParam, i, datei, 256 );
+					DragQueryFile( (HDROP)wParam, i, datei, 1024 );
+					CHAR *fname = datei;
+					if (*fname == '\"') {
+						// eventually remove quotation marks
+						fname++;
+						fname[lstrlen(fname)-1] = 0;
+					}
 					pBmp->pSnom[0].fX = 1.0;
 					pBmp->pSnom[0].fY = 1.0;
 					pBmp->Links = pBmp->Rechts = NONE;
@@ -1142,13 +1169,13 @@ long WINAPI FrameWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					pBmp->pSnom[0].Error.fSkal = 1.0;
 					pBmp->pSnom[0].Lumi.fSkal = 1.0;
 					pBmp->hwnd = hwndFrame; // Für Import-Dialog, damit es einen Vater gibt ...
-					if( !ReadAll( datei, pBmp ) ) {
+					if( !ReadAll( fname, pBmp ) ) {
 						MemFree( pBmp );
 						continue;
 					}
-					UpdateRecent( datei, pBmp );
+					UpdateRecent( fname, pBmp );
 					mdicreate.szClass = (LPSTR)szBmpClass ;
-					mdicreate.szTitle = datei;
+					mdicreate.szTitle = fname;
 					mdicreate.hOwner  = hInst;
 					mdicreate.x       = CW_USEDEFAULT;
 					mdicreate.y       = CW_USEDEFAULT;
