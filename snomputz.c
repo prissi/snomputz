@@ -164,6 +164,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 			if (!PostMessage(hOther, WM_DROPFILES, (WPARAM)hdrop, 0)) {
 				GlobalFree(hdrop);
 			}
+			SetForegroundWindow(hOther);
 			return 0;	// use it in other handle
 		}
 	}
