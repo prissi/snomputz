@@ -199,6 +199,15 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="3p.bmp" />
+    <Image Include="icon1.ico" />
+    <Image Include="icon2.ico" />
+    <Image Include="scanbar.bmp" />
+    <Image Include="snombild.ico" />
+    <Image Include="snomputz.ico" />
+    <Image Include="toolbar.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\libtiff-msvc-x86.4.0.7.8808\build\native\libtiff-msvc-x86.targets" Condition="Exists('packages\libtiff-msvc-x86.4.0.7.8808\build\native\libtiff-msvc-x86.targets')" />

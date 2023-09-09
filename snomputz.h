@@ -78,6 +78,7 @@
 #define FARB_WEITE_ZAHL                 125
 #define FARB_Z_ACHSE                    119
 #define FARB_Z_UNIT                     121
+#define FARB_MEDIAN						140
 
 #define FFT_FKT	201
 #define FFT_HIGH_FREQ	206

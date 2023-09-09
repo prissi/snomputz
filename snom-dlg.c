@@ -870,6 +870,8 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 	static HBRUSH hBrush[3];
 	static WORKMODE	IsMode = NONE;
 	static HFONT hSetFont;
+	static BOOL bMedian = TRUE;
+	static double fMedian;
 	BYTE buffer[128];
 	WORD i = 0;
 
@@ -922,7 +924,7 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			pBild = NULL;
 			no_update = FALSE;
 
-			// Den Wechselknop vorbereiten
+			// Den Wechselknopf vorbereiten
 			{
 				RECT rect;
 				TC_ITEM	tci;
@@ -1164,6 +1166,21 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 		case WM_COMMAND:
 			switch( LOWORD( wParam ) ) {
 
+				case FARB_MEDIAN:
+					if (!IsDlgButtonChecked(hdlg, FARB_MEDIAN)) {
+						break;
+					}
+					else {
+						double fMedian, fWidth;
+						MeadianArea(GetDataPointer(pBmp, pBild->Typ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pBild->uMaxDaten, &fMedian, &fWidth);
+						fWidth = pBild->fEnde - pBild->fStart;
+						pBild->fStart = fMedian * 100 / pBild->uMaxDaten - fWidth/2.0;
+						pBild->fEnde = pBild->fStart + fWidth;
+						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten* pBild->fStart* pBild->fSkal / 100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
+						SetDlgItemText(hdlg, FARB_START_ZAHL, buffer);
+
+					}
+			
 				case FARB_START_ZAHL:
 				case FARB_WEITE_ZAHL:
 #ifdef BIT32

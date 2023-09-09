@@ -6,6 +6,7 @@
 #include	<stdlib.h>
 #include	<string.h>
 #include	<math.h>
+#include	<float.h>
 
 #include	<tiffio.h>
 
@@ -35,6 +36,7 @@
 #define M_PI        3.14159265358979323846
 #endif
 
+#define LITTLE_FLOAT 33 
 
 /*****************************************************************************************
  * Konvertiert einen Datenblock in ein Snombild (Topografie, Fehler oder Lumineszens)
@@ -82,18 +84,18 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 	}
 
 	// Eh 16-Bit Daten? Dann einfach kopieren
-	if( iBits == 16 ) {
+	if (iBits == 16) {
 		LPUWORD	puSrc = (LPUWORD)pvPtr;
 
 		puZeile = puData;
-		for( y = 0;  y < h;  y++ ) {
-			for( x = 0;  x < w;  x++ ) { // attention: Never put the next two lines into a single one!!!! (MS compiler error!!!!)
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) { // attention: Never put the next two lines into a single one!!!! (MS compiler error!!!!)
 				WORD i = (signed short)puSrc[x];
 				i += uAdd;
-				if( i > iMax ) {
+				if (i > iMax) {
 					iMax = i;
 				}
-				if( i < iMin ) {
+				if (i < iMin) {
 					iMin = i;
 				}
 				puZeile[x] = i;
@@ -102,6 +104,107 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 			puZeile += w;
 			puSrc += ww;
 		}
+	}
+	// Eh 16-Bit Daten? Dann einfach kopieren
+	else if (iBits == 32) {
+		LPDWORD puSrc = (LPDWORD)pvPtr;
+		DWORD dMin = 0x7FFFFFFFul, dMax = 0;
+
+		// first find max and min
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				DWORD i = puSrc[x];
+				if (i > dMax) {
+					dMax = i;
+				}
+				if (i < dMin) {
+					dMin = i;
+				}
+			}
+			// Bedenke: w kann != ww sein!
+			puSrc += ww;
+		}
+
+		puSrc = (LPDWORD)pvPtr;
+		if (dMax - dMin < 65000ul) {
+
+			puZeile = puData;
+			for (y = 0; y < h; y++) {
+				for (x = 0; x < w; x++) { // attention: Never put the next two lines into a single one!!!! (MS compiler error!!!!)
+					DWORD i = puSrc[x];
+					i -= dMin;
+					puZeile[x] = i;
+				}
+				// Bedenke: w kann != ww sein!
+				puZeile += w;
+				puSrc += ww;
+			}
+			iMax = dMax - dMin;
+		}
+		else {
+			DWORD diff = (dMax - dMin);
+			unsigned iShift = 1;
+			while ((diff >> iShift) > 65535) {
+				iShift++;
+			}
+
+			puZeile = puData;
+			for (y = 0; y < h; y++) {
+				for (x = 0; x < w; x++) {
+					DWORD i = puSrc[x];
+					i -= dMin;
+					i >>= iShift;
+					puZeile[x] = i;
+					if (iMax < i) {
+						iMax = i;
+					}
+				}
+				// Bedenke: w kann != ww sein!
+				puZeile += w;
+				puSrc += ww;
+			}
+		}
+		iMin = 0;
+	}
+	// Eh 16-Bit Daten? Dann einfach kopieren
+	else if (iBits == LITTLE_FLOAT) {
+		float* puSrc = (float *)pvPtr;
+		float fMin = FLT_MAX, fMax = FLT_MIN;
+		double factor;
+
+		// first find max and min
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				float i = puSrc[x];
+				if (i > fMax) {
+					fMax = i;
+				}
+				if (i < fMin) {
+					fMin = i;
+				}
+			}
+			// Bedenke: w kann != ww sein!
+			puSrc += ww;
+		}
+
+		puSrc = (LPDWORD)pvPtr;
+		factor = 50000.0 / (fMax - fMin);
+
+		puZeile = puData;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) { // attention: Never put the next two lines into a single one!!!! (MS compiler error!!!!)
+				double i = puSrc[x];
+				i -= fMin;
+				puZeile[x] = (WORD)(i*factor);
+			}
+			// Bedenke: w kann != ww sein!
+			puZeile += w;
+			puSrc += ww;
+		}
+		pSnom->Topo.fSkal = 0.02;
+			
+		iMax = 45000;
+		iMin = 0;
 	}
 	else if( iBits == 8 ) {
 		// sonst Daten nach 16-Bit konvertieren
@@ -249,6 +352,116 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
  * Spezielle Dateiformate
  *****************************************************************************************/
 
+
+#define strcmpconst(a,b) (strncmp((a),(b),sizeof(a)-1))
+
+ /*************************************** Bruker ***************************************
+  * just from example
+  */
+BOOL ReadSPMlab(HFILE hFile, LPBMPDATA pBmp)
+{
+	LPSNOMDATA pSnom = &(pBmp->pSnom[0]);
+	LPBYTE pcBuf, pcC, pcC2;
+	CHAR *str, str2[16];
+	long iLen = 0, lDataLen, lHeaderLen = MAX_DI_HDLEN;
+	WORKMODE Header = 0;
+	double dWx, dWy, dWz;
+	BOOL bDoubleData = FALSE;               // hopefully ...
+
+	// Einige Defaultwerte eintagen
+	Header = TOPO;
+	pBmp->pPsi.fRot = 0.0;
+	// Header ist hoffentlich kleiner als 65536 (zumindest was den INHALT angeht ... )
+	pcBuf = (LPBYTE)pMalloc(MAX_DI_HDLEN);
+	if (pcBuf == NULL) {
+		FehlerRsc(E_MEMORY);
+		return (FALSE);
+	}
+
+	// Ganzen Header auf einmal lesen
+	_llseek(hFile, 0l, 0);
+	_lread(hFile, pcBuf, MAX_DI_HDLEN);
+
+	str = strtok(pcBuf, "\x0D\x0A");
+
+	lstrcpy(pSnom->Topo.strTitel, STR_TOPO);
+	lstrcpy(pSnom->Error.strTitel, STR_ERROR);
+	lstrcpy(pSnom->Lumi.strTitel, STR_LUMI);
+
+	// always assume topo for now
+	Header = TOPO;
+
+	while (str) {
+		int i= sizeof("ScanRangeX");
+		if (strcmpconst("ScanRangeX", str) == 0) {
+			sscanf(str + 11, "%lf %s", (LPDOUBLE)&dWx, (LPSTR)str2);
+			if (str2[0] == 0xB5) { // micrometer
+				dWx *= 1000.0;
+			}
+			if (str2[0] == 0xC5) { // Aangstroem
+				dWx /= 10.0;
+			}
+		}
+		else if (strcmpconst("ScanRangeY", str) == 0) {
+			sscanf(str + 11, "%lf %s", (LPDOUBLE)&dWy, (LPSTR)str2);
+			if (str2[0] == 0xB5) { // micrometer
+				dWy *= 1000.0;
+			}
+			if (str2[0] == 0xC5) { // Aangstroem
+				dWy /= 10.0;
+			}
+		}
+		else if (strcmpconst("ResolutionX", str) == 0) {
+			pSnom->w = atoi(str + 12);
+		}
+		else if (strcmpconst("ResolutionY", str) == 0) {
+			pSnom->h = atoi(str + 12);
+		}
+		else if (strcmpconst("[Data]", str) == 0) {
+			lHeaderLen = (str - pcBuf) + 8;
+		}
+		str = strtok(NULL, "\x0D\x0A");
+	}
+
+	// Ok, there is always only a single Bitmap to read
+
+	// set dimesnions
+	pSnom->fX = dWx / pSnom->w;
+	pSnom->fY = dWy / pSnom->h;
+
+	// copy header
+	if ((pBmp->pExtra = pMalloc(lHeaderLen)) != NULL) {
+		pBmp->Typ = WSxM;
+		pBmp->lExtraLen = lHeaderLen;
+		MemMove(pBmp->pExtra, pcBuf, lHeaderLen);
+	}
+	MemFree(pcBuf);
+	_llseek(hFile, lHeaderLen, 0);
+
+	// read data
+	lDataLen = pSnom->w * pSnom->h * sizeof(long);
+	pcBuf = pMalloc(lDataLen);
+	if (pcBuf == 0 || _hread(hFile, pcBuf, lDataLen) < lDataLen) {
+		MemFree(pcBuf);
+		_lclose(hFile);
+		FehlerRsc(E_FILE);
+		return (FALSE);
+	}
+	_lclose(hFile);
+	LadeBlock(pBmp, pcBuf, pSnom->w, pSnom->w, pSnom->h, LITTLE_FLOAT, Header, 0, TRUE);
+	MemFree(pcBuf);
+/*	if (Header == TOPO) {
+		pSnom->Topo.fSkal = dWz / (double)pSnom->Topo.uMaxDaten;
+	}
+	else {
+		pSnom->Error.fSkal = dWz / (double)pSnom->Error.uMaxDaten;
+	}
+	*/
+	return (TRUE);
+}
+
+
+// Finish read Bruker
 
 
  /*************************************** WSxM-Format ***************************************
@@ -2969,6 +3182,13 @@ BOOLEAN	ReadAll( LPCSTR datei, LPBMPDATA pBmp )
 		bResult = ReadSeiko( hFile, pBmp );
 		NormalMaus();
 		return ( bResult );
+	}
+
+	if (*(long*)str == *(long*)"[Dat") {
+		// seem like Seiko ...
+		bResult = ReadSPMlab(hFile, pBmp);
+		NormalMaus();
+		return (bResult);
 	}
 
 	// ECS Header seems to be not very special ...

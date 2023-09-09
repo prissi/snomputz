@@ -159,4 +159,13 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="snomputz.ico" />
+    <Image Include="icon2.ico" />
+    <Image Include="snombild.ico" />
+    <Image Include="toolbar.bmp" />
+    <Image Include="scanbar.bmp" />
+    <Image Include="3p.bmp" />
+  </ItemGroup>
 </Project>
