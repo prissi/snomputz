@@ -674,7 +674,7 @@ BOOLEAN	BildIntegral( LPBILD pBild, LONG w, LONG h )
          uUpLim: Obere Grenze
          bInterpolate: Zwischenwerte interpolieren
  */
-BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, UWORD uLowLim, UWORD uUpLim,
+BOOLEAN	BildDespikeOld( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, UWORD uLowLim, UWORD uUpLim,
                      BOOLEAN bX, BOOLEAN bY, BOOLEAN bLowLim, BOOLEAN bUpLim, BOOLEAN bInterpolate )
 {
 	LONG x, y, i, lDelta, lBreite;
@@ -785,6 +785,115 @@ BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, U
 	return ( bX||bY );
 }
 // 3.1.99
+
+
+#define IsMasked(x) (puMaske &&  (puMaske[x / 8] & (0x0080 >> (x & 7))) != 0)
+
+BOOLEAN FitLinearAnalytical(LPUWORD puZeile, LPUCHAR puMaske, LONG w, LPDOUBLE pfMittel)
+{
+	ULONG i, j, lMWpts, lMW;
+	double slope = 0;
+
+	lMWpts = lMW = 0;
+	int last_x = -1;
+	int hw = w / 2;
+
+	// Alle Punkte in dem entsprechenden Bereich aufsummieren ...
+	for (int x = 0; x < w;  x++) {
+		// ... so sie nicht maskiert sind!
+		if (IsMasked(x)) {
+			continue;
+		}
+		else {
+			lMW += (ULONG)puZeile[x];
+			lMWpts++;
+
+			if (x >= hw  &&  !IsMasked(x-hw)) {
+				slope = ((double)puZeile[x] - puZeile[x - hw]) / (double)hw;
+			}
+		}
+	}
+	// Alles ausmaskiert!?
+	if (lMWpts == 0) {
+		return FALSE;
+	}
+	// ansonsten einfach lMitteln ...
+	pfMittel[0] = (double)lMW / (double)lMWpts;
+	pfMittel[1] = slope;
+	pfMittel[0] -= slope * 2.0 / w;	// to have a meaningful start slope
+
+	// wenn hier, dann kein vorzeitiger Abbruch
+	return (TRUE);
+}
+
+
+/* Horizontales Despiken */
+BOOLEAN	BildDespike(LPBILD pBild, LONG w, LONG h, LONG spike_width, LONG spike_factor)
+{
+	LONG x, y, i, lDelta, lBreite;
+	LPUWORD	puDaten = pBild->puDaten;
+	double ab[3];
+	LONG lMin = 0;
+
+	ASSERT(w * h > 0 && pBild != NULL && (LONG)pBild->puDaten > 256);
+
+	// we do a median search if some line is wrong
+	for (y = 0; y < h; y ++) {
+		UWORD* row = pBild->puDaten + (y * w);
+		int start_scar = -1;
+		for (x = 0; x < w; x++) {
+
+			LONG max_diff = pBild->uMaxDaten / spike_factor + 1;
+			for (int k = 0; k < w-spike_width; k++) {
+				LONG diff = labs((LONG)row[k] - (LONG)row[k + spike_width]);
+				if (diff>max_diff) {
+					start_scar = k;
+					max_diff = diff;
+				}
+			}
+		} // for x
+		if (start_scar > 2 && start_scar < w - 3) {
+			LONG lWert;
+			// possible scar: linear interpolation right and left side and between constant
+			FitLinearAnalytical(row, NULL, start_scar-1, ab);
+			for (x = 0; x < start_scar; x++) {
+				lWert = (LONG)(row[x] - (x * ab[1] + ab[0]));
+				row[x] = lWert;
+				if (lWert < lMin) {
+					lMin = lWert;
+				}
+			}
+			double end_left = start_scar * ab[1] + ab[0];	// endpoint (ideal)
+
+			FitLinearAnalytical(row + start_scar + spike_width, NULL, w - start_scar - spike_width - 1, ab);
+			for (x = 0; x < w - start_scar - spike_width - 1; x++) {
+				lWert = (LONG)(row[x + start_scar + spike_width] - (x * ab[1] + ab[0]));
+				row[x + start_scar + spike_width] = lWert;
+				if (lWert < lMin) {
+					lMin = lWert;
+				}
+			}
+
+			double start_right = ab[0];
+			ab[0] = end_left;
+			ab[1] = 2.0 * (start_right - end_left) / spike_width;
+			for (x = 0; x < spike_width - 1; x++) {
+				lWert = (LONG)(row[x + start_scar] - (x * ab[1] + ab[0]));
+				row[x + start_scar] = lWert;
+				if (lWert < lMin) {
+					lMin = lWert;
+				}
+			}
+		}
+	} // for y
+	// Minimum abziehen, wenn nötig
+	if (lMin < 0) {
+		for (i = 0; i < w * h; i++) {
+			pBild->puDaten[i] -= lMin;
+		}
+	}
+	return BildMax(pBild, w, h);
+}
 
 
 /**************************************************************************

@@ -1900,7 +1900,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						// fehlende Werte gleich Interpolieren
 						// dabei X-Richtung und Y-Richtung, untere Grenze ist Null, Fehlende Werte lin. interpolieren
 						StatusLineRsc( I_DESPIKE );
-						BildDespike( pTopo, 180, 180, 10, 10, 0, 0, TRUE, TRUE, TRUE, FALSE, TRUE );
+						BildDespikeOld( pTopo, 180, 180, 10, 10, 0, 0, TRUE, TRUE, TRUE, FALSE, TRUE );
 
 						// Fenster nun darstellen
 						ClearStatusLine();
@@ -2146,7 +2146,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						szFselHelpStr = STR_HFILE_HIST;
 						lstrcpy( str, pBmp->szName );
 						ChangeExt( str, ".hst" );
-						if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+						if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII )  &&
 							( f = fopen( str, "r" ) ) != NULL ) {
 							LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
 							LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
@@ -2241,7 +2241,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					szFselHelpStr = STR_HFILE_HIST;
 					lstrcpy( str, pBmp->szName );
 					ChangeExt( str, ".hst" );
-					if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII, NULL )  &&
+					if( CMUFileOpen( hwndFrame, STR_SAVE_HIST, str, STR_FILE_ASCII )  &&
 						( f = fopen( str, "r" ) ) != NULL ) {
 						LPBILD pBild = GetBildPointer( pBmp, pBmp->Links );
 						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );

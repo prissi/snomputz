@@ -750,7 +750,7 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 {
 	LPUWORD puData, puZeile;
 	LONG i, iMax = 0, iMin = 65536;
-	LONG x, y;
+	LONG x;
 
 	LPSNOMDATA pSnom = &(pBmp->pSnom[0]);
 	BYTE pcBuf[MAX_MMD_HDLEN];

@@ -12,6 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D73023C9-FB88-4C2F-AE28-A2186E973B77}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -40,13 +41,10 @@
     <_ProjectFileVersion>16.0.30804.86</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\</OutDir>
-    <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -84,10 +82,8 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;comdlg32.lib;shell32.lib;vfw32.lib;kernel32.lib;gdi32.lib;user32.lib;Advapi32.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Debug/snom32ms.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/snom32ms.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
@@ -126,7 +122,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;comdlg32.lib;shell32.lib;vfw32.lib;kernel32.lib;gdi32.lib;user32.lib;Advapi32.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Release/snom32ms.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\Release/snom32ms.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>

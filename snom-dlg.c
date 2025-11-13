@@ -2416,7 +2416,7 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 				nm.code = TCN_SELCHANGE;
 				SendMessage( hdlg, WM_NOTIFY, 0, (LPARAM)&nm );
 			}
-			// Is ĂĽberhaupt was zu tun? (Sollte immer wahr sein!)
+			// nothing to do?
 			if( SpikeModus == NONE ) {
 				EndDialog( hdlg, TRUE );
 			}
@@ -2481,18 +2481,16 @@ BOOL WINAPI SpikeDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 					i = 0;
 					StatusLineRsc( I_DESPIKE );
 					if( SpikeModus&TOPO ) {
-						BildDespike( &( pSnom->Topo ), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i],
-						             bX[i], bY[i], bLow[i], bUp[i], bLin[i] );
+						BildDespike(&(pSnom->Topo), pSnom->w, pSnom->h, 15, 4);
+//						BildDespikeOld(&(pSnom->Topo), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i], bX[i], bY[i], bLow[i], bUp[i], bLin[i]);
 						i++;
 					}
 					if( SpikeModus&LUMI ) {
-						BildDespike( &( pSnom->Lumi ), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i],
-						             bX[i], bY[i], bLow[i], bUp[i], bLin[i] );
+//						BildDespikeOld( &( pSnom->Lumi ), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i], bX[i], bY[i], bLow[i], bUp[i], bLin[i] );
 						i++;
 					}
 					if( SpikeModus&ERRO ) {
-						BildDespike( &( pSnom->Error ), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i],
-						             bX[i], bY[i], bLow[i], bUp[i], bLin[i] );
+//						BildDespikeOld( &( pSnom->Error ), pSnom->w, pSnom->h, uPts[i], uPts[i], uLow[i], uUp[i], bX[i], bY[i], bLow[i], bUp[i], bLin[i] );
 						i++;
 					}
 					RecalcCache( pBmp, TRUE, TRUE );

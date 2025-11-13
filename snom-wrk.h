@@ -56,9 +56,13 @@ BOOLEAN	BildIntegral( LPBILD pBild, LONG w, LONG h );
 
 
 // Einfaches Despiken
-BOOLEAN	BildDespike( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, UWORD uLowLim, UWORD uHighLim, 
+BOOLEAN	BildDespikeOld( LPBILD pBild, LONG w, LONG h, LONG lSpikeX, LONG lSpikeY, UWORD uLowLim, UWORD uHighLim, 
 										 BOOLEAN bX, BOOLEAN bY, BOOLEAN bLowLim, BOOLEAN bUpLim, BOOLEAN bInterpolate );
 // 3.1.99
+
+/* Horizontales Despiken */
+BOOLEAN	BildDespike(LPBILD pBild, LONG w, LONG h, LONG spike_width, LONG spike_factor);
+
 
 // Berechnet spaltengemittelte Medianmittelung
 void	BildMedianSpalten( LPUWORD puDaten, LONG w, LONG h, WORD iAnzahl );
