@@ -328,7 +328,7 @@ BOOLEAN	BildSteigungY( LPBILD pBild, const LONG dummy, const LONG w, const LONG 
 
 		// take most often slope (at least 5 % of the points)
 		lDelta = 0;
-		for(  i = cnt = 0;  cnt<=(w/20);  i++  ) {
+		for(  i = cnt = 0;  cnt<=(w/20)  &&  i<DIFF_COUNT;  i++  ) {
 			cnt += plAnzahl[i].count;
 			lDelta += (plAnzahl[i].count*plAnzahl[i].hgt);
 		}

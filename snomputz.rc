@@ -165,6 +165,7 @@ BEGIN
         MENUITEM "&Plane fit ...",              IDM_3DMITTEL
         MENUITEM "&X-Deviations",               IDM_NULL
         MENUITEM "&Y-Deviations",               IDM_DIFF_NULL
+		MENUITEM "&Median differences", IDM_MEDIAN_DIFF
     END
     POPUP "&Manipulation"
     BEGIN

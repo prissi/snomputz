@@ -157,6 +157,8 @@
 #define IDM_DESPIKE                     547
 #define IDM_DIFFERENTIAL                552
 #define IDM_DIFF_NULL                   543
+#define IDM_MEDIAN_DIFF                 471
+
 #define IDM_DREHEN                      540
 #define IDM_DRUCKEN                     524
 #define IDM_DRUCKEREINSTELLEN           523

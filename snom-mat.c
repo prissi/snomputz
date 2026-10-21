@@ -246,6 +246,121 @@ void myBilateralFilter(const Mat& src, Mat& dst, int ksize, double space_sigma, 
 }
 #endif
 
+
+// helper for qsort
+int compare_long(const void* a, const void* b)
+{
+	LONG x = *(const LONG*)a;
+	LONG y = *(const LONG*)b;
+
+	if (x < y) return -1;
+	if (x > y) return 1;
+	return 0;
+}
+
+// Flatted with median diff
+BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY)
+{
+	LPUWORD puZeile, puNextZeile;
+	LONG x, y, lMin, lMax;
+	LPBYTE pMaskLine, pNextMaskLine;
+	PLONG pMedian;
+	LONG nMedian;
+	UWORD offset;
+
+	if (pBmp == NULL || pBild == NULL) {
+		return (FALSE);
+	}
+
+	lMin = 65536;
+	lMax = 0;
+
+	pMedian = malloc(w * sizeof(LONG));
+	offset = pBild->uMaxDaten/4; // to avoid over/underflow (should never happen)
+
+	puZeile = pBild->puDaten;
+	pMaskLine = NULL;
+	pNextMaskLine = NULL;
+
+	LONG diff = 0;
+	double fDiff = 0;
+	for (y = 0; y < h-1; y++) {
+		// following data
+		puNextZeile = puZeile + w;
+		nMedian = 0;
+
+		// check for mask
+		if (pBmp->pMaske) {
+			pMaskLine = pBmp->pMaske + (h - y - 1) * pBmp->wMaskeW;
+			pNextMaskLine = pBmp->pMaske + (h - y - 2) * pBmp->wMaskeW;
+
+			// no mask
+			for (long i = 0; i < w; i++) {
+				LONG xoff = i/8;
+				SHORT bit = 1 << (i % 8);
+				if ((pMaskLine[xoff] | pNextMaskLine[xoff]) & bit == 0) {
+					pMedian[nMedian++] = (LONG)puNextZeile[i] - (LONG)puNextZeile[i];
+				}
+			}
+		}
+		else {
+			// no mask
+			for (long i = 0; i < w; i++) {
+				pMedian[i] = (LONG)puNextZeile[i] - (LONG)puZeile[i] ;
+			}
+			nMedian = w;
+		}
+		// check if not totally masked
+		if (nMedian > 0) {
+			switch (nMedian) {
+				case 1:
+					fDiff += pMedian[0];
+					break;
+				case 2:
+					fDiff += (pMedian[0] + pMedian[1]) / 2.0;
+					break;
+				default:
+					qsort(pMedian, nMedian, sizeof(LONG), compare_long);
+					fDiff += (pMedian[nMedian / 2] * 2 + pMedian[nMedian / 2 - 1] + pMedian[nMedian / 2 + 1]) / 4.0;
+					break;
+			}
+		}
+		diff = fDiff;
+		for (long i = 0; i < w; i++) {
+			puZeile[i] += offset - diff;
+			if (puZeile[i] < lMin) lMin = puZeile[i];
+			if (puZeile[i] > lMax) lMax = puZeile[i];
+		}
+		puZeile += w;
+	}
+	// last line
+	for (long i = 0; i < w; i++) {
+		puZeile[i] += offset - diff;
+		if (puZeile[i] < lMin) lMin = puZeile[i];
+		if (puZeile[i] > lMax) lMax = puZeile[i];
+	}
+
+	free(pMedian);
+	return (BildMinMax(pBild, lMin, lMax, w, h));
+}
+
+
+/* nur intern! */
+// Polynom n-ter Ordnung für MittelFitBild ...
+void fpoly(double x, LPDOUBLE pf, int n)
+{
+	int i;
+
+
+	pf[0] = 1.0;
+	for (i = 1; i < n; i++) {
+		pf[i] = pf[i - 1] * x;
+	}
+}
+// 21.10.2026
+
+
+
 /**************************************************************************************
  * Autokorrelation (Autokovarianz) berechnen
  */
@@ -1277,19 +1392,6 @@ BOOLEAN	MittelBild( LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, int n )
 	}
 
 	return ( BildMinMax( pBild, lMin, lMax, w, h ) );
-}
-
-
-/* nur intern! */
-// Polynom n-ter Ordnung für MittelFitBild ...
-void fpoly( double x, LPDOUBLE pf, int n )
-{
-	int i;
-
-	pf[0] = 1.0;
-	for( i = 1;  i < n;  i++ ) {
-		pf[i] = pf[i-1]*x;
-	}
 }
 
 

@@ -1033,7 +1033,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 					DialogBoxParam( hInst, "FarbenDialog", hwnd, (DLGPROC)FarbenDialog, (LPARAM)hwnd );
 					break;
 
-				/**** Menü "Veründern" ****/
+				/**** Menü "Edit" ****/
 
 				//** Bild zeilenweise mitteln **
 				case IDM_ZEILENMITTEL:
@@ -1117,6 +1117,39 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						RecalcCache( pBmp, TRUE, TRUE );
 						NormalMaus();
 						InvalidateRect( hwnd, NULL, FALSE );
+					}
+					break;
+				}
+
+				// Minimize median difference
+				case IDM_MEDIAN_DIFF:
+				{
+					LPSNOMDATA pSnom;
+					LONG lTeiler = 0;
+
+					if (WhatToDo(pBmp, modus) == NONE) {
+						WarnungRsc(W_NIX);
+						break;
+					}
+
+					StatusLineRsc(I_Y_DIFF);
+					pSnom = pAllocNewSnom(pBmp, modus);
+					if (pSnom != NULL) {
+						WarteMaus();
+
+						if ((LONG)pSnom->Topo.puDaten > 256) {
+							BildMedianDiff(pBmp, &(pSnom->Topo), pSnom->w, pSnom->h, FALSE);
+						}
+						if ((LONG)pSnom->Error.puDaten > 256) {
+							BildMedianDiff(pBmp, &(pSnom->Error), pSnom->w, pSnom->h, FALSE);
+						}
+						if ((LONG)pSnom->Lumi.puDaten > 256) {
+							BildMedianDiff(pBmp, &(pSnom->Lumi), pSnom->w, pSnom->h, FALSE);
+						}
+
+						RecalcCache(pBmp, TRUE, TRUE);
+						NormalMaus();
+						InvalidateRect(hwnd, NULL, FALSE);
 					}
 					break;
 				}

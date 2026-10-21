@@ -13,6 +13,10 @@ double	fPolyWert( double x, LPDOUBLE pf, int n );
 BOOLEAN	BildFFTFilter( LPBILD pBild, LONG w, LONG h, LPFLOAT pfFilter, int iSize );
 // 9.2.99
 
+// Flatted with median diff
+BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY);
+// 21.10.2026
+
 // Autokorrelation berechnen
 BOOLEAN	Autokorrelation( LPFLOAT pfZiel, LPFLOAT pfDaten, int iMaxPts, BOOLEAN UseZeroMean );
 // 4/98

@@ -75,6 +75,7 @@ BOOLEAN	LadeBlock( LPBMPDATA pBmp, LPVOID pvPtr, LONG w, LONG ww, LONG h, int iB
 	}
 	w = pSnom->w;
 	h = pSnom->h;
+	pBmp->pMaske = NULL;
 
 	// Speicher anfordern
 	puData = (LPUWORD)pMalloc( pSnom->w*pSnom->h*sizeof( WORD ) );
@@ -886,8 +887,8 @@ BOOL ReadMMD(HFILE hFile, LPBMPDATA pBmp)
 		pBmp->wMaskeW = iMaskW;
 	}
 	else {
-		pBmp->pMaske = NULL;
 		MemFree(pMaske);
+		pBmp->pMaske = NULL;
 	}
 
 	MemFree(fData);
