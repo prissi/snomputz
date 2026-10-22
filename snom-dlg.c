@@ -1172,14 +1172,22 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 					}
 					else {
 						double fMedian, fWidth;
-						MeadianArea(GetDataPointer(pBmp, pBild->Typ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pBild->uMaxDaten, &fMedian, &fWidth);
-						fWidth = pBild->fEnde - pBild->fStart;
-						pBild->fStart = fMedian * 100 / pBild->uMaxDaten - fWidth/2.0;
+						MedianArea(GetDataPointer(pBmp, pBild->Typ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pBild->uMaxDaten, &fMedian, &fWidth);
+						pBild->fStart = fMedian - fWidth/2.0;
 						pBild->fEnde = pBild->fStart + fWidth;
-						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten* pBild->fStart* pBild->fSkal / 100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
+						pBild->fStart *= 100.0/pBild->uMaxDaten;
+						pBild->fEnde *= 100.0/ pBild->uMaxDaten;
+						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten* pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
 						SetDlgItemText(hdlg, FARB_START_ZAHL, buffer);
 
+						SetScrollPos(hfStart, SB_CTL, (WORD)(pBild->fStart * 10.0 + 0.5), TRUE);
+						SetScrollPos(hfEnd, SB_CTL, (WORD)((pBild->fEnde-pBild->fStart) * 10.0 + 0.5), TRUE);
+						// Bitmap updaten!
+						RecalcCache(pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE);
+						InvalidateRect(hwnd, NULL, FALSE);
+						InvalidateRect(GetDlgItem(hdlg, FARB_SHOW_LUT), NULL, FALSE);
 					}
+					break;
 			
 				case FARB_START_ZAHL:
 				case FARB_WEITE_ZAHL:
@@ -3277,7 +3285,7 @@ RecalcDot:
 			bCenter = new_center;
 			pBmp->dot_radius = iOffset;
 
-			MeadianArea( pData, pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+			MedianArea( pData, pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
 			pBmp->dot_mean_level = Median;
 			pBmp->dot_quantisation = MedianRMS;
 			if( pBmp->dot_number > 0 ) {

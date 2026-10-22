@@ -33,7 +33,7 @@ void	CorrelationFunction( HFILE hFile, LPUWORD puDaten, LONG w, LONG h, double d
 void	RMSArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, LPDOUBLE pfMeanH, LPDOUBLE pfRMS, LPFLOAT pfQuadrate );
 // 18.2.98
 
-void	MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS );
+void	MedianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h, double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS );
 // 18.11.11
 
 /****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe auf einer Scanline ****/

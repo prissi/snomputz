@@ -258,6 +258,16 @@ int compare_long(const void* a, const void* b)
 	return 0;
 }
 
+int compare_uword(const void* a, const void* b)
+{
+	LONG x = *(const UWORD*)a;
+	LONG y = *(const UWORD*)b;
+
+	if (x < y) return -1;
+	if (x > y) return 1;
+	return 0;
+}
+
 // Flatted with median diff
 BOOLEAN	BildMedianDiffX(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h)
 {
@@ -787,8 +797,44 @@ int CompareHgtRecordT( const void *a, const void *b )
 /************************************************************************
  *	Berechnet die mittlere Höhe (häufigster Wert)
  */
-void MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
+void MedianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
                   double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS )
+{
+	LONG i, j, k;
+	LPUWORD	puPtr, pMedian = calloc(w*h,sizeof(WORD));
+
+	double fMean = 0.0, fSD = 0.0;
+
+	puPtr = puDaten + ww * y + x;
+	ww -= w;
+	k = 0;
+	for (j = 0; j < h; j++) {
+		for (i = 0; i < w; i++) {
+			DWORD data = *puPtr++;
+			pMedian[k++] = data;
+			fMean += data;
+			fSD += ((LONG)data * (LONG)data);
+		}
+		puPtr += ww;
+	}
+
+	if (pfMedian) {
+		// now we have an array of counts, find the ten largest ones
+		qsort(pMedian, k, sizeof(*pMedian), compare_uword);
+		*pfMedian = pMedian[(k) / 2] * dSkal;
+	}
+
+	// for RMS, we can just use standard formula
+	*pfRMS = 0.0;
+	if (k > 0) {
+		*pfRMS = sqrt(((double)fSD - (fMean * fMean) / k) / (k - 1l)) * dSkal;
+	}
+}
+// 18.11.11
+
+
+void MedianAreaOld(LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
+	double dSkal, UWORD maxhgt, LPDOUBLE pfMedian, LPDOUBLE pfRMS)
 {
 	HgtRecordT max[65536];
 	LONG i, j;
@@ -796,41 +842,42 @@ void MeadianArea( LPUWORD puDaten, LONG ww, LONG x, LONG y, LONG w, LONG h,
 
 	double fMean = 0.0, fSD = 0.0;
 
-	assert(  w <= ww  );
+	assert(w <= ww);
 
-	for( j = 0;  j < maxhgt;  j++ ) {
+	for (j = 0; j < maxhgt; j++) {
 		max[j].hgt = j;
 		max[j].count = 0;
 	}
 
-	puPtr = puDaten+ww*y+x;
+	puPtr = puDaten + ww * y + x;
 	ww -= w;
-	for( j = 0;  j < h;  j++ ) {
-		for( i = 0;  i < w;  i++ ) {
+	for (j = 0; j < h; j++) {
+		for (i = 0; i < w; i++) {
 			max[*puPtr++].count++;
 		}
 		puPtr += ww;
 	}
 	// now we have an array of counts, find the ten largest ones
-	qsort( max, maxhgt, sizeof( *max ), CompareHgtRecordT );
+	qsort(max, maxhgt, sizeof(*max), CompareHgtRecordT);
 
 	// an now get the mean Median of the most often 5% data
-	for( i = 0, j = ( ( w-x )*( h-y ) )/20;  j >= 0;  i++ ) {
+	for (i = 0, j = ((w - x) * (h - y)) / 20; j >= 0; i++) {
 		long k = max[i].hgt;
 		// Für Mittelwert
 		fMean += k;
 		// Für Standardabweichung
-		fSD += ( k*k );
+		fSD += (k * k);
 		j -= max[i].count;
 	}
 
 	*pfRMS = 0.0;
-	if( i > 0 ) {
-		*pfRMS = sqrt( ( (double)fSD-( fMean*fMean )/i )/( i-1l ) )*dSkal;
+	if (i > 0) {
+		*pfRMS = sqrt(((double)fSD - (fMean * fMean) / i) / (i - 1l)) * dSkal;
 	}
-	*pfMedian = fMean*dSkal / (double)i;
+	*pfMedian = fMean * dSkal / (double)i;
 }
 // 18.11.11
+
 
 
 /****	Berechnet die mittlere Rauhigkeit und die mittlere Höhe auf einer Scanline ****/

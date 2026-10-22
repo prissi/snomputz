@@ -1636,13 +1636,13 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 
 					if( pBmp->pSnom[pBmp->iAktuell].Topo.puDaten ) {
 						RMSArea( GetDataPointer( pBmp, TOPO ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Topo.fSkal, &Mean, &RMS, NULL );
-						MeadianArea( GetDataPointer( pBmp, TOPO ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Topo.fSkal, pBmp->pSnom[pBmp->iAktuell].Topo.uMaxDaten, &Median, &MedianRMS );
+						MedianArea( GetDataPointer( pBmp, TOPO ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Topo.fSkal, pBmp->pSnom[pBmp->iAktuell].Topo.uMaxDaten, &Median, &MedianRMS );
 						sprintf( str, GetStringRsc( STR_TOPO_MEAN ), Mean, RMS, Median, MedianRMS );
 						MessageBox( hwnd, (LPSTR)str, "", MB_ICONINFORMATION|MB_OK );
 					}
 					if( pBmp->pSnom[pBmp->iAktuell].Lumi.puDaten ) {
 						RMSArea( GetDataPointer( pBmp, LUMI ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Lumi.fSkal, &Mean, &RMS, NULL );
-						MeadianArea( GetDataPointer( pBmp, LUMI ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Lumi.fSkal, pBmp->pSnom[pBmp->iAktuell].Lumi.uMaxDaten, &Median, &MedianRMS );
+						MedianArea( GetDataPointer( pBmp, LUMI ), pBmp->pSnom[iAkt].w, 0, 0, pBmp->pSnom[iAkt].w, pBmp->pSnom[iAkt].h, pBmp->pSnom[pBmp->iAktuell].Lumi.fSkal, pBmp->pSnom[pBmp->iAktuell].Lumi.uMaxDaten, &Median, &MedianRMS );
 						sprintf( str, GetStringRsc( STR_LUMI_MEAN ), Mean, RMS, Median, MedianRMS );
 						MessageBox( hwnd, (LPSTR)str, "", MB_ICONINFORMATION|MB_OK );
 					}
@@ -2076,7 +2076,7 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						LPSNOMDATA pSnom = &( pBmp->pSnom[pBmp->iAktuell] );
 						if( pBmp->dot_number == 0 ) {
 							double Median, MedianRMS;
-							MeadianArea( GetDataPointer( pBmp, TOPO ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
+							MedianArea( GetDataPointer( pBmp, TOPO ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pSnom->Topo.uMaxDaten, &Median, &MedianRMS );
 							pBmp->dot_mean_level = Median;
 							pBmp->dot_quantisation = MedianRMS;
 							if(  pBmp->dot_radius == 0  ) {
