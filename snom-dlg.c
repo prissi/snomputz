@@ -1599,7 +1599,19 @@ Redraw3D:
 						pBmp->bPlotUnten = PlotsUnten;
 					}
 					RedrawAll( CLEAR3D|UPDATE|SLIDER );
-
+					{
+						// save font info
+						HANDLE hSubkey;
+						RegCreateKey(HKEY_CURRENT_USER, "Software\\Snomputz\\Font", &hSubkey);
+						RegSetValue(hSubkey, "Name", REG_SZ, CFont.lpLogFont->lfFaceName, 0);
+						LONG i = CFont.iPointSize;
+						RegSetValueEx(hSubkey, "Size", 0, REG_DWORD, &i, sizeof(i));
+						i = CFont.lpLogFont->lfWeight;
+						RegSetValueEx(hSubkey, "Weight", 0, REG_DWORD, &i, sizeof(i));
+						i = CFont.lpLogFont->lfItalic;
+						RegSetValueEx(hSubkey, "Italic", 0, REG_DWORD, &i, sizeof(i));
+						RegCloseKey(hSubkey);
+					}
 				case IDCANCEL:
 					EndDialog( hdlg, wParam != IDOK );
 					return ( TRUE ) ;

@@ -280,16 +280,49 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		PDlg.Flags = PD_RETURNDEFAULT;
 		PrintDlg( &PDlg );
 
-		CFont.lStructSize = sizeof( CHOOSEFONT );
+		//default inits for font
+		CFont.lStructSize = sizeof(CHOOSEFONT);
 		CFont.hwndOwner = NULL;
 		CFont.lpLogFont = &lf;
+		CFont.iPointSize = 12;
 		CFont.Flags = CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS | CF_ANSIONLY; // | CF_NOSTYLESEL;
 
-		// Vernünftig Initialisieren
 		lf.lfWeight = FW_DONTCARE;
 		lf.lfOutPrecision = OUT_TT_PRECIS;
 		lf.lfClipPrecision = CLIP_STROKE_PRECIS;
 		lf.lfQuality = PROOF_QUALITY;
+
+		// reasonable default
+		strcpy(lf.lfFaceName, "Arial");
+		CFont.iPointSize = 14;
+		lf.lfItalic = 0;
+
+		// maybe restore font from registry
+		if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Snomputz\\Font", 0, KEY_READ, &hRegKey) == ERROR_SUCCESS) {
+			DWORD dwType = 0;
+			DWORD dwSize = 0;
+
+			dwSize = sizeof(lf.lfFaceName);
+			RegQueryValue(hRegKey, "Name", (LPBYTE)lf.lfFaceName, &dwSize);
+
+			DWORD dwValue = 0;
+			dwSize = sizeof(dwValue);
+			RegQueryValueExA(hRegKey, "Size", NULL, &dwType, (LPBYTE)&dwValue, &dwSize);
+			CFont.iPointSize = dwValue;
+			RegQueryValueExA(hRegKey, "Weight", NULL, &dwType, (LPBYTE)&dwValue, &dwSize);
+			lf.lfWeight = dwValue;
+			if (RegQueryValueExA(hRegKey, "Italic", NULL, &dwType, (LPBYTE)&dwValue, &dwSize) == ERROR_SUCCESS) {
+				lf.lfItalic = (BYTE)dwValue;
+			}
+			RegCloseKey(hRegKey);
+		}
+		if (CFont.iPointSize != FW_DONTCARE) {
+			// Init succeeded => need to proper calculate font size
+			HDC hdc = GetDC(NULL);
+			int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+			lf.lfHeight = -MulDiv(CFont.iPointSize, dpiY, 720); // 720 because iPointSize is 10ths of a point
+			ReleaseDC(NULL, hdc);
+		}
 
 		WM_FSEL_HELP = RegisterWindowMessage( HELPMSGSTRING );
 #ifdef BIT32
@@ -382,13 +415,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 	cMarkierungLinks = atol( szBuf );
 	GetPrivateProfileString( "Colors", "Mark right", "16744192", (LPSTR)szBuf, 80, sIniFileName );
 	cMarkierungRechts = atol( szBuf );
-
-	// Zeichensatz
-	GetPrivateProfileString( "Font", "Face", "MS Sans Serif", (LPSTR)lf.lfFaceName, LF_FACESIZE, sIniFileName );
-	lf.lfHeight = GetPrivateProfileInt( "Font", "Size", -12, sIniFileName );
-	if( abs( lf.lfHeight ) > 50000 ) {
-		lf.lfHeight = -12;
-	}
 
 	// Skalierung
 	GetPrivateProfileString( "Scale", "X", "1.0", (LPSTR)szBuf, 80, sIniFileName );
