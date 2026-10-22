@@ -1138,13 +1138,16 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 						WarteMaus();
 
 						if ((LONG)pSnom->Topo.puDaten > 256) {
-							BildMedianDiff(pBmp, &(pSnom->Topo), pSnom->w, pSnom->h, FALSE);
+							BildMedianDiffY(pBmp, &(pSnom->Topo), pSnom->w, pSnom->h);
+// useless					BildMedianDiffX(pBmp, &(pSnom->Topo), pSnom->w, pSnom->h);
 						}
 						if ((LONG)pSnom->Error.puDaten > 256) {
-							BildMedianDiff(pBmp, &(pSnom->Error), pSnom->w, pSnom->h, FALSE);
+							BildMedianDiffY(pBmp, &(pSnom->Error), pSnom->w, pSnom->h);
+// useless					BildMedianDiffX(pBmp, &(pSnom->Error), pSnom->w, pSnom->h);
 						}
 						if ((LONG)pSnom->Lumi.puDaten > 256) {
-							BildMedianDiff(pBmp, &(pSnom->Lumi), pSnom->w, pSnom->h, FALSE);
+							BildMedianDiffY(pBmp, &(pSnom->Lumi), pSnom->w, pSnom->h);
+// useless					BildMedianDiffX(pBmp, &(pSnom->Lumi), pSnom->w, pSnom->h);
 						}
 
 						RecalcCache(pBmp, TRUE, TRUE);
@@ -1453,8 +1456,8 @@ long WINAPI BmpWndProc( HWND hwnd, UINT message, UINT wParam, LONG lParam )
 							if( (LONG)puOldDaten <= 256 ) {
 								puOldDaten = pBmp->pSnom[(int)puOldDaten-1].Topo.puDaten;
 							}
-							for( y = 0;  y < w;  y++ ) {
-								for( x = 0;  x < h;  x++ ) {
+							for( y = 0;  y < pSnom->h;  y++ ) {
+								for( x = 0;  x < pSnom->w;  x++ ) {
 									puDaten[x] = puOldDaten[w*( h-x-1 )+y];
 								}
 								puDaten += h;

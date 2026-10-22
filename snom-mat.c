@@ -259,11 +259,11 @@ int compare_long(const void* a, const void* b)
 }
 
 // Flatted with median diff
-BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY)
+BOOLEAN	BildMedianDiffX(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h)
 {
-	LPUWORD puZeile, puNextZeile;
+	LPUWORD puZeile;
 	LONG x, y, lMin, lMax;
-	LPBYTE pMaskLine, pNextMaskLine;
+	LPBYTE pMaskLine;
 	PLONG pMedian;
 	LONG nMedian;
 	UWORD offset;
@@ -278,37 +278,43 @@ BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY)
 	pMedian = malloc(w * sizeof(LONG));
 	offset = pBild->uMaxDaten/4; // to avoid over/underflow (should never happen)
 
-	puZeile = pBild->puDaten;
+	puZeile = puZeile = pBild->puDaten;
 	pMaskLine = NULL;
-	pNextMaskLine = NULL;
 
+	double fDiff = 0.0;
 	LONG diff = 0;
-	double fDiff = 0;
-	for (y = 0; y < h-1; y++) {
+	for (x = 1; x < w; x++) {
 		// following data
-		puNextZeile = puZeile + w;
 		nMedian = 0;
 
 		// check for mask
 		if (pBmp->pMaske) {
 			pMaskLine = pBmp->pMaske + (h - y - 1) * pBmp->wMaskeW;
-			pNextMaskLine = pBmp->pMaske + (h - y - 2) * pBmp->wMaskeW;
-
 			// no mask
-			for (long i = 0; i < w; i++) {
-				LONG xoff = i/8;
-				SHORT bit = 1 << (i % 8);
-				if ((pMaskLine[xoff] | pNextMaskLine[xoff]) & bit == 0) {
-					pMedian[nMedian++] = (LONG)puNextZeile[i] - (LONG)puNextZeile[i];
+			for (long i = 0; i < h; i++) {
+				LONG pos = x + (i * w);
+				if((i % 8)==0) {
+					LONG xoff = i / 8;
+					if (pMaskLine[xoff-1] & 0x80 == 0 && pMaskLine[xoff] & 1 == 0) {
+						pMedian[nMedian++] = (LONG)puZeile[pos-1] - (LONG)puZeile[pos];
+					}
+				}
+				else {
+					LONG xoff = i / 8;
+					SHORT bit = 3 << (i % 8);
+					if (pMaskLine[xoff] & bit == 0) {
+						pMedian[nMedian++] = (LONG)puZeile[pos-1] - (LONG)puZeile[pos];
+					}
 				}
 			}
 		}
 		else {
 			// no mask
-			for (long i = 0; i < w; i++) {
-				pMedian[i] = (LONG)puNextZeile[i] - (LONG)puZeile[i] ;
+			for (long i = 0; i < h; i++) {
+				LONG pos = x + (i * w);
+				pMedian[i] = (LONG)puZeile[pos-1] - (LONG)puZeile[pos];
 			}
-			nMedian = w;
+			nMedian = h;
 		}
 		// check if not totally masked
 		if (nMedian > 0) {
@@ -326,18 +332,108 @@ BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY)
 			}
 		}
 		diff = fDiff;
-		for (long i = 0; i < w; i++) {
-			puZeile[i] += offset - diff;
-			if (puZeile[i] < lMin) lMin = puZeile[i];
-			if (puZeile[i] > lMax) lMax = puZeile[i];
+		for (long i = 0; i < h; i++) {
+			LONG pos = x-1 + (i * w);
+			LONG l = puZeile[pos] + offset - diff;
+			if (l < lMin) lMin = l;
+			if (l > lMax) lMax = l;
+			puZeile[pos] = l;
 		}
+	}
+	// last line
+	for (long i = 0; i < h; i++) {
+		LONG l = puZeile[(i*w)+(w-1)] + offset - diff;
+		if (l < lMin) lMin = l;
+		if (l > lMax) lMax = l;
+		puZeile[(i * w) + (w - 1)] = l;
+	}
+
+	free(pMedian);
+	return (BildMinMax(pBild, lMin, lMax, w, h));
+}
+
+
+BOOLEAN	BildMedianDiffY(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h)
+{
+	LPUWORD puZeile, puPrevZeile;
+	LONG x, y, lMin, lMax;
+	LPBYTE pMaskLine, pPrevMaskLine;
+	PLONG pMedian;
+	LONG nMedian;
+	UWORD offset;
+
+	if (pBmp == NULL || pBild == NULL) {
+		return (FALSE);
+	}
+
+	lMin = 65536;
+	lMax = 0;
+
+	pMedian = malloc(w * sizeof(LONG));
+	offset = pBild->uMaxDaten / 4; // to avoid over/underflow (should never happen)
+
+	puPrevZeile = puZeile = pBild->puDaten;
+	pMaskLine = NULL;
+	pPrevMaskLine = NULL;
+
+	LONG diff = 0;
+	double fDiff = 0;
+	for (y = 1; y < h; y++) {
+		// following data
 		puZeile += w;
+		nMedian = 0;
+
+		// check for mask
+		if (pBmp->pMaske) {
+			pMaskLine = pBmp->pMaske + (h - y - 1) * pBmp->wMaskeW;
+			pPrevMaskLine = pBmp->pMaske + (h - y) * pBmp->wMaskeW;
+
+			// no mask
+			for (long i = 0; i < w; i++) {
+				LONG xoff = i / 8;
+				SHORT bit = 1 << (i % 8);
+				if ((pMaskLine[xoff] | pPrevMaskLine[xoff]) & bit == 0) {
+					pMedian[nMedian++] = (LONG)puZeile[i] - (LONG)puPrevZeile[i];
+				}
+			}
+		}
+		else {
+			// no mask
+			for (long i = 0; i < w; i++) {
+				pMedian[i] = (LONG)puZeile[i] - (LONG)puPrevZeile[i];
+			}
+			nMedian = w;
+		}
+		// check if not totally masked
+		if (nMedian > 0) {
+			switch (nMedian) {
+			case 1:
+				fDiff += pMedian[0];
+				break;
+			case 2:
+				fDiff += (pMedian[0] + pMedian[1]) / 2.0;
+				break;
+			default:
+				qsort(pMedian, nMedian, sizeof(LONG), compare_long);
+				fDiff += (pMedian[nMedian / 2] * 2 + pMedian[nMedian / 2 - 1] + pMedian[nMedian / 2 + 1]) / 4.0;
+				break;
+			}
+		}
+		diff = fDiff;
+		for (long i = 0; i < w; i++) {
+			LONG l = puPrevZeile[i] + offset - diff;
+			if (l < lMin) lMin = l;
+			if (l > lMax) lMax = l;
+			puPrevZeile[i] = l;
+		}
+		puPrevZeile = puZeile;
 	}
 	// last line
 	for (long i = 0; i < w; i++) {
-		puZeile[i] += offset - diff;
-		if (puZeile[i] < lMin) lMin = puZeile[i];
-		if (puZeile[i] > lMax) lMax = puZeile[i];
+		LONG l = puPrevZeile[i] + offset - diff;
+		if (l < lMin) lMin = l;
+		if (l > lMax) lMax = l;
+		puPrevZeile[i] = l;
 	}
 
 	free(pMedian);

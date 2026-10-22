@@ -14,7 +14,8 @@ BOOLEAN	BildFFTFilter( LPBILD pBild, LONG w, LONG h, LPFLOAT pfFilter, int iSize
 // 9.2.99
 
 // Flatted with median diff
-BOOLEAN	BildMedianDiff(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h, BOOLEAN XY);
+BOOLEAN	BildMedianDiffX(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h);
+BOOLEAN	BildMedianDiffY(LPBMPDATA pBmp, LPBILD pBild, LONG w, LONG h);
 // 21.10.2026
 
 // Autokorrelation berechnen
