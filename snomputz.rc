@@ -399,7 +399,7 @@ BEGIN
     LTEXT           "",-1,12,92,122,12,WS_BORDER | NOT WS_GROUP
     CONTROL         "",FARB_SHOW_LUT,"Button",BS_OWNERDRAW,13,93,120,11
     LTEXT           "Offset",-1,12,110,25,12
-    CONTROL         "fix median", FARB_MEDIAN, "Button", BS_AUTOCHECKBOX, 35, 108, 50, 12
+    PUSHBUTTON      "auto median", FARB_MEDIAN, 35, 108, 50, 12
     EDITTEXT        FARB_START_ZAHL,88,108,44,11
     SCROLLBAR       FARB_START, 12, 120, 124, 12, WS_TABSTOP
     LTEXT           "Height",-1,12,140,32,12

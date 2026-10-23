@@ -1167,21 +1167,20 @@ DWORD WINAPI FarbenDialog( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam
 			switch( LOWORD( wParam ) ) {
 
 				case FARB_MEDIAN:
-					if (!IsDlgButtonChecked(hdlg, FARB_MEDIAN)) {
-						break;
-					}
-					else {
+					{
 						double fMedian, fWidth;
 						MedianArea(GetDataPointer(pBmp, pBild->Typ), pSnom->w, 0, 0, pSnom->w, pSnom->h, 1.0, pBild->uMaxDaten, &fMedian, &fWidth);
+						fWidth *= 100.0 / pBild->uMaxDaten;
+						fMedian *= 100.0 / pBild->uMaxDaten;
 						pBild->fStart = fMedian - fWidth/2.0;
 						pBild->fEnde = pBild->fStart + fWidth;
-						pBild->fStart *= 100.0/pBild->uMaxDaten;
-						pBild->fEnde *= 100.0/ pBild->uMaxDaten;
-						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten* pBild->fStart*pBild->fSkal/100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
+						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten*pBild->fStart*pBild->fSkal / 100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
 						SetDlgItemText(hdlg, FARB_START_ZAHL, buffer);
+						sprintf(buffer, "%.3lg %s", pBild->uMaxDaten*fWidth*pBild->fSkal / 100.0, (pBild->bSpecialZUnit ? pBild->strZUnit : "nm"));
+						SetDlgItemText(hdlg, FARB_WEITE_ZAHL, buffer);
 
 						SetScrollPos(hfStart, SB_CTL, (WORD)(pBild->fStart * 10.0 + 0.5), TRUE);
-						SetScrollPos(hfEnd, SB_CTL, (WORD)((pBild->fEnde-pBild->fStart) * 10.0 + 0.5), TRUE);
+						SetScrollPos(hfEnd, SB_CTL, (WORD)(fWidth * 10.0 + 0.5), TRUE);
 						// Bitmap updaten!
 						RecalcCache(pBmp, FULL_IMG_UPDATE, FULL_IMG_UPDATE);
 						InvalidateRect(hwnd, NULL, FALSE);
